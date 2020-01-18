@@ -12,7 +12,7 @@ import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
-
+import.java.util.*;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -32,6 +32,7 @@ public class ControlPanelManipulator extends SubsystemBase {
   private final Color kGreenTarget = ColorMatch.makeColor(0.197, 0.561, 0.240);
   private final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
   private final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
+  private final float controlPanelSlice = 12.5f;
 
   private final ColorMatch m_colorMatcher = new ColorMatch();
 
@@ -62,13 +63,13 @@ public class ControlPanelManipulator extends SubsystemBase {
     ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
 
     if (match.color == kBlueTarget) {
-      colorString = "B";
+      colorString = "b";
     } else if (match.color == kRedTarget) {
-      colorString = "R";
+      colorString = "r";
     } else if (match.color == kGreenTarget) {
-      colorString = "G";
+      colorString = "g";
     } else if (match.color == kYellowTarget) {
-      colorString = "Y";
+      colorString = "y";
     } else {
       colorString = "?";
     }
@@ -87,8 +88,31 @@ public class ControlPanelManipulator extends SubsystemBase {
     return m_wristEncoder.get()/Constants.CPMWristEncoderCountsPerRev*360;
   }
 
-  public calcPositionControlTargetPosition() {
-    
+  public float calcPositionControlTargetPosition() {
+    //calculate in inches, motor can spin x inches
+    int colorDistance = 0;
+    int i = 1; //Start at index 1
+    String currentDetectedColor = getColor();
+    String currentTargetColor = getFMSColorTarget();
+    String[] colorList = { "r", "g", "b", "y", "r", "g"};
+    int colorListLength = colorList.length;
+    while (i < colorListLength) {
+      if (colorList[i] == currentDetectedColor) {
+        if (colorList[i-1] == currentTargetColor) {
+          colorDistance = -1;
+          break;
+        }
+        else if (colorList[i+1] == currentTargetColor) {
+          colorDistance = 1;
+          break;
+        }
+        else {
+          colorDistance = 2;
+          break;
+        }
+      }
+    }
+    return colorDistance*12.5f;
   }
 
   @Override

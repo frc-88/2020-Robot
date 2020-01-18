@@ -23,4 +23,6 @@ public final class Constants {
     public static final int CPMPneumaticsReverse = 88;
     public static final int CPMDigitalInputChannel = 88;
     public static final int CPMWristEncoderCountsPerRev = 88;
+    
+    public static
 }
