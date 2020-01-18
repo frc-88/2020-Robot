@@ -9,13 +9,17 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.kauailabs.navx.frc.AHRS;
+import com.revrobotics.ColorMatch;
+import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -24,17 +28,67 @@ public class ControlPanelManipulator extends SubsystemBase {
   /**
    * Creates a new ControlPanelManipulator.
    */
+  private final Color kBlueTarget = ColorMatch.makeColor(0.143, 0.427, 0.429);
+  private final Color kGreenTarget = ColorMatch.makeColor(0.197, 0.561, 0.240);
+  private final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
+  private final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
+
+  private final ColorMatch m_colorMatcher = new ColorMatch();
 
   private TalonFX m_spinner = new TalonFX(Constants.CPMMotor);
   private final I2C.Port m_i2cPort = I2C.Port.kOnboard;
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(m_i2cPort);
-  private Encoder m_positionEncoder = new Encoder(Constants.CPMJointEncoderChannelA, Constants.CPMJointEncoderChannelB);
+  private Encoder m_wristEncoder = new Encoder(Constants.CPMJointEncoderChannelA, Constants.CPMJointEncoderChannelB);
   private DoubleSolenoid m_pneumatics = new DoubleSolenoid(Constants.CPMPneumaticsForward, Constants.CPMPneumaticsReverse);
   private AHRS m_navX = new AHRS(SPI.Port.kMXP); 
   private DigitalInput m_contactSensor = new DigitalInput(Constants.CPMDigitalInputChannel);
+  
 
   public ControlPanelManipulator() {
+    m_wristEncoder.reset();
+    m_colorMatcher.addColorMatch(kBlueTarget);
+    m_colorMatcher.addColorMatch(kGreenTarget);
+    m_colorMatcher.addColorMatch(kRedTarget);
+    m_colorMatcher.addColorMatch(kYellowTarget);    
+  }
 
+  public boolean isEngaged() {
+    return m_contactSensor.get();
+  }
+
+  public String getColor() {
+    Color detectedColor = m_colorSensor.getColor();
+    String colorString;
+    ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
+
+    if (match.color == kBlueTarget) {
+      colorString = "B";
+    } else if (match.color == kRedTarget) {
+      colorString = "R";
+    } else if (match.color == kGreenTarget) {
+      colorString = "G";
+    } else if (match.color == kYellowTarget) {
+      colorString = "Y";
+    } else {
+      colorString = "?";
+    }
+    return colorString;
+  }
+
+  public String getFMSColorTarget() {
+    return DriverStation.getInstance().getGameSpecificMessage();
+  }
+
+  public double getRobotFacing() {
+    return m_navX.getYaw();
+  }
+
+  public double getRobotWrist() {
+    return m_wristEncoder.get()/Constants.CPMWristEncoderCountsPerRev*360;
+  }
+
+  public calcPositionControlTargetPosition() {
+    
   }
 
   @Override
