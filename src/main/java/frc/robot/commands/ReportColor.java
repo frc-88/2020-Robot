@@ -30,6 +30,9 @@ public class ReportColor extends CommandBase {
   @Override
   public void execute() {
     SmartDashboard.putString("robot sensor color", cpm.getColor());
+    SmartDashboard.putNumber("Red", cpm.getRawColor().red);
+    SmartDashboard.putNumber("Green", cpm.getRawColor().green);
+    SmartDashboard.putNumber("Blue", cpm.getRawColor().blue);
   }
 
   // Called once the command ends or is interrupted.

@@ -28,10 +28,11 @@ public class ControlPanelManipulator extends SubsystemBase {
   /**
    * Creates a new ControlPanelManipulator.
    */
-  private final Color kBlueTarget = ColorMatch.makeColor(0.143, 0.427, 0.429);
-  private final Color kGreenTarget = ColorMatch.makeColor(0.197, 0.561, 0.240);
-  private final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
-  private final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
+  //adjusted color rgb values based on testing
+  private final Color kBlueTarget = ColorMatch.makeColor(0.12, 0.41, 0.46);
+  private final Color kGreenTarget = ColorMatch.makeColor(0.17, 0.55, 0.26);
+  private final Color kRedTarget = ColorMatch.makeColor(0.54, 0.33, 0.12);
+  private final Color kYellowTarget = ColorMatch.makeColor(0.31, 0.56, 0.12);
   private final float controlPanelSlice = 12.5f;
 
   private final ColorMatch m_colorMatcher = new ColorMatch();
@@ -113,6 +114,11 @@ public class ControlPanelManipulator extends SubsystemBase {
       }
     }
     return colorDistance*12.5f;
+  }
+
+  public Color getRawColor() {
+    Color detectedColor = m_colorSensor.getColor();
+    return detectedColor;
   }
 
   @Override
