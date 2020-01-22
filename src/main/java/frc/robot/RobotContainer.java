@@ -10,7 +10,10 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.ReportColor;
+import frc.robot.subsystems.ControlPanelManipulator;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.util.TJController;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /**
@@ -25,7 +28,11 @@ public class RobotContainer {
 
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
+  private final ControlPanelManipulator m_cpm= new ControlPanelManipulator();
 
+  private final ReportColor m_reportColor= new ReportColor(m_cpm);
+
+  private final TJController m_driverController = new TJController(0);
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -42,6 +49,7 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    m_driverController.buttonB.whileHeld(m_reportColor);
   }
 
 
