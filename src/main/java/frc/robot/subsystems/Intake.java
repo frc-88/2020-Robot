@@ -15,6 +15,13 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
+
+
+
+
+/**
+ * 
+ */
 public class Intake extends SubsystemBase {
 
   private TalonSRX rollerMotor;
@@ -38,7 +45,7 @@ public class Intake extends SubsystemBase {
     rollerMotor.set(ControlMode.PercentOutput, speed);
   }
 
-  
+
   public void deploy(){
     deployPiston.set(Value.kForward);
   }
