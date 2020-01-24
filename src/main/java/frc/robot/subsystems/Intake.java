@@ -16,12 +16,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 
-
-
-
 /**
- * 
+ *   intake be like "eat!"
+ * they eating them oh my gosh
+ *     robot hungy lol
  */
+
 public class Intake extends SubsystemBase {
 
   private TalonSRX rollerMotor;
@@ -41,12 +41,12 @@ public class Intake extends SubsystemBase {
   }
 
 
-  public void setRoller(double speed){
+  public void setRoller(double speed) {
     rollerMotor.set(ControlMode.PercentOutput, speed);
   }
 
 
-  public void deploy(){
+  public void deploy() {
     deployPiston.set(Value.kForward);
   }
 
@@ -54,5 +54,4 @@ public class Intake extends SubsystemBase {
   public void retract(){
     deployPiston.set(Value.kReverse);
   }
-
 }
