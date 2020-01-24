@@ -23,5 +23,14 @@ public final class Constants {
     public static final int CPMPneumaticsReverse = 04;
     public static final int CPMDigitalInputChannel = 05;
     public static final int CPMWristEncoderCountsPerRev = 06;
+
+    public static final int ROLLER_ID = 5;
+    public static final int INTAKE_DEPLOY_PISTON = 0;
+    public static final int INTAKE_RETRACT_PISTON = 7;
+    
+
+
+
+
 }
 
