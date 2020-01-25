@@ -8,7 +8,7 @@
 package frc.robot.driveutil;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
+import com.ctre.phoenix.motorcontrol.can.BaseTalonConfiguration;
 import com.ctre.phoenix.motorcontrol.can.VictorSPXConfiguration;
 
 /**
@@ -25,7 +25,7 @@ public class TJDriveModuleConfiguration {
     public boolean invertSensor = false;
     public NeutralMode neutralMode = NeutralMode.Coast;
     
-    public TalonSRXConfiguration masterConfiguration;
-    public TalonSRXConfiguration talonFollowerConfiguration;
+    public BaseTalonConfiguration masterConfiguration;
+    public BaseTalonConfiguration talonFollowerConfiguration;
     public VictorSPXConfiguration victorFollowerConfiguration;
 }

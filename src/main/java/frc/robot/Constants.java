@@ -32,5 +32,47 @@ public final class Constants {
 
 
 
+    /********************************************************************
+    * 
+    *     ____       _          
+    *    / __ \_____(_)   _____ 
+    *   / / / / ___/ / | / / _ \
+    *  / /_/ / /  / /| |/ /  __/
+    * /_____/_/  /_/ |___/\___/ 
+    * 
+    */
+                            
+    // Drive CAN IDs
+    public static final int LEFT_MASTER_DRIVE_ID = 0;
+	public static final int LEFT_TALON_FOLLOWER_DRIVE_ID = 0;
+	public static final int RIGHT_MASTER_DRIVE_ID = 0;
+	public static final int RIGHT_TALON_FOLLOWER_DRIVE_ID = 0;
+	public static final int SHIFTER_LEFT_PCM = 0;
+	public static final int SHIFTER_LEFT_OUT = 0;
+	public static final int SHIFTER_LEFT_IN = 0;
+	public static final int SHIFTER_RIGHT_PCM = 0;
+	public static final int SHIFTER_RIGHT_OUT = 0;
+	public static final int SHIFTER_RIGHT_IN = 0;
+
+    // Drive Configuration 
+    public static final int NUM_DRIVE_MOTORS_PER_SIDE = 2;
+	public static final double LOW_DRIVE_RATIO = 0;
+	public static final double HIGH_DRIVE_RATIO = 0;
+	public static final double DRIVE_SENSOR_RATIO = 0;
+	public static final double DRIVE_LOW_STATIC_FRICTION_VOLTAGE = 0;
+	public static final double DRIVE_HIGH_STATIC_FRICTION_VOLTAGE = 0;
+	public static final double DRIVE_LEFT_LOW_EFFICIENCY = 0;
+	public static final double DRIVE_LEFT_HIGH_EFFICIENCY = 0;
+	public static final double DRIVE_RIGHT_LOW_EFFICIENCY = 0;
+	public static final double DRIVE_RIGHT_HIGH_EFFICIENCY = 0;
+	public static final double MAX_SPEED_LOW = 0;
+	public static final double MAX_SPEED_HIGH = 0;
+	public static final double DRIVE_CURRENT_LIMIT = 0;
+	public static final int DRIVE_SPEED_EXP = 0;
+	public static final int DRIVE_TURN_EXP = 0;
+	public static final double MAX_ACCEL_HIGH_TIPPY = 0;
+	public static final double MAX_ACCEL_HIGH = 0;
+	public static final double MAX_ACCEL_LOW_TIPPY = 0;
+	public static final double MAX_ACCEL_LOW = 0;
 }
 
