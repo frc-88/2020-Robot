@@ -10,8 +10,10 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DeployIntake;
+import frc.robot.commands.MoveColorWheelToTargetColor;
 import frc.robot.commands.ReportColor;
 import frc.robot.commands.RetractIntake;
+import frc.robot.commands.RotateColorWheel;
 import frc.robot.commands.RunIntake;
 import frc.robot.commands.StopIntake;
 import frc.robot.subsystems.ControlPanelManipulator;
@@ -42,7 +44,8 @@ public class RobotContainer {
 
 
   private final ReportColor m_reportColor= new ReportColor(m_cpm);
-
+  private final MoveColorWheelToTargetColor m_moveColorWheelToTargetColor = new MoveColorWheelToTargetColor(m_cpm);
+  private final RotateColorWheel m_rotateColorWheel = new RotateColorWheel(m_cpm);
   private final TJController m_driverController = new TJController(0);
 
   /**
@@ -62,6 +65,8 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     m_driverController.buttonB.whileHeld(m_reportColor);
+    m_driverController.buttonA.whileHeld(m_moveColorWheelToTargetColor);
+    m_driverController.buttonY.whileHeld(m_rotateColorWheel);
   }
 
 

@@ -15,7 +15,7 @@ public class MoveColorWheelToTargetColor extends CommandBase {
   /**
    * Creates a new MoveColorWheelToTargetColor.
    */
-  public MoveColorWheelToTargetColor() {
+  public MoveColorWheelToTargetColor(ControlPanelManipulator cpm) {
     this.cpm=cpm;
     addRequirements(cpm);
     // Use addRequirements() here to declare subsystem dependencies.
