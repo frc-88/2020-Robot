@@ -68,16 +68,16 @@ public class TJDriveModule extends TalonSRX {
      * Get the output current of the ith talon follower
      */
     public double getFollowerCurrent(int i) {
-        return talonFollowers[i].getOutputCurrent();
+        return talonFollowers[i].getStatorCurrent();
     }
 
     /**
      * Get the total output current of the master and all talon followers
      */
     public double getTotalCurrent() {
-        double total = this.getOutputCurrent();
+        double total = this.getStatorCurrent();
         for (TalonSRX follower : talonFollowers) {
-            total += follower.getOutputCurrent();
+            total += follower.getStatorCurrent();
         }
         return total;
     }
