@@ -37,13 +37,13 @@ public class ControlPanelManipulator extends SubsystemBase {
 
   private final ColorMatch m_colorMatcher = new ColorMatch();
 
-  private final TalonFX m_spinner = new TalonFX(Constants.CPMMotor);
+  private TalonFX m_spinner = new TalonFX(Constants.CPM_MOTOR);
   private final I2C.Port m_i2cPort = I2C.Port.kOnboard;
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(m_i2cPort);
-  private final Encoder m_wristEncoder = new Encoder(Constants.CPMJointEncoderChannelA, Constants.CPMJointEncoderChannelB);
-  private final DoubleSolenoid m_pneumatics = new DoubleSolenoid(Constants.CPMPneumaticsForward, Constants.CPMPneumaticsReverse);
-  private final AHRS m_navX = new AHRS(SPI.Port.kMXP); 
-  private final DigitalInput m_contactSensor = new DigitalInput(Constants.CPMDigitalInputChannel);
+  private Encoder m_wristEncoder = new Encoder(Constants.CPM_JOINT_ENCODER_CHANNEL_1A, Constants.CPM_JOINT_ENCODER_CHANNEL_1B);
+  private DoubleSolenoid m_pneumatics = new DoubleSolenoid(Constants.CPM_PNEUMATICS_FORWARD, Constants.CPM_PNEUMATICS_REVERSE);
+  private AHRS m_navX = new AHRS(SPI.Port.kMXP); 
+  private DigitalInput m_contactSensor = new DigitalInput(Constants.CPM_DIGITAL_INPUT_CHANNEL);
   
 
   public ControlPanelManipulator() {
@@ -96,7 +96,7 @@ public class ControlPanelManipulator extends SubsystemBase {
   }
 
   public double getRobotWrist() {
-    return m_wristEncoder.get()/Constants.CPMWristEncoderCountsPerRev*360;
+    return m_wristEncoder.get()/Constants.CPM_WRIST_ENCODER_COUNTS_PER_REV*360;
   }
 
   public float calcPositionControlTargetPosition() {
