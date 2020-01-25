@@ -37,13 +37,13 @@ public class ControlPanelManipulator extends SubsystemBase {
 
   private final ColorMatch m_colorMatcher = new ColorMatch();
 
-  private TalonFX m_spinner = new TalonFX(Constants.CPMMotor);
+  private final TalonFX m_spinner = new TalonFX(Constants.CPMMotor);
   private final I2C.Port m_i2cPort = I2C.Port.kOnboard;
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(m_i2cPort);
-  private Encoder m_wristEncoder = new Encoder(Constants.CPMJointEncoderChannelA, Constants.CPMJointEncoderChannelB);
-  private DoubleSolenoid m_pneumatics = new DoubleSolenoid(Constants.CPMPneumaticsForward, Constants.CPMPneumaticsReverse);
-  private AHRS m_navX = new AHRS(SPI.Port.kMXP); 
-  private DigitalInput m_contactSensor = new DigitalInput(Constants.CPMDigitalInputChannel);
+  private final Encoder m_wristEncoder = new Encoder(Constants.CPMJointEncoderChannelA, Constants.CPMJointEncoderChannelB);
+  private final DoubleSolenoid m_pneumatics = new DoubleSolenoid(Constants.CPMPneumaticsForward, Constants.CPMPneumaticsReverse);
+  private final AHRS m_navX = new AHRS(SPI.Port.kMXP); 
+  private final DigitalInput m_contactSensor = new DigitalInput(Constants.CPMDigitalInputChannel);
   
 
   public ControlPanelManipulator() {
@@ -59,9 +59,9 @@ public class ControlPanelManipulator extends SubsystemBase {
   }
 
   public String getColor() {
-    Color detectedColor = m_colorSensor.getColor();
+    final Color detectedColor = m_colorSensor.getColor();
     String colorString;
-    ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
+    final ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
 
     if (match.color == kBlueTarget) {
       colorString = "b";
@@ -81,6 +81,16 @@ public class ControlPanelManipulator extends SubsystemBase {
     return DriverStation.getInstance().getGameSpecificMessage();
   }
 
+  public boolean isPhaseThree() {
+    // check if we are in phase 3 where we receive a valid color string
+    return (this.getFMSColorTarget().length() != 0);
+  }
+
+  public boolean isPhaseTwo() {
+    // check if we are in phase 2 where we do not have a valid color string
+    return (this.getFMSColorTarget().length() > 0);
+  }
+
   public double getRobotFacing() {
     return m_navX.getYaw();
   }
@@ -92,11 +102,11 @@ public class ControlPanelManipulator extends SubsystemBase {
   public float calcPositionControlTargetPosition() {
     //calculate in inches, motor can spin x inches
     int colorDistance = 0;
-    int i = 1; //Start at index 1
-    String currentDetectedColor = getColor();
-    String currentTargetColor = getFMSColorTarget();
-    String[] colorList = { "r", "g", "b", "y", "r", "g"};
-    int colorListLength = colorList.length;
+    final int i = 1; //Start at index 1
+    final String currentDetectedColor = getColor();
+    final String currentTargetColor = getFMSColorTarget();
+    final String[] colorList = { "r", "g", "b", "y", "r", "g"};
+    final int colorListLength = colorList.length;
     while (i < colorListLength) {
       if (colorList[i] == currentDetectedColor) {
         if (colorList[i-1] == currentTargetColor) {
@@ -113,11 +123,15 @@ public class ControlPanelManipulator extends SubsystemBase {
         }
       }
     }
-    return colorDistance*12.5f;
+    return colorDistance/8.0f;
+  }
+
+  public void spinColorWheelNumRotations(final float numColorWheelRotations) {
+    return;
   }
 
   public Color getRawColor() {
-    Color detectedColor = m_colorSensor.getColor();
+    final Color detectedColor = m_colorSensor.getColor();
     return detectedColor;
   }
 

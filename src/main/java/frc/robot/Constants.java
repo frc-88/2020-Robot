@@ -21,8 +21,9 @@ public final class Constants {
     public static final int CPMJointEncoderChannelB = 02;
     public static final int CPMPneumaticsForward = 03;
     public static final int CPMPneumaticsReverse = 04;
-    public static final int CPMDigitalInputChannel = 05;
+    public static final int CPMDigitalInputChannel = 00;
     public static final int CPMWristEncoderCountsPerRev = 06;
+    public static final float CPM_PHASE_2_WHEEL_ROTATION = 4;
 
     public static final int ROLLER_ID = 5;
     public static final int INTAKE_DEPLOY_PISTON = 0;
