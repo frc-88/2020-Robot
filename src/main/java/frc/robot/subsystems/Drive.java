@@ -10,10 +10,9 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.driveutil.DriveConfiguration;
 import frc.robot.driveutil.DriveUtils;
 import frc.robot.driveutil.TJDriveModule;
@@ -30,8 +29,10 @@ public class Drive extends SubsystemBase {
   private DriveConfiguration m_driveConfiguration;
   private DoubleSolenoid m_leftShifter, m_rightShifter;
 
-  private double currentLimit = Constants.DRIVE_CURRENT_LIMIT;
+  private double m_currentLimit = Constants.DRIVE_CURRENT_LIMIT;
   private double m_maxSpeed;
+  private double m_lastLimitSpeed = 0;
+  private boolean m_deccelerating = false;
 
   public Drive() {
     m_driveConfiguration = new DriveConfiguration();
@@ -53,9 +54,7 @@ public class Drive extends SubsystemBase {
     m_rightShifter = new DoubleSolenoid(Constants.SHIFTER_RIGHT_PCM, Constants.SHIFTER_RIGHT_OUT,
         Constants.SHIFTER_RIGHT_IN);
 
-    m_leftTransmission.shiftToLow();
-    m_rightTransmission.shiftToLow();
-    m_maxSpeed = Constants.MAX_SPEED_LOW;
+    shiftToLow();
   }
 
   public void basicDrive(double leftSpeed, double rightSpeed) {
@@ -68,8 +67,8 @@ public class Drive extends SubsystemBase {
    * limiting current draw.
    */
   public void basicDriveLimited(double leftVelocity, double rightVelocity) {
-    m_leftDrive.setVelocityCurrentLimited(leftVelocity, currentLimit / 2);
-    m_rightDrive.setVelocityCurrentLimited(rightVelocity, currentLimit / 2);
+    m_leftDrive.setVelocityCurrentLimited(leftVelocity, m_currentLimit / 2);
+    m_rightDrive.setVelocityCurrentLimited(rightVelocity, m_currentLimit / 2);
   }
 
   /**
@@ -100,23 +99,23 @@ public class Drive extends SubsystemBase {
 
     double maxAccel;
     if (isInHighGear()) {
-      if (Robot.m_arm.getDistanceFromBase() >= Constants.ARM_TIPPY_DISTANCE) {
-        maxAccel = Constants.MAX_ACCEL_HIGH_TIPPY;
-      } else {
-        maxAccel = Constants.MAX_ACCEL_HIGH;
-      }
+      // if (Robot.m_arm.getDistanceFromBase() >= Constants.ARM_TIPPY_DISTANCE) {
+      // maxAccel = Constants.MAX_ACCEL_HIGH_TIPPY;
+      // } else {
+      maxAccel = Constants.MAX_ACCEL_HIGH;
+      // }
     } else {
-      if (Robot.m_arm.getDistanceFromBase() >= Constants.ARM_TIPPY_DISTANCE) {
-        maxAccel = Constants.MAX_ACCEL_LOW_TIPPY;
-      } else {
-        maxAccel = Constants.MAX_ACCEL_LOW;
-      }
+      // if (Robot.m_arm.getDistanceFromBase() >= Constants.ARM_TIPPY_DISTANCE) {
+      // maxAccel = Constants.MAX_ACCEL_LOW_TIPPY;
+      // } else {
+      maxAccel = Constants.MAX_ACCEL_LOW;
+      // }
     }
 
     double currentSpeed = getStraightSpeed();
     if (speed - currentSpeed > 0) {
 
-      deccelerating = false;
+      m_deccelerating = false;
 
       double vel = currentSpeed + maxAccel;
       if (speed < vel) {
@@ -128,25 +127,69 @@ public class Drive extends SubsystemBase {
 
       double vel = getStraightSpeed() - maxAccel;
 
-      if (!deccelerating) {
-        lastLimitSpeed = currentSpeed;
-        deccelerating = true;
+      if (!m_deccelerating) {
+        m_lastLimitSpeed = currentSpeed;
+        m_deccelerating = true;
       }
 
       if (speed > vel) {
-        lastLimitSpeed = speed;
+        m_lastLimitSpeed = speed;
         return speed;
       } else {
-        if (vel > lastLimitSpeed) {
-          return lastLimitSpeed;
+        if (vel > m_lastLimitSpeed) {
+          return m_lastLimitSpeed;
         } else {
-          lastLimitSpeed = vel;
+          m_lastLimitSpeed = vel;
           return vel;
         }
       }
 
     }
 
+  }
+
+  public void shiftToLow() {
+    m_leftShifter.set(Value.kForward);
+    m_rightShifter.set(Value.kForward);
+
+    m_leftTransmission.shiftToLow();
+    m_rightTransmission.shiftToLow();
+
+    m_maxSpeed = Constants.MAX_SPEED_LOW;
+  }
+
+  public void shiftToHigh() {
+    m_leftShifter.set(Value.kReverse);
+    m_rightShifter.set(Value.kReverse);
+
+    m_leftTransmission.shiftToHigh();
+    m_rightTransmission.shiftToHigh();
+
+    m_maxSpeed = Constants.MAX_SPEED_HIGH;
+  }
+
+  public boolean isInHighGear() {
+    return m_leftTransmission.isInHighGear();
+  }
+
+  public double getLeftPosition() {
+    return m_leftDrive.getScaledSensorPosition();
+  }
+
+  public double getRightPosition() {
+    return m_rightDrive.getScaledSensorPosition();
+  }
+
+  public double getLeftSpeed() {
+    return m_leftDrive.getScaledSensorVelocity();
+  }
+
+  public double getRightSpeed() {
+    return m_rightDrive.getScaledSensorVelocity();
+  }
+
+  public double getStraightSpeed() {
+    return (getLeftSpeed() + getRightSpeed()) / 2;
   }
 
   @Override
