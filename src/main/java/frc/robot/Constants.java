@@ -39,10 +39,9 @@ public final class Constants {
     public static final int INTAKE_DEPLOY_PISTON = 0;
     public static final int INTAKE_RETRACT_PISTON = 7;
     
-
-
-
-
+    // Hopper constants
+  	public static final int HOPPER_AGITATOR_1 = 0;
+	public static final int HOPPER_AGITATOR_2 = 0;
 
 }
 
