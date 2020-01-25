@@ -44,9 +44,9 @@ public final class Constants {
                             
     // Drive CAN IDs
     public static final int LEFT_MASTER_DRIVE_ID = 0;
-	public static final int LEFT_TALON_FOLLOWER_DRIVE_ID = 0;
+	public static final int LEFT_FOLLOWER_DRIVE_ID = 0;
 	public static final int RIGHT_MASTER_DRIVE_ID = 0;
-	public static final int RIGHT_TALON_FOLLOWER_DRIVE_ID = 0;
+	public static final int RIGHT_FOLLOWER_DRIVE_ID = 0;
 	public static final int SHIFTER_LEFT_PCM = 0;
 	public static final int SHIFTER_LEFT_OUT = 0;
 	public static final int SHIFTER_LEFT_IN = 0;

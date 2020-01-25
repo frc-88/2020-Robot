@@ -7,40 +7,39 @@ import frc.robot.Constants;
 public class DriveConfiguration {
     public TJDriveModuleConfiguration left, right;
 
-    private TalonFXConfiguration _talonMaster;
-    private TalonFXConfiguration _talonFollower;
+    private TalonFXConfiguration _masterConfiguration;
+    private TalonFXConfiguration _followerConfiguration;
 
-    public DriveConfiguration()
-    {
+    public DriveConfiguration() {
         left = new TJDriveModuleConfiguration();
         right = new TJDriveModuleConfiguration();
 
         left.master = Constants.LEFT_MASTER_DRIVE_ID;
-        left.talonFollowers = new int[] {Constants.LEFT_TALON_FOLLOWER_DRIVE_ID};
-        
+        left.followers = new int[] { Constants.LEFT_FOLLOWER_DRIVE_ID };
+
         right.master = Constants.RIGHT_MASTER_DRIVE_ID;
-        right.talonFollowers = new int[] {Constants.RIGHT_TALON_FOLLOWER_DRIVE_ID};
-        
+        right.followers = new int[] { Constants.RIGHT_FOLLOWER_DRIVE_ID };
+
         /* Master */
 
-        _talonMaster = new TalonFXConfiguration();
+        _masterConfiguration = new TalonFXConfiguration();
 
         // TODO - properly configure TalonFX master
-        // _talonMaster.primaryPID.selectedFeedbackSensor = FeedbackDevice.QuadEncoder; 
+        // _talonMaster.primaryPID.selectedFeedbackSensor = FeedbackDevice.QuadEncoder;
         // _talonMaster.neutralDeadband = 0.01;
         // _talonMaster.voltageCompSaturation = 12;
 
-        left.masterConfiguration = _talonMaster;
-        right.masterConfiguration = _talonMaster;
+        left.masterConfiguration = _masterConfiguration;
+        right.masterConfiguration = _masterConfiguration;
 
         // /* Followers */
-        _talonFollower = new TalonFXConfiguration();
+        _followerConfiguration = new TalonFXConfiguration();
 
         // TODO - properly configure TalonFX follower
         // _talonFollower.neutralDeadband = 0.01;
 
-        left.talonFollowerConfiguration = _talonFollower;
-        right.talonFollowerConfiguration = _talonFollower;
+        left.followerConfiguration = _followerConfiguration;
+        right.followerConfiguration = _followerConfiguration;
 
         // /* General Settings */
         // left.neutralMode = NeutralMode.Brake;

@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DeployIntake;
@@ -49,6 +50,8 @@ public class RobotContainer {
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+    CameraServer.getInstance().startAutomaticCapture();
+    
     // Configure the button bindings
     configureButtonBindings();
     m_intake.setDefaultCommand(m_stopIntake);
