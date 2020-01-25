@@ -23,8 +23,9 @@ public final class Constants {
     public static final int CPM_JOINT_ENCODER_CHANNEL_1B = 02;
     public static final int CPM_PNEUMATICS_FORWARD = 03;
     public static final int CPM_PNEUMATICS_REVERSE = 04;
-    public static final int CPM_DIGITAL_INPUT_CHANNEL = 05;
+    public static final int CPM_DIGITAL_INPUT_CHANNEL = 00;
     public static final int CPM_WRIST_ENCODER_COUNTS_PER_REV = 06;
+    public static final float CPM_PHASE_2_WHEEL_ROTATIONS = 4;
 
     //Shooter constants
     public static final int SHOOTER_MOTOR = 07;
