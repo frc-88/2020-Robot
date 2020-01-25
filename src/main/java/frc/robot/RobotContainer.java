@@ -9,12 +9,16 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.DeployIntake;
 import frc.robot.commands.ReportColor;
+import frc.robot.commands.RetractIntake;
+import frc.robot.commands.RunIntake;
+import frc.robot.commands.StopIntake;
 import frc.robot.subsystems.ControlPanelManipulator;
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.Intake;
 import frc.robot.util.TJController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -24,11 +28,18 @@ import edu.wpi.first.wpilibj2.command.Command;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-
-  private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
+  private final Command m_autoCommand = new WaitCommand(1);
 
   private final ControlPanelManipulator m_cpm= new ControlPanelManipulator();
+
+  private final Intake m_intake = new Intake();
+
+  private final DeployIntake m_deployIntake = new DeployIntake(m_intake);
+  private final RetractIntake m_retractIntake = new RetractIntake(m_intake);
+  private final StopIntake m_stopIntake = new StopIntake(m_intake);
+  private final RunIntake m_runIntake = new RunIntake(m_intake, 1);
+  private final RunIntake m_ejectIntake = new RunIntake(m_intake, -1);
+
 
   private final ReportColor m_reportColor= new ReportColor(m_cpm);
 
@@ -40,6 +51,7 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
+    m_intake.setDefaultCommand(m_stopIntake);
   }
 
   /**

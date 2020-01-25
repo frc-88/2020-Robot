@@ -16,6 +16,7 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
     //CPM constants
     public static final int CPM_MOTOR = 00;
     public static final int CPM_JOINT_ENCODER_CHANNEL_1A = 01;
@@ -31,7 +32,17 @@ public final class Constants {
     public static final int SHOOTER_ANGLE_ENCODER_CHANNEL_1A = 9;
     public static final int SHOOTER_ANGLE_ENCODER_CHANNEL_1B = 10;
     public static final int SHOOTER_FEEDER_MOTOR = 0;
-	public static final int SHOOTER_ROTATOR_MOTOR = 0;
+	  public static final int SHOOTER_ROTATOR_MOTOR = 0;
+
+    //Intake constants
+    public static final int ROLLER_ID = 5;
+    public static final int INTAKE_DEPLOY_PISTON = 0;
+    public static final int INTAKE_RETRACT_PISTON = 7;
+    
+
+
+
+
 
 }
 
