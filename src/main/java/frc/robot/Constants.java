@@ -16,14 +16,6 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final int CPMMotor = 00;
-    public static final int CPMJointEncoderChannelA = 01;
-    public static final int CPMJointEncoderChannelB = 02;
-    public static final int CPMPneumaticsForward = 03;
-    public static final int CPMPneumaticsReverse = 04;
-    public static final int CPMDigitalInputChannel = 00;
-    public static final int CPMWristEncoderCountsPerRev = 06;
-    public static final float CPM_PHASE_2_WHEEL_ROTATION = 4;
 
     //CPM constants
     public static final int CPM_MOTOR = 00;
@@ -33,6 +25,7 @@ public final class Constants {
     public static final int CPM_PNEUMATICS_REVERSE = 04;
     public static final int CPM_DIGITAL_INPUT_CHANNEL = 05;
     public static final int CPM_WRIST_ENCODER_COUNTS_PER_REV = 06;
+    public static final float CPM_PHASE_2_WHEEL_ROTATION = 4;
 
     //Shooter constants
     public static final int SHOOTER_MOTOR = 07;

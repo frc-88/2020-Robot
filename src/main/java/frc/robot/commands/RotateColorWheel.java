@@ -36,12 +36,8 @@ public class RotateColorWheel extends CommandBase {
     // then rotate color wheel 4 times and rumble the controller when done
     // If not phase 2 then just exit and rumble the controller
     
-    if (cpm.isEngaged() && cpm.isPhaseTwo()) {
-      cpm.spinColorWheelNumRotations(Constants.CPM_PHASE_2_WHEEL_ROTATION);
-      // TODO: rumble the controller
-    }
-    // rotate the wheel 4 times and then stop the wheel
-
+    cpm.spinColorWheelNumRotations(Constants.CPM_PHASE_2_WHEEL_ROTATION);
+    // TODO: rumble the controller
   }
 
   // Called once the command ends or is interrupted.
