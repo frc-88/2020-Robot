@@ -65,10 +65,9 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     m_driverController.buttonB.whileHeld(m_reportColor);
-    m_driverController.buttonA.whileHeld(m_moveColorWheelToTargetColor);
-    m_driverController.buttonY.whileHeld(m_rotateColorWheel);
+    m_driverController.buttonA.whenPressed(m_moveColorWheelToTargetColor);
+    m_driverController.buttonY.whenPressed(m_rotateColorWheel);
   }
-
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
