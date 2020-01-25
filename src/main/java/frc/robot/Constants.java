@@ -74,5 +74,8 @@ public final class Constants {
 	public static final double MAX_ACCEL_HIGH = 0;
 	public static final double MAX_ACCEL_LOW_TIPPY = 0;
 	public static final double MAX_ACCEL_LOW = 0;
+
+	/*******************************************************************/
+
 }
 
