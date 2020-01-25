@@ -10,6 +10,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.TalonFXPIDSetConfiguration;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
@@ -38,7 +39,7 @@ public class ControlPanelManipulator extends SubsystemBase {
   private final Color kRedTarget = ColorMatch.makeColor(0.54, 0.33, 0.12);
   private final Color kYellowTarget = ColorMatch.makeColor(0.31, 0.56, 0.12);
   private final float controlPanelSlice = 12.5f;
-  private final double motorRotationsPerWheelRotation = (100/2 * Math.PI);
+  private final double motorRotationsPerWheelRotation = (100. / (2. * Math.PI));
   private final int ticksPerMotorRotation = 2048;
 
   private final ColorMatch m_colorMatcher = new ColorMatch();
@@ -51,7 +52,7 @@ public class ControlPanelManipulator extends SubsystemBase {
   private AHRS m_navX = new AHRS(SPI.Port.kMXP); 
   private DigitalInput m_contactSensor = new DigitalInput(Constants.CPM_DIGITAL_INPUT_CHANNEL);
 
-  private double MAXIMUM_WHEEL_VELOCITY = (59 / 60);
+  private double MAXIMUM_WHEEL_VELOCITY = (59. / 60.);
   private DoublePreferenceConstant MAXIMUM_WHEEL_ACCELERATION;
   private DoublePreferenceConstant spinner_kP;
   private DoublePreferenceConstant spinner_kI;
@@ -81,6 +82,7 @@ public class ControlPanelManipulator extends SubsystemBase {
     m_spinner.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
     m_spinner.configMotionCruiseVelocity(convertWheelVelocityToMotorVelocity(MAXIMUM_WHEEL_VELOCITY));
     m_spinner.configMotionAcceleration(convertWheelVelocityToMotorVelocity(MAXIMUM_WHEEL_ACCELERATION.getValue()));
+    m_spinner.selectProfileSlot(0, 0);
 
     SmartDashboard.putBoolean("Zero CPM", false);
   }
@@ -206,6 +208,8 @@ public class ControlPanelManipulator extends SubsystemBase {
 
   public void moveWheelToPosition(double wheelPosition) {
     m_spinner.set(TalonFXControlMode.MotionMagic, convertWheelPositionToMotorPosition(wheelPosition));
+    //System.out.println(convertWheelPositionToMotorPosition(wheelPosition));
+    System.out.println(m_spinner.getControlMode());
 
   }
 
@@ -225,5 +229,10 @@ public class ControlPanelManipulator extends SubsystemBase {
     if(SmartDashboard.getBoolean("Zero CPM", false)) {
       setWheelPosition(0);
     }
+
+    m_spinner.config_kP(0, spinner_kP.getValue());
+    m_spinner.config_kI(0, spinner_kI.getValue());
+    m_spinner.config_kD(0, spinner_kD.getValue());
+    m_spinner.config_kF(0, spinner_kF.getValue());
   }
 }
