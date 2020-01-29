@@ -9,6 +9,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -24,7 +25,7 @@ public class Drive extends SubsystemBase {
   /**
    * Creates a new Drive.
    */
-  private TJDriveModule m_leftDrive, m_rightDrive;
+  private final TJDriveModule m_leftDrive, m_rightDrive;
   private ShiftingTransmission m_leftTransmission, m_rightTransmission;
   private DriveConfiguration m_driveConfiguration;
   private DoubleSolenoid m_leftShifter, m_rightShifter;
@@ -92,7 +93,7 @@ public class Drive extends SubsystemBase {
     double leftSpeed = (speed + turn);
     double rightSpeed = (speed - turn);
 
-    basicDriveLimited(leftSpeed, rightSpeed);
+    basicDrive(leftSpeed, rightSpeed);
   }
 
   public double limitAcceleration(double speed) {
@@ -194,6 +195,10 @@ public class Drive extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Left drive bus voltage", m_leftDrive.getBusVoltage());
+    SmartDashboard.putNumber("Right drive bus voltage", m_rightDrive.getBusVoltage());
+    SmartDashboard.putNumber("Left drive total current", m_leftDrive.getTotalCurrent());
+    SmartDashboard.putNumber("Right drive total current", m_rightDrive.getTotalCurrent());
+        // This method will be called once per scheduler run
   }
 }

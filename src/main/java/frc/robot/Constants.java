@@ -53,16 +53,16 @@ public final class Constants {
 	*/
 	
 	// Drive CAN IDs
-	public static final int LEFT_MASTER_DRIVE_ID = 0;
-	public static final int LEFT_FOLLOWER_DRIVE_ID = 0;
-	public static final int RIGHT_MASTER_DRIVE_ID = 0;
-	public static final int RIGHT_FOLLOWER_DRIVE_ID = 0;
-	public static final int SHIFTER_LEFT_PCM = 0;
-	public static final int SHIFTER_LEFT_OUT = 0;
-	public static final int SHIFTER_LEFT_IN = 0;
-	public static final int SHIFTER_RIGHT_PCM = 0;
-	public static final int SHIFTER_RIGHT_OUT = 0;
-	public static final int SHIFTER_RIGHT_IN = 0;
+	public static final int LEFT_MASTER_DRIVE_ID = 2;
+	public static final int LEFT_FOLLOWER_DRIVE_ID = 3;
+	public static final int RIGHT_MASTER_DRIVE_ID = 13;
+	public static final int RIGHT_FOLLOWER_DRIVE_ID = 12;
+	public static final int SHIFTER_LEFT_PCM = 1;
+	public static final int SHIFTER_LEFT_OUT = 6;
+	public static final int SHIFTER_LEFT_IN = 7;
+	public static final int SHIFTER_RIGHT_PCM = 1;
+	public static final int SHIFTER_RIGHT_OUT = 4;
+	public static final int SHIFTER_RIGHT_IN = 5;
 
 	// Drive Configuration
 	public static final int NUM_DRIVE_MOTORS_PER_SIDE = 2;
