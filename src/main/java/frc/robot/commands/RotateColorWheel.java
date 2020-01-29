@@ -7,16 +7,18 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.ControlPanelManipulator;
 
-public class ReportColor extends CommandBase {
+public class RotateColorWheel extends CommandBase {
   private ControlPanelManipulator cpm;
   /**
    * Creates a new ReportColor.
    */
-  public ReportColor(ControlPanelManipulator cpm) {
+
+  public RotateColorWheel(ControlPanelManipulator cpm) {
+    // Use addRequirements() here to declare subsystem dependencies.
     this.cpm=cpm;
     addRequirements(cpm);
   }
@@ -24,16 +26,18 @@ public class ReportColor extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    // TODO: deploy the CPM
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    SmartDashboard.putString("robot sensor color", cpm.getColor());
-    SmartDashboard.putNumber("Red", cpm.getRawColor().red);
-    SmartDashboard.putNumber("Green", cpm.getRawColor().green);
-    SmartDashboard.putNumber("Blue", cpm.getRawColor().blue);
-    SmartDashboard.putBoolean("CPM Contact", cpm.isEngaged());
+    // If we are in phase 2 and we are in contact with the color wheel 
+    // then rotate color wheel 4 times and rumble the controller when done
+    // If not phase 2 then just exit and rumble the controller
+    
+    cpm.spinColorWheelNumRotations(Constants.CPM_PHASE_2_WHEEL_ROTATIONS);
+    // TODO: rumble the controller
   }
 
   // Called once the command ends or is interrupted.
