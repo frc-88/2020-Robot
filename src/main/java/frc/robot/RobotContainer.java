@@ -51,8 +51,8 @@ public class RobotContainer {
 
   private final ReportColor m_reportColor= new ReportColor(m_cpm);
 
-  private final ArcadeDrive m_arcadeDrive = new ArcadeDrive(m_drive, m_driverController::getLeftStickY, m_driverController::getLeftStickX);
-  private final TankDrive m_tankDrive = new TankDrive(m_drive, m_driverController::getLeftStickX, m_driverController::getLeftStickX);
+  private final ArcadeDrive m_arcadeDrive = new ArcadeDrive(m_drive, m_driverController::getLeftStickY, m_driverController::getRightStickX);
+  private final TankDrive m_tankDrive = new TankDrive(m_drive, m_driverController::getLeftStickY, m_driverController::getRightStickY);
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
