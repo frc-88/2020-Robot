@@ -7,8 +7,8 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXPIDSetConfiguration;
 import com.kauailabs.navx.frc.AHRS;
@@ -207,7 +207,7 @@ public class ControlPanelManipulator extends SubsystemBase {
   }
 
   public void moveWheelToPosition(double wheelPosition) {
-    m_spinner.set(TalonFXControlMode.MotionMagic, convertWheelPositionToMotorPosition(wheelPosition));
+    m_spinner.set(ControlMode.MotionMagic, convertWheelPositionToMotorPosition(wheelPosition));
     //System.out.println(convertWheelPositionToMotorPosition(wheelPosition));
     System.out.println(m_spinner.getControlMode());
 
