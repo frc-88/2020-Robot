@@ -26,9 +26,11 @@ public final class Constants {
 	public static final int CPM_DIGITAL_INPUT_CHANNEL = 05;
 
 	public static final int CPM_WRIST_ENCODER_COUNTS_PER_REV = 06;
-	public static final float CPM_PHASE_2_WHEEL_ROTATIONS = 4;
-	public static final float CPM_INCHES_PER_SLICE = 12.5f;
+	public static final double CPM_PHASE_2_WHEEL_ROTATIONS = 3.5;
+	public static final double CPM_INCHES_PER_SLICE = 12.5;
 	public static final int CPM_NUM_SLICES = 8;
+
+
 
 	// Shooter constants
 	public static final int SHOOTER_MOTOR = 07;

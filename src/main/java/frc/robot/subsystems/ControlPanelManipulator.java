@@ -121,9 +121,9 @@ public class ControlPanelManipulator extends SubsystemBase {
     return m_wristEncoder.get()/Constants.CPM_WRIST_ENCODER_COUNTS_PER_REV*360;
   }
 
-  public float calcPositionControlTargetPosition() {
+  public double calcPositionControlTargetPosition() {
     //calculate in inches, motor can spin x inches
-    float colorDistance = 0;
+    double colorDistance = 0;
     final int i = 1; //Start at index 1
     final String currentDetectedColor = getColor();
     final String currentTargetColor = getFMSColorTarget();

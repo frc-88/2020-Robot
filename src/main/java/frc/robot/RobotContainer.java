@@ -49,7 +49,7 @@ public class RobotContainer {
   private final TJController m_driverController = new TJController(0);
 
   private final SetColorWheelPosition m_moveColorWheelToTargetColor = new SetColorWheelPosition(m_cpm);
-  private final RotateColorWheel m_rotateColorWheel = new RotateColorWheel(m_cpm);
+  private final RotateColorWheel m_rotateColorWheel = new RotateColorWheel(m_cpm, m_driverController);
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -67,7 +67,6 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    m_driverController.buttonB.whileHeld(m_reportColor);
 
     SmartDashboard.putData(m_setColorWheelPosition);
   }
