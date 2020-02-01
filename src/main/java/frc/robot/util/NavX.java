@@ -28,5 +28,21 @@ public class NavX {
         return m_ahrs.getYaw();
     }
 
-    //WDW
+    // 1-Jan-2020 Adding Pitch and Roll functions
+
+    //Pitch is the slope of the line relative to horizontal.
+    //Think of an airplane nose that is either up or down.
+    public void zeroPitch() {
+        //TBD
+    }
+
+    public double getPitch() {
+        //TBD
+    }
+
+    //Roll is the rotation around the center axis.
+    //Think of an airplane's wings moving around it's body.
+    public void zeroRoll() {
+        //TBD
+    }
 }
