@@ -48,7 +48,6 @@ public class RobotContainer {
 
   private final TJController m_driverController = new TJController(0);
 
-  private final SetColorWheelPosition m_moveColorWheelToTargetColor = new SetColorWheelPosition(m_cpm);
   private final RotateColorWheel m_rotateColorWheel = new RotateColorWheel(m_cpm, m_driverController);
 
   /**
@@ -70,7 +69,7 @@ public class RobotContainer {
 
     SmartDashboard.putData(m_setColorWheelPosition);
     SmartDashboard.putData(m_rotateColorWheel);
-    SmartDashboard.putData(m_moveColorWheelToTargetColor);
+
 
   }
 

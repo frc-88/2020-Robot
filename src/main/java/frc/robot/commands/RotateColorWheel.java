@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.ControlPanelManipulator;
 import frc.robot.util.TJController;
+import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 
 public class RotateColorWheel extends CommandBase {
   private ControlPanelManipulator cpm;
@@ -21,7 +22,7 @@ public class RotateColorWheel extends CommandBase {
   private String targetColor;
   private double finalRotationDistance;
   private double directionCorrection = 3./8.; //if calcPositionControlTargetPosition returns a negative value
-
+  private DoublePreferenceConstant wheelRotationCountPreference;
 
   /**
    * Creates a new ReportColor.
