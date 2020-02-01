@@ -18,6 +18,7 @@ import frc.robot.commands.RunIntake;
 import frc.robot.commands.StopIntake;
 import frc.robot.subsystems.ControlPanelManipulator;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Lights;
 import frc.robot.util.TJController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -35,6 +36,8 @@ public class RobotContainer {
   private final ControlPanelManipulator m_cpm= new ControlPanelManipulator();
 
   private final Intake m_intake = new Intake();
+
+  private final Lights m_lights = new Lights();
 
   private final DeployIntake m_deployIntake = new DeployIntake(m_intake);
   private final RetractIntake m_retractIntake = new RetractIntake(m_intake);
