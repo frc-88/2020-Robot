@@ -36,7 +36,7 @@ public class RotateColorWheel extends CommandBase {
     // then rotate color wheel 4 times and rumble the controller when done
     // If not phase 2 then just exit and rumble the controller
     
-    cpm.spinColorWheelNumRotations(Constants.CPM_PHASE_2_WHEEL_ROTATIONS);
+    cpm.moveWheelToPosition(Constants.CPM_PHASE_2_WHEEL_ROTATIONS);
     
     // TODO: rumble the controller
   }

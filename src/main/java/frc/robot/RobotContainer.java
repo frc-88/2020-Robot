@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.DeployIntake;
 import frc.robot.commands.ReportColor;
 import frc.robot.commands.RetractIntake;
+import frc.robot.commands.RotateColorWheel;
 import frc.robot.commands.RunIntake;
 import frc.robot.commands.SetColorWheelPosition;
 import frc.robot.commands.StopIntake;
@@ -47,7 +48,7 @@ public class RobotContainer {
 
   private final TJController m_driverController = new TJController(0);
 
-  private final MoveColorWheelToTargetColor m_moveColorWheelToTargetColor = new MoveColorWheelToTargetColor(m_cpm);
+  private final SetColorWheelPosition m_moveColorWheelToTargetColor = new SetColorWheelPosition(m_cpm);
   private final RotateColorWheel m_rotateColorWheel = new RotateColorWheel(m_cpm);
 
   /**

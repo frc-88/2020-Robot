@@ -148,10 +148,6 @@ public class ControlPanelManipulator extends SubsystemBase {
     return colorDistance/Constants.CPM_NUM_SLICES;
   }
 
-  public void spinColorWheelNumRotations(final float numColorWheelRotations) {
-    return;
-  }
-
   public Color getRawColor() {
     Color detectedColor = m_colorSensor.getColor();
     return detectedColor;
