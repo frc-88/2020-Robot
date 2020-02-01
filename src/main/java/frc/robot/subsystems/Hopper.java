@@ -27,10 +27,10 @@ public class Hopper extends SubsystemBase {
    * Creates a new Hopper.
    */
   public Hopper() {
-    m_agitator1 = new TalonFX(Constants.HOPPER_AGITATOR_1);
+    m_agitator1 = new TalonFX(Constants.HOPPER_FEEDER_1);
     m_agitator1.configFactoryDefault();
 
-    m_agitator2 = new TalonFX(Constants.HOPPER_AGITATOR_2);
+    m_agitator2 = new TalonFX(Constants.HOPPER_FEEDER_2);
     m_agitator2.configFactoryDefault();
 
     new Thread(() -> {
@@ -51,8 +51,8 @@ public class Hopper extends SubsystemBase {
           Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2HSV);
           Core.inRange(output, new Scalar(20, 150, 150),
             new Scalar(50, 255, 255), output);
-          for (int i=0; i < Constants.HOPPER_CAMERA_WIDTH; i++) {
-            for (int y=0; y < Constants.HOPPER_CAMERA_HEIGHT; i++) {
+          for (int i=0; i < Constants.HOPPER_IMAGE_WIDTH; i++) {
+            for (int y=0; y < Constants.HOPPER_IMAGE_HEIGHT; i++) {
               output.get(i, y);
             }
           }
