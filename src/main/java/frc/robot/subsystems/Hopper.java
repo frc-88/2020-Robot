@@ -22,18 +22,20 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Hopper extends SubsystemBase {
-  private TalonFX m_agitator1, m_agitator2;
+  private TalonFX m_feeder1, m_feeder2;
+  private double yellow;
   /**
    * Creates a new Hopper.
    */
   public Hopper() {
-    m_agitator1 = new TalonFX(Constants.HOPPER_FEEDER_1);
-    m_agitator1.configFactoryDefault();
+    m_feeder1 = new TalonFX(Constants.HOPPER_FEEDER_1);
+    m_feeder1.configFactoryDefault();
 
-    m_agitator2 = new TalonFX(Constants.HOPPER_FEEDER_2);
-    m_agitator2.configFactoryDefault();
+    m_feeder2 = new TalonFX(Constants.HOPPER_FEEDER_2);
+    m_feeder2.configFactoryDefault();
 
     new Thread(() -> {
+      int count;
       UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
       camera.setResolution(320, 240);
 
@@ -48,36 +50,28 @@ public class Hopper extends SubsystemBase {
           continue;
         } else {
           // process the image
+          count = 0;
           Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2HSV);
           Core.inRange(output, new Scalar(20, 150, 150),
             new Scalar(50, 255, 255), output);
           for (int i=0; i < Constants.HOPPER_IMAGE_WIDTH; i++) {
             for (int y=0; y < Constants.HOPPER_IMAGE_HEIGHT; i++) {
-              output.get(i, y);
+              double [] pixel = output.get(i, y);
+              if (pixel[0] == 255) {
+                count++;
+              }
             }
           }
+          yellow = count / (Constants.HOPPER_IMAGE_HEIGHT * Constants.HOPPER_IMAGE_WIDTH);
         }
-        outputStream.putFrame(output);
       }
     }).start();
   
   }
 
-  
-	/**
-	 * Segment an image based on hue, saturation, and value ranges.
-	 *
-	 * @param input The image on which to perform the HSL threshold.
-	 * @param hue The min and max hue
-	 * @param sat The min and max saturation
-	 * @param val The min and max value
-	 * @param output The image in which to store the output.
-	 */
-	private void hsvThreshold(Mat input, double[] hue, double[] sat, double[] val,
-  Mat out) {
-}
-
-  
+  public double getYellowPercentage() {
+    return yellow;
+  }
 
   @Override
   public void periodic() {
