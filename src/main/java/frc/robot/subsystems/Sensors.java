@@ -13,43 +13,23 @@ import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Sensors extends SubsystemBase {
-  private final AHRS m_navx;
-  private double m_pitchOffset;
-  private double m_rollOffset;
+import frc.robot.util.NavX;
+import frc.robot.util.Limelight;
 
-    /**
-   * Creates a new Sensors.
+public class Sensors extends SubsystemBase {
+  public final NavX m_navx;
+  public final Limelight m_limelight;
+
+  /**
+   * Creates a new Sensors subsystem
    */
   public Sensors() {
-    m_navx = new AHRS(Port.kMXP);
-
-    zeroPitch();
-    zeroRoll();
-    zeroYaw();
-  }
-
-  public void zeroYaw() {
+    m_navx = new NavX();
     m_navx.zeroYaw();
-  }
 
-  public void zeroPitch() {
-    m_pitchOffset = m_navx.getPitch();
-  }
-  public void zeroRoll() {
-    m_rollOffset = m_navx.getRoll();
-  }
-
-  public double getYaw() {
-    return m_navx.getYaw();
-  }
-
-  public double getPitch() {
-    return m_navx.getPitch() - m_pitchOffset;
-  }
-
-  public double getRoll() {
-    return m_navx.getRoll() - m_rollOffset;
+    m_limelight = new Limelight();
+    m_limelight.camVision();
+    m_limelight.ledOff();
   }
 
   @Override
@@ -57,8 +37,12 @@ public class Sensors extends SubsystemBase {
     // This method will be called once per scheduler run
 
     // NavX data
-    SmartDashboard.putNumber("NavX Yaw", getYaw());
-    SmartDashboard.putNumber("NavX Pitch", getPitch());
-    SmartDashboard.putNumber("NavX Roll", getRoll());
+    SmartDashboard.putNumber("NavX Yaw", m_navx.getYaw());
+    // SmartDashboard.putNumber("NavX Pitch", m_navx.getPitch());
+    // SmartDashboard.putNumber("NavX Roll", m_navx.getRoll());
+
+    // Limelight data
+    SmartDashboard.putBoolean("Limelight connected?", m_limelight.isConnected());
+    SmartDashboard.putBoolean("Limelight has target?", m_limelight.hasTarget());
   }
 }

@@ -10,7 +10,7 @@ package frc.robot.util;
 import edu.wpi.first.networktables.*;
 
 /**
- * Add your docs here.
+ * Limelight wrapper class
  */
 public class Limelight {
     private String m_name;
@@ -58,8 +58,11 @@ public class Limelight {
         return m_name;
     }
 
-    public void setPip() {
-        m_stream.setNumber(2);
+    /**
+     * @return True if data is being received from the Limelight.
+     */
+    public boolean isConnected() {
+        return (m_ta.exists() && m_tv.exists() && m_tx.exists() && m_ty.exists());
     }
 
     /**
@@ -67,13 +70,6 @@ public class Limelight {
      */
     public boolean hasTarget() {
         return m_tv.getDouble(0.0) == 1.0;
-    }
-
-    /**
-     * @return True if data is being received from the Limelight.
-     */
-    public boolean isConnected() {
-        return (m_ta.exists() && m_tv.exists() && m_tx.exists() && m_ty.exists());
     }
 
     /**
@@ -155,4 +151,8 @@ public class Limelight {
         return 0.0;
     }
 
-  }
+    public void setPip() {
+        m_stream.setNumber(2);
+    }
+
+}
