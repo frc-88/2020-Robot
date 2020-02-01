@@ -33,13 +33,16 @@ public final class Constants {
     public static final int SHOOTER_ANGLE_ENCODER_CHANNEL_1A = 9;
     public static final int SHOOTER_ANGLE_ENCODER_CHANNEL_1B = 10;
     public static final int SHOOTER_FEEDER_MOTOR = 0;
-	  public static final int SHOOTER_ROTATOR_MOTOR = 0;
+	public static final int SHOOTER_ROTATOR_MOTOR = 0;
 
     //Intake constants
     public static final int ROLLER_ID = 5;
     public static final int INTAKE_DEPLOY_PISTON = 0;
     public static final int INTAKE_RETRACT_PISTON = 7;
     
+    //Climber constants
+    public static final int CLIMBER_MOTOR_LEFT = 88;
+    public static final int CLIMBER_MOTOR_RIGHT = 882;
 
 
 
