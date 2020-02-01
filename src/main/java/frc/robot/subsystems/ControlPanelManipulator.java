@@ -91,9 +91,9 @@ public class ControlPanelManipulator extends SubsystemBase {
   }
 
   public String getColor() {
-    final Color detectedColor = m_colorSensor.getColor();
+    Color detectedColor = m_colorSensor.getColor();
     String colorString;
-    final ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
+    ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
 
     if (match.color == kBlueTarget) {
       colorString = "b";
@@ -111,16 +111,6 @@ public class ControlPanelManipulator extends SubsystemBase {
 
   public String getFMSColorTarget() {
     return DriverStation.getInstance().getGameSpecificMessage().toLowerCase();
-  }
-
-  public boolean isPhaseThree() {
-    // check if we are in phase 3 where we receive a valid color string
-    return (this.getFMSColorTarget().length() != 0);
-  }
-
-  public boolean isPhaseTwo() {
-    // check if we are in phase 2 where we do not have a valid color string
-    return (this.getFMSColorTarget().length() > 0);
   }
 
   public double getRobotFacing() {
@@ -159,7 +149,7 @@ public class ControlPanelManipulator extends SubsystemBase {
   }
 
   public Color getRawColor() {
-    final Color detectedColor = m_colorSensor.getColor();
+    Color detectedColor = m_colorSensor.getColor();
     return detectedColor;
   }
 
