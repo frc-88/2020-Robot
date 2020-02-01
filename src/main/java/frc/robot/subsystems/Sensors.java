@@ -7,9 +7,6 @@
 
 package frc.robot.subsystems;
 
-import com.kauailabs.navx.frc.AHRS;
-
-import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -38,8 +35,8 @@ public class Sensors extends SubsystemBase {
 
     // NavX data
     SmartDashboard.putNumber("NavX Yaw", m_navx.getYaw());
-    // SmartDashboard.putNumber("NavX Pitch", m_navx.getPitch());
-    // SmartDashboard.putNumber("NavX Roll", m_navx.getRoll());
+    SmartDashboard.putNumber("NavX Pitch", m_navx.getPitch());
+    SmartDashboard.putNumber("NavX Roll", m_navx.getRoll());
 
     // Limelight data
     SmartDashboard.putBoolean("Limelight connected?", m_limelight.isConnected());
