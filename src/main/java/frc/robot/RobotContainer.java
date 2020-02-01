@@ -69,6 +69,9 @@ public class RobotContainer {
   private void configureButtonBindings() {
 
     SmartDashboard.putData(m_setColorWheelPosition);
+    SmartDashboard.putData(m_rotateColorWheel);
+    SmartDashboard.putData(m_moveColorWheelToTargetColor);
+
   }
 
 
