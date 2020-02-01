@@ -16,22 +16,26 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+ 
+	// CPM constants
+	public static final int CPM_MOTOR = 3;
+	public static final int CPM_JOINT_ENCODER_CHANNEL_1A = 01;
+	public static final int CPM_JOINT_ENCODER_CHANNEL_1B = 02;
+	public static final int CPM_PNEUMATICS_FORWARD = 03;
+	public static final int CPM_PNEUMATICS_REVERSE = 04;
+	public static final int CPM_DIGITAL_INPUT_CHANNEL = 05;
 
-    //CPM constants
-    public static final int CPM_MOTOR = 3;
-    public static final int CPM_JOINT_ENCODER_CHANNEL_1A = 01;
-    public static final int CPM_JOINT_ENCODER_CHANNEL_1B = 02;
-    public static final int CPM_PNEUMATICS_FORWARD = 03;
-    public static final int CPM_PNEUMATICS_REVERSE = 04;
-    public static final int CPM_DIGITAL_INPUT_CHANNEL = 05;
-    public static final int CPM_WRIST_ENCODER_COUNTS_PER_REV = 06;
+	public static final int CPM_WRIST_ENCODER_COUNTS_PER_REV = 06;
+	public static final float CPM_PHASE_2_WHEEL_ROTATIONS = 4;
+	public static final float CPM_INCHES_PER_SLICE = 12.5f;
+	public static final int CPM_NUM_SLICES = 8;
 
-    //Shooter constants
-    public static final int SHOOTER_MOTOR = 07;
-    public static final int SHOOTER_MOTOR_2 = 8;
-    public static final int SHOOTER_ANGLE_ENCODER_CHANNEL_1A = 9;
-    public static final int SHOOTER_ANGLE_ENCODER_CHANNEL_1B = 10;
-    public static final int SHOOTER_FEEDER_MOTOR = 0;
+	// Shooter constants
+	public static final int SHOOTER_MOTOR = 07;
+	public static final int SHOOTER_MOTOR_2 = 8;
+	public static final int SHOOTER_ANGLE_ENCODER_CHANNEL_1A = 9;
+	public static final int SHOOTER_ANGLE_ENCODER_CHANNEL_1B = 10;
+	public static final int SHOOTER_FEEDER_MOTOR = 0;
 	public static final int SHOOTER_ROTATOR_MOTOR = 0;
 
     //Intake constants

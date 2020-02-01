@@ -47,6 +47,9 @@ public class RobotContainer {
 
   private final TJController m_driverController = new TJController(0);
 
+  private final MoveColorWheelToTargetColor m_moveColorWheelToTargetColor = new MoveColorWheelToTargetColor(m_cpm);
+  private final RotateColorWheel m_rotateColorWheel = new RotateColorWheel(m_cpm);
+
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */

@@ -38,7 +38,6 @@ public class ControlPanelManipulator extends SubsystemBase {
   private final Color kGreenTarget = ColorMatch.makeColor(0.17, 0.55, 0.26);
   private final Color kRedTarget = ColorMatch.makeColor(0.54, 0.33, 0.12);
   private final Color kYellowTarget = ColorMatch.makeColor(0.31, 0.56, 0.12);
-  private final float controlPanelSlice = 12.5f;
   private final double motorRotationsPerWheelRotation = (100. / (2. * Math.PI));
   private final int ticksPerMotorRotation = 2048;
 
@@ -111,7 +110,7 @@ public class ControlPanelManipulator extends SubsystemBase {
   }
 
   public String getFMSColorTarget() {
-    return DriverStation.getInstance().getGameSpecificMessage();
+    return DriverStation.getInstance().getGameSpecificMessage().toLowerCase();
   }
 
   public double getRobotFacing() {
@@ -124,12 +123,12 @@ public class ControlPanelManipulator extends SubsystemBase {
 
   public float calcPositionControlTargetPosition() {
     //calculate in inches, motor can spin x inches
-    int colorDistance = 0;
-    int i = 1; //Start at index 1
-    String currentDetectedColor = getColor();
-    String currentTargetColor = getFMSColorTarget();
-    String[] colorList = { "r", "g", "b", "y", "r", "g"};
-    int colorListLength = colorList.length;
+    float colorDistance = 0;
+    final int i = 1; //Start at index 1
+    final String currentDetectedColor = getColor();
+    final String currentTargetColor = getFMSColorTarget();
+    final String[] colorList = { "r", "g", "b", "y", "r", "g"};
+    final int colorListLength = colorList.length;
     while (i < colorListLength) {
       if (colorList[i] == currentDetectedColor) {
         if (colorList[i-1] == currentTargetColor) {
@@ -146,7 +145,11 @@ public class ControlPanelManipulator extends SubsystemBase {
         }
       }
     }
-    return colorDistance*12.5f;
+    return colorDistance/Constants.CPM_NUM_SLICES;
+  }
+
+  public void spinColorWheelNumRotations(final float numColorWheelRotations) {
+    return;
   }
 
   public Color getRawColor() {
