@@ -29,20 +29,20 @@ public class NavX {
     }
 
     // 1-Jan-2020 Adding Pitch and Roll functions
+    // At startup, the NavX will calibrate.  It is necessary to set yaw to zero, 
+    // but it does not appear that pitch and roll need to be zeroed.
 
     //Pitch is the slope of the line relative to horizontal.
     //Think of an airplane nose that is either up or down.
-    public void zeroPitch() {
-        //TBD
-    }
-
-    public double getPitch() {
-        //TBD
+       public float getPitch() {
+        //Standard method
+        return m_ahrs.getPitch();
     }
 
     //Roll is the rotation around the center axis.
     //Think of an airplane's wings moving around it's body.
-    public void zeroRoll() {
-        //TBD
+        public float getRoll() {
+        //Standard method
+        return m_ahrs.getRoll();
     }
 }
