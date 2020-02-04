@@ -57,33 +57,32 @@ public final class Constants {
 	public static final int LEFT_FOLLOWER_DRIVE_ID = 3;
 	public static final int RIGHT_MASTER_DRIVE_ID = 13;
 	public static final int RIGHT_FOLLOWER_DRIVE_ID = 12;
-	public static final int SHIFTER_LEFT_PCM = 1;
-	public static final int SHIFTER_LEFT_OUT = 6;
-	public static final int SHIFTER_LEFT_IN = 7;
-	public static final int SHIFTER_RIGHT_PCM = 1;
-	public static final int SHIFTER_RIGHT_OUT = 4;
-	public static final int SHIFTER_RIGHT_IN = 5;
+	public static final int LEFT_DRIVE_ENCODER_ID = 32;
+	public static final int RIGHT_DRIVE_ENCODER_ID = 43;
+	public static final int SHIFTER_LEFT_PCM = 21;
+	public static final int SHIFTER_LEFT_OUT = 4;
+	public static final int SHIFTER_LEFT_IN = 5;
+	public static final int SHIFTER_RIGHT_PCM = 21;
+	public static final int SHIFTER_RIGHT_OUT = 6;
+	public static final int SHIFTER_RIGHT_IN = 7;
 
 	// Drive Configuration
 	public static final int NUM_DRIVE_MOTORS_PER_SIDE = 2;
-	public static final double LOW_DRIVE_RATIO = 0;
-	public static final double HIGH_DRIVE_RATIO = 0;
-	public static final double DRIVE_SENSOR_RATIO = 0;
-	public static final double DRIVE_LOW_STATIC_FRICTION_VOLTAGE = 0;
-	public static final double DRIVE_HIGH_STATIC_FRICTION_VOLTAGE = 0;
-	public static final double DRIVE_LEFT_LOW_EFFICIENCY = 0;
-	public static final double DRIVE_LEFT_HIGH_EFFICIENCY = 0;
-	public static final double DRIVE_RIGHT_LOW_EFFICIENCY = 0;
-	public static final double DRIVE_RIGHT_HIGH_EFFICIENCY = 0;
-	public static final double MAX_SPEED_LOW = 0;
-	public static final double MAX_SPEED_HIGH = 0;
-	public static final double DRIVE_CURRENT_LIMIT = 0;
-	public static final int DRIVE_SPEED_EXP = 0;
-	public static final int DRIVE_TURN_EXP = 0;
-	public static final double MAX_ACCEL_HIGH_TIPPY = 0;
-	public static final double MAX_ACCEL_HIGH = 0;
-	public static final double MAX_ACCEL_LOW_TIPPY = 0;
-	public static final double MAX_ACCEL_LOW = 0;
+	public static final double LOW_DRIVE_RATIO = (1. / 18.38) * (5.99/12.) * Math.PI;
+	public static final double HIGH_DRIVE_RATIO = (1. / 8.50) * (5.99/12.) * Math.PI;;
+	public static final double DRIVE_SENSOR_RATIO = (1. / ((5.99/12.) * 3.14159)) * 7.5;
+	public static final double DRIVE_LOW_STATIC_FRICTION_VOLTAGE = 0.2;
+	public static final double DRIVE_HIGH_STATIC_FRICTION_VOLTAGE = 0.24;
+	public static final double DRIVE_LEFT_LOW_EFFICIENCY = 1.025;
+	public static final double DRIVE_LEFT_HIGH_EFFICIENCY = 1.03;
+	public static final double DRIVE_RIGHT_LOW_EFFICIENCY = 1.03;
+	public static final double DRIVE_RIGHT_HIGH_EFFICIENCY = 1.02;
+	public static final double MAX_SPEED_LOW = 8.8;
+	public static final double MAX_SPEED_HIGH = 18;
+	public static final double DRIVE_CURRENT_LIMIT = 250;
+	public static final int DRIVE_SPEED_EXP = 2;
+	public static final int DRIVE_TURN_EXP = 3;
+	public static final double DRIVE_JOYSTICK_DEADBAND = 0.12;
 
 	/*******************************************************************/
 

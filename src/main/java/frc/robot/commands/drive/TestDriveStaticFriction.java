@@ -7,48 +7,47 @@
 
 package frc.robot.commands.drive;
 
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drive;
-public class ArcadeDrive extends CommandBase {
-  private Drive drive;
-  private DoubleSupplier speed;
-  private DoubleSupplier turn;
-  private BooleanSupplier inHighGear;
-  /**
-   * Creates a new ArcadeDrive.
-   */
-  public ArcadeDrive(Drive drive, DoubleSupplier speed, DoubleSupplier turn, BooleanSupplier inHighGear) {
-    this.turn=turn;
-    this.drive=drive;
-    this.speed=speed;
-    this.inHighGear = inHighGear;
-    addRequirements(drive);
 
+public class TestDriveStaticFriction extends CommandBase {
+
+  private Drive drive;
+
+  /**
+   * Creates a new TestDriveStaticFriction.
+   */
+  public TestDriveStaticFriction(Drive drive) {
+    this.drive = drive;
+    addRequirements(drive);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    SmartDashboard.putNumber("SetLeftSpeed", 0);
+    SmartDashboard.putNumber("SetRightSpeed", 0);
+    SmartDashboard.putBoolean("SetInHigh", false);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (inHighGear.getAsBoolean()) {
+    if (SmartDashboard.getBoolean("SetInHigh", false)) {
       drive.shiftToHigh();
     } else {
       drive.shiftToLow();
     }
-    drive.arcadeDrive(speed.getAsDouble(), turn.getAsDouble());
+    drive.basicDrive(SmartDashboard.getNumber("SetLeftSpeed", 0) / 12., SmartDashboard.getNumber("SetRightSpeed", 0) / 12.);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    drive.arcadeDrive(0, 0);
+    SmartDashboard.delete("SetLeftSpeed");
+    SmartDashboard.delete("SetRightSpeed");
+    SmartDashboard.delete("SetInHigh");
   }
 
   // Returns true when the command should end.

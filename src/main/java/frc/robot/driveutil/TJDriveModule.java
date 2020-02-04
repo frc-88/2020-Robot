@@ -8,6 +8,7 @@
 package frc.robot.driveutil;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import frc.robot.util.transmission.Transmission;
@@ -46,6 +47,26 @@ public class TJDriveModule extends TalonFX {
     }
 
     /**
+     * Puts all talons in brake mode.
+     */
+    public void brakeAll() {
+        this.setNeutralMode(NeutralMode.Brake);
+        for (TalonFX follower : followers) {
+            follower.setNeutralMode(NeutralMode.Brake);
+        }
+    }
+
+    /**
+     * Puts all talons in coast mode.
+     */
+    public void coastAll() {
+        this.setNeutralMode(NeutralMode.Coast);
+        for (TalonFX follower : followers) {
+            follower.setNeutralMode(NeutralMode.Coast);
+        }
+    }
+
+    /**
      * Get the number of talon followers this drive module has.
      */
     public int getNumTalonFollowers() {
@@ -56,16 +77,16 @@ public class TJDriveModule extends TalonFX {
      * Get the output current of the ith talon follower
      */
     public double getFollowerCurrent(int i) {
-        return followers[i].getStatorCurrent();
+        return followers[i].getSupplyCurrent();
     }
 
     /**
      * Get the total output current of the master and all talon followers
      */
     public double getTotalCurrent() {
-        double total = this.getStatorCurrent();
+        double total = this.getSupplyCurrent();
         for (TalonFX follower : followers) {
-            total += follower.getStatorCurrent();
+            total += follower.getSupplyCurrent();
         }
         return total;
     }
@@ -104,6 +125,14 @@ public class TJDriveModule extends TalonFX {
                 m_transmission.getCurrentLimitedVoltage(
                         targetVelocity, this.getSelectedSensorVelocity(), currentLimit)
                     / 12);
+    }
+
+    /**
+     * Gets the expected current draw in order to achieve the given velocity.
+     * @param targetVelocity The velocity to target
+     */
+    public double getExpectedCurrentDraw(double targetVelocity) {
+        return m_transmission.getExpectedCurrentDraw(targetVelocity, this.getSelectedSensorVelocity());
     }
 
 }

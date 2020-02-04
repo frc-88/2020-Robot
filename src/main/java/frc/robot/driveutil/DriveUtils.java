@@ -1,8 +1,10 @@
 package frc.robot.driveutil;
 
 import java.lang.Math;
+import java.util.function.DoubleSupplier;
 
 public class DriveUtils{
+
     public static double signedPow(double base, int exp){
         double value = 0;
         
@@ -18,6 +20,14 @@ public class DriveUtils{
 
     public static double deadbandExponential(double spd, int exp, double deadband) {
         return Math.abs(spd)<deadband ? 0 : DriveUtils.signedPow(spd, exp) * (1 - deadband) + Math.signum(spd) * deadband;
+    }
+
+    public static DoubleSupplier deadbandExponential(DoubleSupplier input, int exp, double deadband) {
+        return () -> deadbandExponential(input.getAsDouble(), exp, deadband);
+    }
+
+    public static DoubleSupplier invertDouble(DoubleSupplier input) {
+        return () -> -input.getAsDouble();
     }
 
     public static double cheesyTurn(double spd, double turnRate) {

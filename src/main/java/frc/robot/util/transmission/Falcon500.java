@@ -15,13 +15,11 @@ public class Falcon500 implements Motor{
 
     @Override
     public double getVelocityConstant() {
-        // TODO
-        return 0;
+        return 12. / 6380. * 60.;
     }
 
     @Override
     public double getWindingsResistance() {
-        // TODO
-        return 0;
+        return 12. / 257.;
     }
 }

@@ -1,5 +1,8 @@
 package frc.robot.driveutil;
 
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
 import frc.robot.Constants;
@@ -24,10 +27,9 @@ public class DriveConfiguration {
 
         _masterConfiguration = new TalonFXConfiguration();
 
-        // TODO - properly configure TalonFX master
-        // _talonMaster.primaryPID.selectedFeedbackSensor = FeedbackDevice.QuadEncoder;
-        // _talonMaster.neutralDeadband = 0.01;
-        // _talonMaster.voltageCompSaturation = 12;
+        _masterConfiguration.primaryPID.selectedFeedbackSensor = FeedbackDevice.RemoteSensor0;
+        _masterConfiguration.neutralDeadband = 0.00;
+        _masterConfiguration.voltageCompSaturation = 12;
 
         left.masterConfiguration = _masterConfiguration;
         right.masterConfiguration = _masterConfiguration;
@@ -35,18 +37,17 @@ public class DriveConfiguration {
         // /* Followers */
         _followerConfiguration = new TalonFXConfiguration();
 
-        // TODO - properly configure TalonFX follower
-        // _talonFollower.neutralDeadband = 0.01;
+        _followerConfiguration.neutralDeadband = 0.01;
 
         left.followerConfiguration = _followerConfiguration;
         right.followerConfiguration = _followerConfiguration;
 
         // /* General Settings */
-        // left.neutralMode = NeutralMode.Brake;
-         left.invertMotor = true;
-        // left.enableVoltageCompensation = true;
-        // right.neutralMode = NeutralMode.Brake;
-         right.invertMotor = false;
-        // right.enableVoltageCompensation = true;
+        left.neutralMode = NeutralMode.Brake;
+        left.invertMotor = false;
+        left.enableVoltageCompensation = true;
+        right.neutralMode = NeutralMode.Brake;
+        right.invertMotor = true;
+        right.enableVoltageCompensation = true;
     }
 }
