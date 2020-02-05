@@ -16,6 +16,8 @@ import frc.robot.commands.RetractIntake;
 import frc.robot.commands.RotateColorWheel;
 import frc.robot.commands.RunIntake;
 import frc.robot.commands.StopIntake;
+import frc.robot.commands.vision.SetToFrontCamera;
+import frc.robot.commands.vision.SetToRearCamera;
 import frc.robot.subsystems.ControlPanelManipulator;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Sensors;
@@ -51,6 +53,9 @@ public class RobotContainer {
   private final RotateColorWheel m_rotateColorWheel = new RotateColorWheel(m_cpm);
   private final TJController m_driverController = new TJController(0);
 
+  private final SetToFrontCamera m_setToFrontCamera = new SetToFrontCamera(m_sensors);
+  private final SetToRearCamera m_setToRearCamera = new SetToRearCamera(m_sensors);
+
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
@@ -70,6 +75,10 @@ public class RobotContainer {
     m_driverController.buttonB.whileHeld(m_reportColor);
     m_driverController.buttonA.whenPressed(m_moveColorWheelToTargetColor);
     m_driverController.buttonY.whenPressed(m_rotateColorWheel);
+
+    m_driverController.buttonRightBumper.whenPressed(m_setToFrontCamera);
+    m_driverController.buttonRightBumper.whenReleased(m_setToRearCamera);
+
   }
 
   /**

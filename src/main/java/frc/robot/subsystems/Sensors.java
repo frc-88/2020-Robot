@@ -7,6 +7,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -17,6 +18,10 @@ import frc.robot.util.Limelight;
 public class Sensors extends SubsystemBase {
   public final NavX m_navx;
   public final Limelight m_limelight;
+
+  UsbCamera frontCamera = CameraServer.getInstance().startAutomaticCapture(0);
+  UsbCamera rearCamera = CameraServer.getInstance().startAutomaticCapture(1);
+
 
   /**
    * Creates a new Sensors subsystem
