@@ -8,12 +8,15 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
+import frc.robot.subsystems.Climber;
 
 public class ClimberExtend extends CommandBase {
-  /**
-   * Creates a new ClimberExtend.
-   */
-  public ClimberExtend() {
+  private Climber climber;
+
+  public ClimberExtend(Climber climber) {
+    this.climber=climber;
+    addRequirements(climber);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -25,6 +28,7 @@ public class ClimberExtend extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    climber.setMotors(Constants.CLIMBER_MAX_EXTEND_SPEED);
   }
 
   // Called once the command ends or is interrupted.
