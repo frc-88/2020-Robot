@@ -8,6 +8,8 @@
 package frc.robot.subsystems;
 
 import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoSink;
+import edu.wpi.cscore.VideoSource.ConnectionStrategy;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -21,7 +23,7 @@ public class Sensors extends SubsystemBase {
 
   UsbCamera frontCamera = CameraServer.getInstance().startAutomaticCapture(0);
   UsbCamera rearCamera = CameraServer.getInstance().startAutomaticCapture(1);
-
+  VideoSink server = CameraServer.getInstance().getServer();
 
   /**
    * Creates a new Sensors subsystem
@@ -34,8 +36,19 @@ public class Sensors extends SubsystemBase {
     m_limelight.camVision();
     m_limelight.ledOff();
 
-    CameraServer.getInstance().startAutomaticCapture();
+    setToFrontCamera();
+    // frontCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+    // rearCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
   }
+
+  public void setToFrontCamera() {
+    server.setSource(frontCamera);
+  }
+
+  public void setToRearCamera() {
+    server.setSource(rearCamera);
+  }
+
 
   @Override
   public void periodic() {

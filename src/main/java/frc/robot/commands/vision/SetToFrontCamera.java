@@ -7,7 +7,6 @@
 
 package frc.robot.commands.vision;
 
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.Sensors;
 
@@ -25,6 +24,6 @@ public class SetToFrontCamera extends InstantCommand {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    CameraServer.getInstance().startAutomaticCapture(0);
+    sensors.setToFrontCamera();
   }
 }
