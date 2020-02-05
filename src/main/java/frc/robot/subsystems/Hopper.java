@@ -37,10 +37,10 @@ public class Hopper extends SubsystemBase {
     new Thread(() -> {
       int count;
       UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-      camera.setResolution(320, 240);
+      camera.setResolution(Constants.HOPPER_IMAGE_WIDTH, Constants.HOPPER_IMAGE_HEIGHT);
 
       CvSink cvSink = CameraServer.getInstance().getVideo();
-      CvSource outputStream = CameraServer.getInstance().putVideo("Blur", 320, 240);
+      CvSource outputStream = CameraServer.getInstance().putVideo("Blur", Constants.HOPPER_IMAGE_WIDTH, Constants.HOPPER_IMAGE_HEIGHT);
 
       Mat source = new Mat();
       Mat output = new Mat();
