@@ -7,7 +7,9 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.DriverStation;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -28,7 +30,6 @@ import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
 import frc.robot.util.TJController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 /**
@@ -60,19 +61,12 @@ public class RobotContainer {
 
   private final ReportColor m_reportColor = new ReportColor(m_cpm);
 
-  private final ArcadeDrive m_arcadeDrive = new ArcadeDrive(m_drive,
-      DriveUtils.deadbandExponential(m_driverController::getLeftStickY, Constants.DRIVE_SPEED_EXP, Constants.DRIVE_JOYSTICK_DEADBAND),
-      DriveUtils.invertDouble(DriveUtils.deadbandExponential(m_driverController::getRightStickX, Constants.DRIVE_SPEED_EXP, Constants.DRIVE_JOYSTICK_DEADBAND)),
-      m_drive::autoshift);
-  private final TankDrive m_tankDrive = new TankDrive(m_drive, m_driverController::getLeftStickY,
-      m_driverController::getRightStickY);
+  private final ArcadeDrive m_arcadeDrive;
+  private final TankDrive m_tankDrive;
 
-  private final TestDriveStaticFriction m_testDriveStaticFriction = new TestDriveStaticFriction(m_drive);
-  private final CalculateDriveEfficiency m_calculateDriveEfficiency = new CalculateDriveEfficiency(m_drive);
-  private final ArcadeDrive m_testArcadeDrive = new ArcadeDrive(m_drive, 
-      () -> SmartDashboard.getNumber("SetTestDriveSpeed", 0) / (SmartDashboard.getBoolean("SetTestShiftHigh", false) ? Constants.MAX_SPEED_HIGH : Constants.MAX_SPEED_LOW), 
-      () -> SmartDashboard.getNumber("SetTestDriveTurn", 0) / (SmartDashboard.getBoolean("SetTestShiftHigh", false) ? Constants.MAX_SPEED_HIGH : Constants.MAX_SPEED_LOW),
-      () -> SmartDashboard.getBoolean("SetTestShiftHigh", false));
+  private final TestDriveStaticFriction m_testDriveStaticFriction;
+  private final CalculateDriveEfficiency m_calculateDriveEfficiency;
+  private final ArcadeDrive m_testArcadeDrive;
 
   private final MoveColorWheelToTargetColor m_moveColorWheelToTargetColor = new MoveColorWheelToTargetColor(m_cpm);
   private final RotateColorWheel m_rotateColorWheel = new RotateColorWheel(m_cpm);
@@ -81,10 +75,31 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+
+    // Initialize everything
+    DoubleSupplier arcadeDriveSpeedSupplier = DriveUtils.deadbandExponential(
+        m_driverController::getLeftStickY, Constants.DRIVE_SPEED_EXP, Constants.DRIVE_JOYSTICK_DEADBAND);
+    DoubleSupplier arcadeDriveTurnSupplier = DriveUtils.cheesyTurn(arcadeDriveSpeedSupplier, 
+        DriveUtils.deadbandExponential(m_driverController::getRightStickX, Constants.DRIVE_SPEED_EXP, Constants.DRIVE_JOYSTICK_DEADBAND),
+        Constants.CHEESY_DRIVE_MIN_TURN, Constants.CHEESY_DRIVE_MAX_TURN);
+    BooleanSupplier arcadeDriveShiftSupplier = () -> m_drive.autoshift(arcadeDriveSpeedSupplier.getAsDouble());
+    m_arcadeDrive = new ArcadeDrive(m_drive, arcadeDriveSpeedSupplier, arcadeDriveTurnSupplier, arcadeDriveShiftSupplier);
+
+    DoubleSupplier tankDriveLeftSupplier = m_driverController::getLeftStickY;
+    DoubleSupplier tankDriveRightSupplier = m_driverController::getRightStickY;
+    m_tankDrive = new TankDrive(m_drive, tankDriveLeftSupplier, tankDriveRightSupplier);
+
+    m_testDriveStaticFriction = new TestDriveStaticFriction(m_drive);
+    m_calculateDriveEfficiency = new CalculateDriveEfficiency(m_drive);
+
+    BooleanSupplier testArcadeDriveShiftSupplier = () -> SmartDashboard.getBoolean("SetTestShiftHigh", false);
+    DoubleSupplier testArcadeDriveSpeedSupplier = () -> SmartDashboard.getNumber("SetTestDriveSpeed", 0) / (testArcadeDriveShiftSupplier.getAsBoolean() ? Constants.MAX_SPEED_HIGH : Constants.MAX_SPEED_LOW);
+    DoubleSupplier testArcadeDriveTurnSupplier = () -> SmartDashboard.getNumber("SetTestDriveTurn", 0) / (testArcadeDriveShiftSupplier.getAsBoolean() ? Constants.MAX_SPEED_HIGH : Constants.MAX_SPEED_LOW);
+    m_testArcadeDrive = new ArcadeDrive(m_drive, testArcadeDriveSpeedSupplier, testArcadeDriveTurnSupplier, testArcadeDriveShiftSupplier);
+
     // Configure the button bindings
     configureButtonBindings();
     m_intake.setDefaultCommand(m_stopIntake);
-    // m_drive.setDefaultCommand(m_arcadeDrive);
     m_drive.setDefaultCommand(m_arcadeDrive);
   }
 

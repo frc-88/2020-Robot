@@ -26,19 +26,18 @@ public class DriveUtils{
         return () -> deadbandExponential(input.getAsDouble(), exp, deadband);
     }
 
-    public static DoubleSupplier invertDouble(DoubleSupplier input) {
-        return () -> -input.getAsDouble();
-    }
+    public static double cheesyTurn(double spd, double turnRate, double minTurn, double maxTurn) {
+        spd = Math.abs(spd);
 
-    public static double cheesyTurn(double spd, double turnRate) {
-        if (spd == 0) {
-          return turnRate;
-    
-        } else {
-          return spd * turnRate;
+        if (Math.abs(spd) < minTurn) {
+            spd = minTurn;
         }
-    
+
+        return spd * turnRate * maxTurn;
     }
 
+    public static DoubleSupplier cheesyTurn(DoubleSupplier speed, DoubleSupplier turnRate, double minTurn, double maxTurn) {
+        return () -> cheesyTurn(speed.getAsDouble(), turnRate.getAsDouble(), minTurn, maxTurn);
+    }
 
 }

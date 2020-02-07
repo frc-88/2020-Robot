@@ -44,14 +44,18 @@ public class Drive extends SubsystemBase {
   private PIDPreferenceConstants rightVelPIDConstants;
   private DoublePreferenceConstant downshiftSpeed;
   private DoublePreferenceConstant upshiftSpeed;
+  private DoublePreferenceConstant commandDownshiftSpeed;
+  private DoublePreferenceConstant commandDownshiftCommandValue;
 
   public Drive() {
     m_driveConfiguration = new DriveConfiguration();
 
     leftVelPIDConstants = new PIDPreferenceConstants("Left Drive Vel", 0, 0.015, 0, 0, 2, 2, 0);
     rightVelPIDConstants = new PIDPreferenceConstants("Right Drive Vel", 0, 0.015, 0, 0, 2, 2, 0);
-    downshiftSpeed = new DoublePreferenceConstant("Downshift Speed", 5);
+    downshiftSpeed = new DoublePreferenceConstant("Downshift Speed", 4);
     upshiftSpeed = new DoublePreferenceConstant("UpshiftSpeed", 6);
+    commandDownshiftSpeed = new DoublePreferenceConstant("Command Downshift Speed", 6);
+    commandDownshiftCommandValue = new DoublePreferenceConstant("Command Downshift Command Value", 0.1);
 
     m_leftTransmission = new ShiftingTransmission(new Falcon500(), Constants.NUM_DRIVE_MOTORS_PER_SIDE,
         new CTREMagEncoder(), Constants.LOW_DRIVE_RATIO, Constants.HIGH_DRIVE_RATIO, Constants.DRIVE_SENSOR_RATIO,
@@ -120,10 +124,10 @@ public class Drive extends SubsystemBase {
    */
   public void arcadeDrive(double speed, double turn) {
 
-    turn = DriveUtils.cheesyTurn(speed, turn);
+    turn *= -1;
 
-    speed *= m_maxSpeed;
-    turn *= m_maxSpeed;
+    speed *= Constants.MAX_SPEED_HIGH;
+    turn *= Constants.MAX_SPEED_HIGH;
 
     double leftSpeed = (speed + turn);
     double rightSpeed = (speed - turn);
@@ -131,12 +135,16 @@ public class Drive extends SubsystemBase {
     basicDriveLimited(leftSpeed, rightSpeed);
   }
 
-  public boolean autoshift() {
+  public boolean autoshift(double commandedValue) {
     double currentSpeed = getStraightSpeed();
     if (isInHighGear() && Math.abs(currentSpeed) <= downshiftSpeed.getValue()) {
       return false;
     } else if (!isInHighGear() && Math.abs(currentSpeed) >= upshiftSpeed.getValue()) {
       return true;
+    } else if (isInHighGear() && Math.abs(currentSpeed) <= commandDownshiftSpeed.getValue()
+        && (Math.signum(commandedValue) != Math.signum(currentSpeed)
+        || Math.abs(commandedValue) <= commandDownshiftCommandValue.getValue())) {
+      return false;
     } else {
       return isInHighGear();
     }
