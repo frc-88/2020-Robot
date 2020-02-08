@@ -20,6 +20,8 @@ import frc.robot.commands.RetractIntake;
 import frc.robot.commands.RotateColorWheel;
 import frc.robot.commands.RunIntake;
 import frc.robot.commands.StopIntake;
+import frc.robot.commands.vision.SetToFrontCamera;
+import frc.robot.commands.vision.SetToRearCamera;
 import frc.robot.commands.drive.ArcadeDrive;
 import frc.robot.commands.drive.CalculateDriveEfficiency;
 import frc.robot.commands.drive.TankDrive;
@@ -28,6 +30,7 @@ import frc.robot.driveutil.DriveUtils;
 import frc.robot.subsystems.ControlPanelManipulator;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Sensors;
 import frc.robot.util.TJController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -42,7 +45,8 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
-  // Controllers
+  private final Sensors m_sensors = new Sensors();
+
   private final TJController m_driverController = new TJController(0);
 
   // Subsystems
@@ -70,6 +74,9 @@ public class RobotContainer {
 
   private final MoveColorWheelToTargetColor m_moveColorWheelToTargetColor = new MoveColorWheelToTargetColor(m_cpm);
   private final RotateColorWheel m_rotateColorWheel = new RotateColorWheel(m_cpm);
+
+  private final SetToFrontCamera m_setToFrontCamera = new SetToFrontCamera(m_sensors);
+  private final SetToRearCamera m_setToRearCamera = new SetToRearCamera(m_sensors);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -113,6 +120,9 @@ public class RobotContainer {
     m_driverController.buttonB.whileHeld(m_reportColor);
     m_driverController.buttonA.whenPressed(m_moveColorWheelToTargetColor);
     m_driverController.buttonY.whenPressed(m_rotateColorWheel);
+
+    m_driverController.buttonRightBumper.whenPressed(m_setToFrontCamera);
+    m_driverController.buttonRightBumper.whenReleased(m_setToRearCamera);
 
     SmartDashboard.putData("TestDriveStaticFriction", m_testDriveStaticFriction);
     SmartDashboard.putData("CalculateDriveEfficiency", m_calculateDriveEfficiency);
