@@ -1,63 +1,53 @@
 package frc.robot.driveutil;
 
-import com.ctre.phoenix.motorcontrol.*;
-import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
-import com.ctre.phoenix.motorcontrol.can.VictorSPXConfiguration;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
+import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
 import frc.robot.Constants;
 
 public class DriveConfiguration {
     public TJDriveModuleConfiguration left, right;
 
-    private TalonSRXConfiguration _talonMaster;
-    private TalonSRXConfiguration _talonFollower;
-    private VictorSPXConfiguration _victorFollower;
+    private TalonFXConfiguration _masterConfiguration;
+    private TalonFXConfiguration _followerConfiguration;
 
-    public DriveConfiguration()
-    {
+    public DriveConfiguration() {
         left = new TJDriveModuleConfiguration();
         right = new TJDriveModuleConfiguration();
 
-        // left.master = RobotMap.LEFT_MASTER_DRIVE_ID;
-        // left.talonFollowers = new int[] {RobotMap.LEFT_TALON_FOLLOWER_DRIVE_ID};
-        // left.victorFollowers = new int [] {RobotMap.LEFT_VICTOR_FOLLOWER00_DRIVE_ID,
-        //     RobotMap.LEFT_VICTOR_FOLLOWER01_DRIVE_ID};
+        left.master = Constants.LEFT_MASTER_DRIVE_ID;
+        left.followers = new int[] { Constants.LEFT_FOLLOWER_DRIVE_ID };
 
-        // right.master = RobotMap.RIGHT_MASTER_DRIVE_ID;
-        // right.talonFollowers = new int[] {RobotMap.RIGHT_TALON_FOLLOWER_DRIVE_ID};
-        // right.victorFollowers = new int [] {RobotMap.RIGHT_VICTOR_FOLLOWER00_DRIVE_ID,
-        //     RobotMap.RIGHT_VICTOR_FOLLOWER01_DRIVE_ID};
+        right.master = Constants.RIGHT_MASTER_DRIVE_ID;
+        right.followers = new int[] { Constants.RIGHT_FOLLOWER_DRIVE_ID };
 
-        // _talonMaster = new TalonSRXConfiguration();
-        // _talonFollower = new TalonSRXConfiguration();
-        // _victorFollower = new VictorSPXConfiguration();
+        /* Master */
 
-        // /* Talon SRX - Master */
-        // _talonMaster.primaryPID.selectedFeedbackSensor = FeedbackDevice.QuadEncoder; 
-        // _talonMaster.neutralDeadband = 0.01;
-        // _talonMaster.voltageCompSaturation = 12;
+        _masterConfiguration = new TalonFXConfiguration();
 
-        // left.masterConfiguration = _talonMaster;
-        // right.masterConfiguration = _talonMaster;
+        _masterConfiguration.primaryPID.selectedFeedbackSensor = FeedbackDevice.RemoteSensor0;
+        _masterConfiguration.neutralDeadband = 0.00;
+        _masterConfiguration.voltageCompSaturation = 12;
+
+        left.masterConfiguration = _masterConfiguration;
+        right.masterConfiguration = _masterConfiguration;
 
         // /* Followers */
+        _followerConfiguration = new TalonFXConfiguration();
 
-        // _talonFollower.neutralDeadband = 0.01;
-        // _victorFollower.neutralDeadband = 0.01;
+        _followerConfiguration.neutralDeadband = 0.01;
 
-        // _talonFollower.primaryPID.selectedFeedbackSensor = FeedbackDevice.CTRE_MagEncoder_Absolute;
-
-        // left.talonFollowerConfiguration = _talonFollower;
-        // right.talonFollowerConfiguration = _talonFollower;
-        // left.victorFollowerConfiguration = _victorFollower;
-        // right.victorFollowerConfiguration = _victorFollower;
+        left.followerConfiguration = _followerConfiguration;
+        right.followerConfiguration = _followerConfiguration;
 
         // /* General Settings */
-        // left.neutralMode = NeutralMode.Brake;
-        // left.invertMotor = true;
-        // left.enableVoltageCompensation = true;
-        // right.neutralMode = NeutralMode.Brake;
-        // right.invertMotor = false;
-        // right.enableVoltageCompensation = true;
+        left.neutralMode = NeutralMode.Brake;
+        left.invertMotor = false;
+        left.enableVoltageCompensation = false;
+        right.neutralMode = NeutralMode.Brake;
+        right.invertMotor = true;
+        right.enableVoltageCompensation = false;
     }
 }
