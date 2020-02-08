@@ -5,7 +5,9 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.climber;
+
+import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -13,9 +15,11 @@ import frc.robot.subsystems.Climber;
 
 public class TiltClimberLeft extends CommandBase {
   private Climber climber;
+  private DoubleSupplier speed;
 
-  public TiltClimberLeft(Climber climber) {
+  public TiltClimberLeft(Climber climber, DoubleSupplier speed) {
     this.climber=climber;
+    this.speed=speed;
     addRequirements(climber);
   }
 
@@ -27,7 +31,7 @@ public class TiltClimberLeft extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    climber.setLeftMotor(Constants.CLIMBER_MAX_RETRACT_SPEED);
+    climber.setLeftMotor(speed.getAsDouble() * Constants.CLIMBER_MAX_RETRACT_SPEED);
   }
 
   // Called once the command ends or is interrupted.

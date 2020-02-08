@@ -5,7 +5,9 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.climber;
+
+import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -13,9 +15,11 @@ import frc.robot.subsystems.Climber;
 
 public class ExtendClimber extends CommandBase {
   private Climber climber;
+  private DoubleSupplier speed;
 
-  public ExtendClimber(Climber climber) {
+  public ExtendClimber(Climber climber, DoubleSupplier speed) {
     this.climber=climber;
+    this.speed=speed;
     addRequirements(climber);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -28,7 +32,7 @@ public class ExtendClimber extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    climber.setMotors(Constants.CLIMBER_MAX_EXTEND_SPEED);
+    climber.setMotors(speed.getAsDouble() * Constants.CLIMBER_MAX_EXTEND_SPEED);
   }
 
   // Called once the command ends or is interrupted.

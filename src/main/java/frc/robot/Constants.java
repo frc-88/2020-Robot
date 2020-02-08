@@ -44,7 +44,10 @@ public final class Constants {
     public static final int CLIMBER_MOTOR_LEFT = 88;
     public static final int CLIMBER_MOTOR_RIGHT = 882;
     public static final double CLIMBER_MAX_RETRACT_SPEED = 0.5;
-    public static final double CLIMBER_MAX_EXTEND_SPEED = -0.3;
+    public static final double CLIMBER_MAX_EXTEND_SPEED = 0.3;
+
+    //Controller constants
+    public static final double CONTROLLER_DEADZONE = 0.1;
 
 
 
