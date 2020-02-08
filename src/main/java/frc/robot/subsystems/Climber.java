@@ -17,19 +17,28 @@ import frc.robot.Constants;
 //or might not reflect the abilities of the climber.
 
 public class Climber extends SubsystemBase{
-    private TalonFX m_climber_motor1 = new TalonFX(Constants.CLIMBER_MOTOR_LEFT);
-    private TalonFX m_climber_motor2 = new TalonFX(Constants.CLIMBER_MOTOR_RIGHT);
+    private TalonFX m_climber_motor_left = new TalonFX(Constants.CLIMBER_MOTOR_LEFT);
+    private TalonFX m_climber_motor_right = new TalonFX(Constants.CLIMBER_MOTOR_RIGHT);
 
     public Climber() {
-        m_climber_motor1.configFactoryDefault();
-        m_climber_motor2.configFactoryDefault();
-        m_climber_motor1.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-        m_climber_motor2.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-        m_climber_motor1.setSelectedSensorPosition(0);
-        m_climber_motor2.setSelectedSensorPosition(0);
+        m_climber_motor_left.configFactoryDefault();
+        m_climber_motor_right.configFactoryDefault();
+        m_climber_motor_left.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+        m_climber_motor_right.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+        m_climber_motor_left.setSelectedSensorPosition(0);
+        m_climber_motor_right.setSelectedSensorPosition(0);
     }
     public void setMotors(final double speed) {
-        m_climber_motor1.set(ControlMode.PercentOutput, speed);
-        m_climber_motor2.set(ControlMode.PercentOutput, speed);
+        m_climber_motor_left.set(ControlMode.PercentOutput, speed);
+        m_climber_motor_right.set(ControlMode.PercentOutput, speed);
     }
+
+    public void setLeftMotor(final double speed) {
+        m_climber_motor_left.set(ControlMode.PercentOutput, speed);
+    }
+
+    public void setRightMotor(final double speed) {
+        m_climber_motor_right.set(ControlMode.PercentOutput, speed);
+    }
+
 }

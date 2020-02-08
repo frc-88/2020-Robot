@@ -18,6 +18,8 @@ import frc.robot.commands.RetractIntake;
 import frc.robot.commands.RotateColorWheel;
 import frc.robot.commands.RunIntake;
 import frc.robot.commands.StopIntake;
+import frc.robot.commands.TiltClimberLeft;
+import frc.robot.commands.TiltClimberRight;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.ControlPanelManipulator;
 import frc.robot.subsystems.Intake;
@@ -53,10 +55,13 @@ public class RobotContainer {
   private final MoveColorWheelToTargetColor m_moveColorWheelToTargetColor = new MoveColorWheelToTargetColor(m_cpm);
   private final RotateColorWheel m_rotateColorWheel = new RotateColorWheel(m_cpm);
   private final TJController m_driverController = new TJController(0);
+  private final TJController m_operatorController = new TJController(1);
 
   // Climber Commands
   private final ExtendClimber m_extendClimber = new ExtendClimber(m_climber);
   private final RetractClimber m_retractClimber = new RetractClimber(m_climber);
+  private final TiltClimberLeft m_tiltClimberLeft = new TiltClimberLeft(m_climber);
+  private final TiltClimberRight m_tiltClimberRight = new TiltClimberRight(m_climber);
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -74,11 +79,15 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    // Driver Controller
     m_driverController.buttonB.whileHeld(m_reportColor);
     m_driverController.buttonA.whenPressed(m_moveColorWheelToTargetColor);
     m_driverController.buttonY.whenPressed(m_rotateColorWheel);
-    m_driverController.buttonRightBumper.whileHeld(m_retractClimber);
-    m_driverController.buttonLeftBumper.whileHeld(m_extendClimber);
+    // Operator Controller
+    m_operatorController.buttonY.whileHeld(m_retractClimber); //up
+    m_operatorController.buttonX.whileHeld(m_extendClimber); //down
+    m_operatorController.buttonA.whileHeld(m_tiltClimberLeft); //left
+    m_operatorController.buttonB.whileHeld(m_tiltClimberRight); //left
   }
 
   /**
