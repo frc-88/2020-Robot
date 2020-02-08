@@ -10,12 +10,15 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DeployIntake;
+import frc.robot.commands.ExtendClimber;
 import frc.robot.commands.MoveColorWheelToTargetColor;
 import frc.robot.commands.ReportColor;
+import frc.robot.commands.RetractClimber;
 import frc.robot.commands.RetractIntake;
 import frc.robot.commands.RotateColorWheel;
 import frc.robot.commands.RunIntake;
 import frc.robot.commands.StopIntake;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.ControlPanelManipulator;
 import frc.robot.subsystems.Intake;
 import frc.robot.util.TJController;
@@ -36,17 +39,24 @@ public class RobotContainer {
 
   private final Intake m_intake = new Intake();
 
+  private final Climber m_climber = new Climber();
+
+  // Intake Commands
   private final DeployIntake m_deployIntake = new DeployIntake(m_intake);
   private final RetractIntake m_retractIntake = new RetractIntake(m_intake);
   private final StopIntake m_stopIntake = new StopIntake(m_intake);
   private final RunIntake m_runIntake = new RunIntake(m_intake, 1);
   private final RunIntake m_ejectIntake = new RunIntake(m_intake, -1);
 
-
+  // CPM Commands
   private final ReportColor m_reportColor= new ReportColor(m_cpm);
   private final MoveColorWheelToTargetColor m_moveColorWheelToTargetColor = new MoveColorWheelToTargetColor(m_cpm);
   private final RotateColorWheel m_rotateColorWheel = new RotateColorWheel(m_cpm);
   private final TJController m_driverController = new TJController(0);
+
+  // Climber Commands
+  private final ExtendClimber m_extendClimber = new ExtendClimber(m_climber);
+  private final RetractClimber m_retractClimber = new RetractClimber(m_climber);
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -67,6 +77,8 @@ public class RobotContainer {
     m_driverController.buttonB.whileHeld(m_reportColor);
     m_driverController.buttonA.whenPressed(m_moveColorWheelToTargetColor);
     m_driverController.buttonY.whenPressed(m_rotateColorWheel);
+    m_driverController.buttonRightBumper.whileHeld(m_retractClimber);
+    m_driverController.buttonLeftBumper.whileHeld(m_extendClimber);
   }
 
   /**
