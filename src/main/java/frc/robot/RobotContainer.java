@@ -52,7 +52,7 @@ public class RobotContainer {
   // Subsystems
   private final ControlPanelManipulator m_cpm = new ControlPanelManipulator();
   private final Intake m_intake = new Intake();
-  private final Drive m_drive = new Drive();
+  private final Drive m_drive = new Drive(m_sensors);
 
   // Commands
   private final Command m_autoCommand = new WaitCommand(1);

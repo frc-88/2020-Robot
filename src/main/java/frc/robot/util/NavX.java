@@ -15,17 +15,22 @@ import edu.wpi.first.wpilibj.SPI;
  */
 public class NavX {
     private final AHRS m_ahrs;
+    private double yawOffset;
 
     public NavX() {
         m_ahrs = new AHRS(SPI.Port.kMXP);
     }
 
     public void zeroYaw() {
-        m_ahrs.zeroYaw();
+        yawOffset = -getYaw() + yawOffset;
     }
 
     public double getYaw() {
-        return m_ahrs.getYaw();
+        return -m_ahrs.getYaw() + yawOffset;
+    }
+
+    public double getYawRate() {
+        return m_ahrs.getRate();
     }
 
     // 1-Jan-2020 Adding Pitch and Roll functions
@@ -34,14 +39,14 @@ public class NavX {
 
     //Pitch is the slope of the line relative to horizontal.
     //Think of an airplane nose that is either up or down.
-       public float getPitch() {
+    public float getPitch() {
         //Standard method
         return m_ahrs.getPitch();
     }
 
     //Roll is the rotation around the center axis.
     //Think of an airplane's wings moving around it's body.
-        public float getRoll() {
+    public float getRoll() {
         //Standard method
         return m_ahrs.getRoll();
     }

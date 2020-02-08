@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.driveutil.DriveConfiguration;
 import frc.robot.driveutil.TJDriveModule;
+import frc.robot.subsystems.Sensors;
 import frc.robot.util.SyncPIDController;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import frc.robot.util.preferenceconstants.PIDPreferenceConstants;
@@ -26,13 +27,13 @@ import frc.robot.util.transmission.Falcon500;
 import frc.robot.util.transmission.ShiftingTransmission;
 
 public class Drive extends SubsystemBase {
-  /**
-   * Creates a new Drive.
-   */
+
+  private final Sensors m_sensors;
+
   private final TJDriveModule m_leftDrive, m_rightDrive;
   private final CANCoder m_leftEncoder, m_rightEncoder;
   private ShiftingTransmission m_leftTransmission, m_rightTransmission;
-  private SyncPIDController m_leftVelPID, m_rightVelPID;
+  private SyncPIDController m_leftVelPID, m_rightVelPID, m_turnSpeedPID, m_headingPID;
   private DriveConfiguration m_driveConfiguration;
   private DoubleSolenoid m_leftShifter, m_rightShifter;
 
@@ -41,15 +42,21 @@ public class Drive extends SubsystemBase {
   private double m_rightCommandedSpeed = 0;
   
   private PIDPreferenceConstants velPIDConstants;
+  private PIDPreferenceConstants turnSpeedPIDConstants;
+  private PIDPreferenceConstants headingPIDConstants;
   private DoublePreferenceConstant downshiftSpeed;
   private DoublePreferenceConstant upshiftSpeed;
   private DoublePreferenceConstant commandDownshiftSpeed;
   private DoublePreferenceConstant commandDownshiftCommandValue;
 
-  public Drive() {
+  public Drive(Sensors sensors) {
+    m_sensors = sensors;
+
     m_driveConfiguration = new DriveConfiguration();
 
     velPIDConstants = new PIDPreferenceConstants("Drive Vel", 0, 0.015, 0, 0, 2, 2, 0);
+    turnSpeedPIDConstants = new PIDPreferenceConstants("Turn Speed", 0, 0, 0, 0, 0, 0, 0);
+    headingPIDConstants = new PIDPreferenceConstants("Heading", 0, 0, 0, 0, 0, 0, 0);
     downshiftSpeed = new DoublePreferenceConstant("Downshift Speed", 4);
     upshiftSpeed = new DoublePreferenceConstant("UpshiftSpeed", 6);
     commandDownshiftSpeed = new DoublePreferenceConstant("Command Downshift Speed", 6);
@@ -85,6 +92,9 @@ public class Drive extends SubsystemBase {
         Constants.SHIFTER_LEFT_IN);
     m_rightShifter = new DoubleSolenoid(Constants.SHIFTER_RIGHT_PCM, Constants.SHIFTER_RIGHT_OUT,
         Constants.SHIFTER_RIGHT_IN);
+
+    m_turnSpeedPID = new SyncPIDController(turnSpeedPIDConstants);
+    m_headingPID = new SyncPIDController(headingPIDConstants);
 
     shiftToLow();
 
@@ -125,14 +135,21 @@ public class Drive extends SubsystemBase {
    */
   public void arcadeDrive(double speed, double turn) {
 
-    turn *= -1;
-
+    // Convert speed to degrees per second and turn to degrees per second
     speed *= Constants.MAX_SPEED_HIGH;
-    turn *= Constants.MAX_SPEED_HIGH;
+    turn *= Constants.MAX_SPEED_HIGH / (Constants.WHEEL_BASE_WIDTH * Math.PI);
 
+    // Apply turn speed PID
+    turn = m_turnSpeedPID.calculateOutput(m_sensors.m_navx.getYawRate(), turn);
+
+    // Convert turn to feet per second
+    turn *= Constants.WHEEL_BASE_WIDTH * Math.PI;
+
+    // Calculate left and right speed
     double leftSpeed = (speed + turn);
     double rightSpeed = (speed - turn);
 
+    // Apply values
     basicDriveLimited(leftSpeed, rightSpeed);
   }
 
