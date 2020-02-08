@@ -38,10 +38,10 @@ public class Drive extends SubsystemBase {
   private DoubleSolenoid m_leftShifter, m_rightShifter;
 
   private double m_currentLimit = Constants.DRIVE_CURRENT_LIMIT;
-  private double m_maxSpeed;
+  private double m_leftCommandedSpeed = 0;
+  private double m_rightCommandedSpeed = 0;
   
-  private PIDPreferenceConstants leftVelPIDConstants;
-  private PIDPreferenceConstants rightVelPIDConstants;
+  private PIDPreferenceConstants velPIDConstants;
   private DoublePreferenceConstant downshiftSpeed;
   private DoublePreferenceConstant upshiftSpeed;
   private DoublePreferenceConstant commandDownshiftSpeed;
@@ -50,8 +50,7 @@ public class Drive extends SubsystemBase {
   public Drive() {
     m_driveConfiguration = new DriveConfiguration();
 
-    leftVelPIDConstants = new PIDPreferenceConstants("Left Drive Vel", 0, 0.015, 0, 0, 2, 2, 0);
-    rightVelPIDConstants = new PIDPreferenceConstants("Right Drive Vel", 0, 0.015, 0, 0, 2, 2, 0);
+    velPIDConstants = new PIDPreferenceConstants("Drive Vel", 0, 0.015, 0, 0, 2, 2, 0);
     downshiftSpeed = new DoublePreferenceConstant("Downshift Speed", 4);
     upshiftSpeed = new DoublePreferenceConstant("UpshiftSpeed", 6);
     commandDownshiftSpeed = new DoublePreferenceConstant("Command Downshift Speed", 6);
@@ -66,8 +65,8 @@ public class Drive extends SubsystemBase {
         Constants.DRIVE_LOW_STATIC_FRICTION_VOLTAGE, Constants.DRIVE_HIGH_STATIC_FRICTION_VOLTAGE,
         Constants.DRIVE_RIGHT_LOW_EFFICIENCY, Constants.DRIVE_RIGHT_HIGH_EFFICIENCY);
 
-    m_leftVelPID = new SyncPIDController(leftVelPIDConstants);
-    m_rightVelPID = new SyncPIDController(rightVelPIDConstants);
+    m_leftVelPID = new SyncPIDController(velPIDConstants);
+    m_rightVelPID = new SyncPIDController(velPIDConstants);
     m_leftTransmission.setVelocityPID(m_leftVelPID);
     m_rightTransmission.setVelocityPID(m_rightVelPID);
 
@@ -111,6 +110,9 @@ public class Drive extends SubsystemBase {
 
     m_leftDrive.setVelocityCurrentLimited(leftVelocity, leftCurrentLimit);
     m_rightDrive.setVelocityCurrentLimited(rightVelocity, rightCurrentLimit);
+    
+    m_leftCommandedSpeed = leftVelocity;
+    m_rightCommandedSpeed = rightVelocity;
   }
 
   /**
@@ -156,8 +158,6 @@ public class Drive extends SubsystemBase {
 
     m_leftTransmission.shiftToLow();
     m_rightTransmission.shiftToLow();
-
-    m_maxSpeed = Constants.MAX_SPEED_LOW;
   }
 
   public void shiftToHigh() {
@@ -166,8 +166,6 @@ public class Drive extends SubsystemBase {
 
     m_leftTransmission.shiftToHigh();
     m_rightTransmission.shiftToHigh();
-
-    m_maxSpeed = Constants.MAX_SPEED_HIGH;
   }
 
   public boolean isInHighGear() {
@@ -218,6 +216,8 @@ public class Drive extends SubsystemBase {
     SmartDashboard.putNumber("R Drive Speed", m_rightDrive.getScaledSensorVelocity());
     SmartDashboard.putNumber("L Drive Position", m_leftDrive.getScaledSensorPosition());
     SmartDashboard.putNumber("R Drive Position", m_rightDrive.getScaledSensorPosition());
+    SmartDashboard.putNumber("L Drive Command Speed", m_leftCommandedSpeed);
+    SmartDashboard.putNumber("R Drive Command Speed", m_rightCommandedSpeed);
 
     if (DriverStation.getInstance().isEnabled()) {
       this.setBrakeMode();

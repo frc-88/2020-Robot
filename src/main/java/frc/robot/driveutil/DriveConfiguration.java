@@ -45,9 +45,9 @@ public class DriveConfiguration {
         // /* General Settings */
         left.neutralMode = NeutralMode.Brake;
         left.invertMotor = false;
-        left.enableVoltageCompensation = true;
+        left.enableVoltageCompensation = false;
         right.neutralMode = NeutralMode.Brake;
         right.invertMotor = true;
-        right.enableVoltageCompensation = true;
+        right.enableVoltageCompensation = false;
     }
 }

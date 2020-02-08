@@ -330,7 +330,7 @@ public class SyncPIDController {
                 m_accum = Math.max(m_accum, -iMax / kI);
             }
         }
-        
+
         return kI * m_accum;
     }
 
