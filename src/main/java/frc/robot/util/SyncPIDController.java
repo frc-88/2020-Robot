@@ -89,8 +89,20 @@ public class SyncPIDController {
         constants.getKI().addChangeHandler(this::setKI);
         constants.getKD().addChangeHandler(this::setKD);
         constants.getKF().addChangeHandler(this::setKF);
-        constants.getIZone().addChangeHandler(this::setIZone);
-        constants.getIMax().addChangeHandler(this::setIMax);
+        constants.getIZone().addChangeHandler((value) -> {
+            if (value == 0.) {
+                this.disableIZone();
+            } else {
+                this.setIZone(value);
+            }
+        });
+        constants.getIMax().addChangeHandler((value) -> {
+            if (value == 0.) {
+                this.disableIMax();
+            } else {
+                this.setIMax(value);
+            }
+        });
         constants.getTolerance().addChangeHandler(this::setTolerance);
     }
 

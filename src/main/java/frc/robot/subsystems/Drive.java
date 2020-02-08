@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.driveutil.DriveConfiguration;
-import frc.robot.driveutil.DriveUtils;
 import frc.robot.driveutil.TJDriveModule;
 import frc.robot.util.SyncPIDController;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
