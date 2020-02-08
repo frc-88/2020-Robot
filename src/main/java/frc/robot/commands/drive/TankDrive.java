@@ -5,24 +5,27 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.drive;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.ControlPanelManipulator;
+import frc.robot.subsystems.Drive;
 
-public class SetColorWheelPosition extends CommandBase {
-  private ControlPanelManipulator cpm;
+public class TankDrive extends CommandBase {
+  private Drive drive;
+  private DoubleSupplier leftVelocity;
+  private DoubleSupplier rightVelocity;
 
   /**
-   * Creates a new SetWheelPosition.
+   * Creates a new TankDrive.
    */
-  public SetColorWheelPosition(ControlPanelManipulator cpm) {
-    SmartDashboard.putNumber("CPM Wheel Position", 0);
-
-    this.cpm = cpm;
-    addRequirements(cpm);
-  }
+  public TankDrive(Drive drive, DoubleSupplier leftVelocity, DoubleSupplier rightVelocity) {
+    this.drive=drive;
+    this.leftVelocity=leftVelocity;
+    this.rightVelocity=rightVelocity;
+    addRequirements(drive);
+    }
 
   // Called when the command is initially scheduled.
   @Override
@@ -32,12 +35,14 @@ public class SetColorWheelPosition extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    cpm.moveWheelToPosition(SmartDashboard.getNumber("CPM Wheel Position", 0));
+    drive.shiftToHigh();
+    drive.basicDrive(leftVelocity.getAsDouble(), rightVelocity.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    drive.basicDrive(0, 0);
   }
 
   // Returns true when the command should end.

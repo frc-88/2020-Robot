@@ -11,19 +11,15 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.ControlPanelManipulator;
 import frc.robot.util.TJController;
-import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 
 public class RotateColorWheel extends CommandBase {
   private ControlPanelManipulator cpm;
   private TJController controller;
   private int state;
-  private String startingColor;
-  private String currentColor;
   private String targetColor;
   private double finalRotationDistance;
   private double directionCorrection = 3./8.; //if calcPositionControlTargetPosition returns a negative value
-  private DoublePreferenceConstant wheelRotationCountPreference;
-
+  
   /**
    * Creates a new ReportColor.
    */
@@ -61,7 +57,7 @@ public class RotateColorWheel extends CommandBase {
         controller.stopRumble();
         // TODO: take control from the driver
         cpm.setWheelPosition(0);
-        startingColor = cpm.getColor();
+        cpm.getColor();
         state = 2;
         break;
       case 2: //start spinning motor, spins motor extra distance to target color if already received

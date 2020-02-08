@@ -280,4 +280,34 @@ public class Transmission {
 
     }
 
+    /**
+     * Gets the expected current draw if the given velocity was to be achieved.
+     * 
+     * Parameters:
+     * @param targetVelocity The desired velocity at the output of the transmission
+     * @param currentSensorVelocity The current velocity reading from the sensor
+     */
+    public double getExpectedCurrentDraw(double targetVelocity, double currentSensorVelocity) {
+
+        // Determine the target voltage to get the requested velocity
+        double targetMotorVelocity = convertOutputVelocityToInput(targetVelocity);
+        double targetVoltage = getBackEMF(targetMotorVelocity) 
+                + Math.signum(targetMotorVelocity) * getStaticFrictionVoltage();
+        
+        // Get the current back-emf voltage
+        double currentMotorVelocity = convertSensorVelocityToInput(currentSensorVelocity);
+        double currentBackEMF = getBackEMF(currentMotorVelocity);
+
+        // If we are deccelerating, there is no current draw
+        if (targetVoltage == 0 
+                || (Math.signum(targetVoltage) == Math.signum(currentBackEMF) 
+                    && Math.abs(targetVoltage) < Math.abs(currentBackEMF))) {
+
+            return 0;
+        } else {
+            return getMotorQuantity() * Math.abs((targetVoltage - currentBackEMF)) / getMotor().getWindingsResistance();
+        }
+
+    }
+
 }
