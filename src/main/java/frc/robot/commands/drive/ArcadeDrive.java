@@ -5,20 +5,28 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.drive;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.ControlPanelManipulator;
-
-public class ReportColor extends CommandBase {
-  private ControlPanelManipulator cpm;
+import frc.robot.subsystems.Drive;
+public class ArcadeDrive extends CommandBase {
+  private Drive drive;
+  private DoubleSupplier speed;
+  private DoubleSupplier turn;
+  private BooleanSupplier inHighGear;
   /**
-   * Creates a new ReportColor.
+   * Creates a new ArcadeDrive.
    */
-  public ReportColor(ControlPanelManipulator cpm) {
-    this.cpm=cpm;
-    addRequirements(cpm);
+  public ArcadeDrive(Drive drive, DoubleSupplier speed, DoubleSupplier turn, BooleanSupplier inHighGear) {
+    this.turn=turn;
+    this.drive=drive;
+    this.speed=speed;
+    this.inHighGear = inHighGear;
+    addRequirements(drive);
+
   }
 
   // Called when the command is initially scheduled.
@@ -29,16 +37,18 @@ public class ReportColor extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    SmartDashboard.putString("robot sensor color", cpm.getColor());
-    SmartDashboard.putNumber("Red", cpm.getRawColor().red);
-    SmartDashboard.putNumber("Green", cpm.getRawColor().green);
-    SmartDashboard.putNumber("Blue", cpm.getRawColor().blue);
-    SmartDashboard.putBoolean("CPM Contact", cpm.isEngaged());
+    if (inHighGear.getAsBoolean()) {
+      drive.shiftToHigh();
+    } else {
+      drive.shiftToLow();
+    }
+    drive.arcadeDrive(speed.getAsDouble(), turn.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    drive.arcadeDrive(0, 0);
   }
 
   // Returns true when the command should end.

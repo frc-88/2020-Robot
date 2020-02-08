@@ -8,16 +8,15 @@
 package frc.robot.driveutil;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
-import com.ctre.phoenix.motorcontrol.can.VictorSPXConfiguration;
+import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
+import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
 /**
  * Add your docs here.
  */
 public class TJDriveModuleConfiguration {
     public int master;
-    public int talonFollowers[]= new int[0];
-    public int victorFollowers[]= new int[0];
+    public int followers[]= new int[0];
 
     public boolean enableCurrentLimit = false;
     public boolean enableVoltageCompensation = false;
@@ -25,7 +24,6 @@ public class TJDriveModuleConfiguration {
     public boolean invertSensor = false;
     public NeutralMode neutralMode = NeutralMode.Coast;
     
-    public TalonSRXConfiguration masterConfiguration;
-    public TalonSRXConfiguration talonFollowerConfiguration;
-    public VictorSPXConfiguration victorFollowerConfiguration;
+    public TalonFXConfiguration masterConfiguration;
+    public TalonFXConfiguration followerConfiguration;
 }
