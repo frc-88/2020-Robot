@@ -47,7 +47,6 @@ public class RobotContainer {
 
   private final Sensors m_sensors = new Sensors();
 
-  private final ControlPanelManipulator m_cpm= new ControlPanelManipulator();
   private final TJController m_driverController = new TJController(0);
 
   // Subsystems
