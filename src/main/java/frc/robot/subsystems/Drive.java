@@ -41,7 +41,8 @@ public class Drive extends SubsystemBase {
   private double m_leftCommandedSpeed = 0;
   private double m_rightCommandedSpeed = 0;
   
-  private PIDPreferenceConstants velPIDConstants;
+  private PIDPreferenceConstants leftVelPIDConstants;
+  private PIDPreferenceConstants rightVelPIDConstants;
   private PIDPreferenceConstants turnSpeedPIDConstants;
   private PIDPreferenceConstants headingPIDConstants;
   private DoublePreferenceConstant downshiftSpeed;
@@ -54,7 +55,8 @@ public class Drive extends SubsystemBase {
 
     m_driveConfiguration = new DriveConfiguration();
 
-    velPIDConstants = new PIDPreferenceConstants("Drive Vel", 0, 0.015, 0, 0, 2, 2, 0);
+    leftVelPIDConstants = new PIDPreferenceConstants("L Drive Vel", 0, 0.015, 0, 0, 2, 2, 0);
+    rightVelPIDConstants = new PIDPreferenceConstants("R Drive Vel", 0, 0.015, 0, 0, 2, 2, 0);
     turnSpeedPIDConstants = new PIDPreferenceConstants("Turn Speed", 0, 0, 0, 0, 0, 0, 0);
     headingPIDConstants = new PIDPreferenceConstants("Heading", 0, 0, 0, 0, 0, 0, 0);
     downshiftSpeed = new DoublePreferenceConstant("Downshift Speed", 4);
@@ -71,8 +73,8 @@ public class Drive extends SubsystemBase {
         Constants.DRIVE_LOW_STATIC_FRICTION_VOLTAGE, Constants.DRIVE_HIGH_STATIC_FRICTION_VOLTAGE,
         Constants.DRIVE_RIGHT_LOW_EFFICIENCY, Constants.DRIVE_RIGHT_HIGH_EFFICIENCY);
 
-    m_leftVelPID = new SyncPIDController(velPIDConstants);
-    m_rightVelPID = new SyncPIDController(velPIDConstants);
+    m_leftVelPID = new SyncPIDController(leftVelPIDConstants);
+    m_rightVelPID = new SyncPIDController(rightVelPIDConstants);
     m_leftTransmission.setVelocityPID(m_leftVelPID);
     m_rightTransmission.setVelocityPID(m_rightVelPID);
 
@@ -114,8 +116,15 @@ public class Drive extends SubsystemBase {
     double leftExpectedCurrent = m_leftDrive.getExpectedCurrentDraw(leftVelocity);
     double rightExpectedCurrent = m_rightDrive.getExpectedCurrentDraw(rightVelocity);
     double totalExpectedCurrent = leftExpectedCurrent + rightExpectedCurrent;
-    double leftCurrentLimit = m_currentLimit * leftExpectedCurrent / totalExpectedCurrent;
-    double rightCurrentLimit = m_currentLimit * rightExpectedCurrent / totalExpectedCurrent;
+    double leftCurrentLimit;
+    double rightCurrentLimit;
+    if (totalExpectedCurrent == 0) {
+      leftCurrentLimit =  m_currentLimit / 2.;
+      rightCurrentLimit = m_currentLimit / 2.;
+    } else {
+      leftCurrentLimit = m_currentLimit * leftExpectedCurrent / totalExpectedCurrent;
+      rightCurrentLimit = m_currentLimit * rightExpectedCurrent / totalExpectedCurrent;
+    }
 
     m_leftDrive.setVelocityCurrentLimited(leftVelocity, leftCurrentLimit);
     m_rightDrive.setVelocityCurrentLimited(rightVelocity, rightCurrentLimit);
@@ -137,13 +146,13 @@ public class Drive extends SubsystemBase {
 
     // Convert speed to degrees per second and turn to degrees per second
     speed *= Constants.MAX_SPEED_HIGH;
-    turn *= Constants.MAX_SPEED_HIGH / (Constants.WHEEL_BASE_WIDTH * Math.PI);
+    turn *= Constants.MAX_SPEED_HIGH / (Constants.WHEEL_BASE_WIDTH * Math.PI) * 360;
 
     // Apply turn speed PID
-    turn = m_turnSpeedPID.calculateOutput(m_sensors.m_navx.getYawRate(), turn);
+    turn += m_turnSpeedPID.calculateOutput(m_sensors.m_navx.getYawRate(), turn);
 
     // Convert turn to feet per second
-    turn *= Constants.WHEEL_BASE_WIDTH * Math.PI;
+    turn *= Constants.WHEEL_BASE_WIDTH * Math.PI / 360;
 
     // Calculate left and right speed
     double leftSpeed = (speed + turn);
@@ -234,6 +243,8 @@ public class Drive extends SubsystemBase {
     SmartDashboard.putNumber("R Drive Position", m_rightDrive.getScaledSensorPosition());
     SmartDashboard.putNumber("L Drive Command Speed", m_leftCommandedSpeed);
     SmartDashboard.putNumber("R Drive Command Speed", m_rightCommandedSpeed);
+    SmartDashboard.putNumber("L Drive Voltage", m_leftDrive.getMotorOutputVoltage());
+    SmartDashboard.putNumber("R Drive Voltage", m_rightDrive.getMotorOutputVoltage());
 
     if (DriverStation.getInstance().isEnabled()) {
       this.setBrakeMode();

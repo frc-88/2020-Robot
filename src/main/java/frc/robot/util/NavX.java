@@ -30,7 +30,7 @@ public class NavX {
     }
 
     public double getYawRate() {
-        return m_ahrs.getRate();
+        return Math.toDegrees(m_ahrs.getRate());
     }
 
     // 1-Jan-2020 Adding Pitch and Roll functions

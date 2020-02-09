@@ -33,7 +33,7 @@ public class Sensors extends SubsystemBase {
 
     m_limelight = new Limelight();
     m_limelight.camVision();
-    m_limelight.ledOff();
+    m_limelight.ledOn();
 
     setToFrontCamera();
     // frontCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);

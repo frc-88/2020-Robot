@@ -50,20 +50,20 @@ public class RobotContainer {
   private final TJController m_driverController = new TJController(0);
 
   // Subsystems
-  private final ControlPanelManipulator m_cpm = new ControlPanelManipulator();
-  private final Intake m_intake = new Intake();
+  // private final ControlPanelManipulator m_cpm = new ControlPanelManipulator();
+  // private final Intake m_intake = new Intake();
   private final Drive m_drive = new Drive(m_sensors);
 
   // Commands
   private final Command m_autoCommand = new WaitCommand(1);
 
-  private final DeployIntake m_deployIntake = new DeployIntake(m_intake);
-  private final RetractIntake m_retractIntake = new RetractIntake(m_intake);
-  private final StopIntake m_stopIntake = new StopIntake(m_intake);
-  private final RunIntake m_runIntake = new RunIntake(m_intake, 1);
-  private final RunIntake m_ejectIntake = new RunIntake(m_intake, -1);
+  // private final DeployIntake m_deployIntake = new DeployIntake(m_intake);
+  // private final RetractIntake m_retractIntake = new RetractIntake(m_intake);
+  // private final StopIntake m_stopIntake = new StopIntake(m_intake);
+  // private final RunIntake m_runIntake = new RunIntake(m_intake, 1);
+  // private final RunIntake m_ejectIntake = new RunIntake(m_intake, -1);
 
-  private final ReportColor m_reportColor = new ReportColor(m_cpm);
+  // private final ReportColor m_reportColor = new ReportColor(m_cpm);
 
   private final ArcadeDrive m_arcadeDrive;
   private final TankDrive m_tankDrive;
@@ -72,8 +72,8 @@ public class RobotContainer {
   private final CalculateDriveEfficiency m_calculateDriveEfficiency;
   private final ArcadeDrive m_testArcadeDrive;
 
-  private final MoveColorWheelToTargetColor m_moveColorWheelToTargetColor = new MoveColorWheelToTargetColor(m_cpm);
-  private final RotateColorWheel m_rotateColorWheel = new RotateColorWheel(m_cpm);
+  // private final MoveColorWheelToTargetColor m_moveColorWheelToTargetColor = new MoveColorWheelToTargetColor(m_cpm);
+  // private final RotateColorWheel m_rotateColorWheel = new RotateColorWheel(m_cpm);
 
   private final SetToFrontCamera m_setToFrontCamera = new SetToFrontCamera(m_sensors);
   private final SetToRearCamera m_setToRearCamera = new SetToRearCamera(m_sensors);
@@ -100,13 +100,13 @@ public class RobotContainer {
     m_calculateDriveEfficiency = new CalculateDriveEfficiency(m_drive);
 
     BooleanSupplier testArcadeDriveShiftSupplier = () -> SmartDashboard.getBoolean("SetTestShiftHigh", false);
-    DoubleSupplier testArcadeDriveSpeedSupplier = () -> SmartDashboard.getNumber("SetTestDriveSpeed", 0) / (testArcadeDriveShiftSupplier.getAsBoolean() ? Constants.MAX_SPEED_HIGH : Constants.MAX_SPEED_LOW);
-    DoubleSupplier testArcadeDriveTurnSupplier = () -> SmartDashboard.getNumber("SetTestDriveTurn", 0) / (testArcadeDriveShiftSupplier.getAsBoolean() ? Constants.MAX_SPEED_HIGH : Constants.MAX_SPEED_LOW);
+    DoubleSupplier testArcadeDriveSpeedSupplier = () -> SmartDashboard.getNumber("SetTestDriveSpeed", 0) / Constants.MAX_SPEED_HIGH;
+    DoubleSupplier testArcadeDriveTurnSupplier = () -> SmartDashboard.getNumber("SetTestDriveTurn", 0) * (Constants.WHEEL_BASE_WIDTH * Math.PI) / Constants.MAX_SPEED_HIGH / 360;
     m_testArcadeDrive = new ArcadeDrive(m_drive, testArcadeDriveSpeedSupplier, testArcadeDriveTurnSupplier, testArcadeDriveShiftSupplier);
 
     // Configure the button bindings
     configureButtonBindings();
-    m_intake.setDefaultCommand(m_stopIntake);
+    // m_intake.setDefaultCommand(m_stopIntake);
     m_drive.setDefaultCommand(m_arcadeDrive);
   }
 
@@ -117,9 +117,9 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    m_driverController.buttonB.whileHeld(m_reportColor);
-    m_driverController.buttonA.whenPressed(m_moveColorWheelToTargetColor);
-    m_driverController.buttonY.whenPressed(m_rotateColorWheel);
+    // m_driverController.buttonB.whileHeld(m_reportColor);
+    // m_driverController.buttonA.whenPressed(m_moveColorWheelToTargetColor);
+    // m_driverController.buttonY.whenPressed(m_rotateColorWheel);
 
     m_driverController.buttonRightBumper.whenPressed(m_setToFrontCamera);
     m_driverController.buttonRightBumper.whenReleased(m_setToRearCamera);
