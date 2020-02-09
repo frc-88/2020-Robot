@@ -5,22 +5,19 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.cpm;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ControlPanelManipulator;
 
-public class SetColorWheelPosition extends CommandBase {
+public class ReportColor extends CommandBase {
   private ControlPanelManipulator cpm;
-
   /**
-   * Creates a new SetWheelPosition.
+   * Creates a new ReportColor.
    */
-  public SetColorWheelPosition(ControlPanelManipulator cpm) {
-    SmartDashboard.putNumber("CPM Wheel Position", 0);
-
-    this.cpm = cpm;
+  public ReportColor(ControlPanelManipulator cpm) {
+    this.cpm=cpm;
     addRequirements(cpm);
   }
 
@@ -32,7 +29,11 @@ public class SetColorWheelPosition extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    cpm.moveWheelToPosition(SmartDashboard.getNumber("CPM Wheel Position", 0));
+    SmartDashboard.putString("robot sensor color", cpm.getColor());
+    SmartDashboard.putNumber("Red", cpm.getRawColor().red);
+    SmartDashboard.putNumber("Green", cpm.getRawColor().green);
+    SmartDashboard.putNumber("Blue", cpm.getRawColor().blue);
+    SmartDashboard.putBoolean("CPM Contact", cpm.isEngaged());
   }
 
   // Called once the command ends or is interrupted.

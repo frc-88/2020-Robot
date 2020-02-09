@@ -14,11 +14,12 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.DeployIntake;
-import frc.robot.commands.ReportColor;
+import frc.robot.commands.cpm.ReportColor;
+import frc.robot.commands.cpm.MoveColorWheelToTargetColor;
 import frc.robot.commands.RetractIntake;
-import frc.robot.commands.RotateColorWheel;
+import frc.robot.commands.cpm.RotateColorWheel;
 import frc.robot.commands.RunIntake;
-import frc.robot.commands.SetColorWheelPosition;
+import frc.robot.commands.cpm.SetColorWheelPosition;
 import frc.robot.commands.StopIntake;
 import frc.robot.commands.vision.SetToFrontCamera;
 import frc.robot.commands.vision.SetToRearCamera;
@@ -48,6 +49,7 @@ public class RobotContainer {
   private final Sensors m_sensors = new Sensors();
 
   private final TJController m_driverController = new TJController(0);
+  private final TJController m_operatorController = new TJController(1);
 
   // Subsystems
   private final ControlPanelManipulator m_cpm = new ControlPanelManipulator();
@@ -76,8 +78,9 @@ public class RobotContainer {
   private final SetToRearCamera m_setToRearCamera = new SetToRearCamera(m_sensors);
     
   // CPM Commands
-  private final SetColorWheelPosition m_setColorWheelPosition = new SetColorWheelPosition(m_cpm);
-  private final RotateColorWheel m_rotateColorWheel = new RotateColorWheel(m_cpm, m_driverController);
+  private final SetColorWheelPosition m_setColorWheelPosition = new SetColorWheelPosition(m_cpm, m_operatorController);
+  private final RotateColorWheel m_rotateColorWheel = new RotateColorWheel(m_cpm, m_operatorController);
+  private final MoveColorWheelToTargetColor m_moveColorWheelToTargetColor = new MoveColorWheelToTargetColor(m_cpm, m_operatorController);
   
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -121,9 +124,11 @@ public class RobotContainer {
 
     SmartDashboard.putData(m_setColorWheelPosition);
     SmartDashboard.putData(m_rotateColorWheel);
+    SmartDashboard.putData(m_moveColorWheelToTargetColor);
 
-    m_driverController.buttonA.whenPressed(m_setColorWheelPosition);
-    m_driverController.buttonB.whenPressed(m_rotateColorWheel);
+    m_operatorController.buttonA.whenPressed(m_setColorWheelPosition);
+    m_operatorController.buttonB.whenPressed(m_rotateColorWheel);
+    m_operatorController.buttonY.whenPressed(m_moveColorWheelToTargetColor);
 
     m_driverController.buttonRightBumper.whenPressed(m_setToFrontCamera);
     m_driverController.buttonRightBumper.whenReleased(m_setToRearCamera);
