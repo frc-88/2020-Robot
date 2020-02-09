@@ -20,6 +20,7 @@ import frc.robot.driveutil.DriveConfiguration;
 import frc.robot.driveutil.TJDriveModule;
 import frc.robot.subsystems.Sensors;
 import frc.robot.util.SyncPIDController;
+import frc.robot.util.WrappingPIDController;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import frc.robot.util.preferenceconstants.PIDPreferenceConstants;
 import frc.robot.util.transmission.CTREMagEncoder;
@@ -33,7 +34,8 @@ public class Drive extends SubsystemBase {
   private final TJDriveModule m_leftDrive, m_rightDrive;
   private final CANCoder m_leftEncoder, m_rightEncoder;
   private ShiftingTransmission m_leftTransmission, m_rightTransmission;
-  private SyncPIDController m_leftVelPID, m_rightVelPID, m_turnSpeedPID, m_headingPID;
+  private SyncPIDController m_leftVelPID, m_rightVelPID;
+  private WrappingPIDController m_headingPID;
   private DriveConfiguration m_driveConfiguration;
   private DoubleSolenoid m_leftShifter, m_rightShifter;
 
@@ -41,27 +43,31 @@ public class Drive extends SubsystemBase {
   private double m_leftCommandedSpeed = 0;
   private double m_rightCommandedSpeed = 0;
   
-  private PIDPreferenceConstants leftVelPIDConstants;
-  private PIDPreferenceConstants rightVelPIDConstants;
-  private PIDPreferenceConstants turnSpeedPIDConstants;
+  private PIDPreferenceConstants velPIDConstants;
   private PIDPreferenceConstants headingPIDConstants;
   private DoublePreferenceConstant downshiftSpeed;
   private DoublePreferenceConstant upshiftSpeed;
   private DoublePreferenceConstant commandDownshiftSpeed;
   private DoublePreferenceConstant commandDownshiftCommandValue;
 
+  // Constants for negative inertia
+  private static final double LARGE_TURN_RATE_THRESHOLD = 0.65;
+  private static final double INCREASE_TURN_SCALAR = 2;
+  private static final double SMALL_DECREASE_TURN_SCALAR = 2.0;
+  private static final double LARGE_DECREASE_TURN_SCALAR = 2.5;
+  private double m_prevTurn = 0; // The last turn value
+  private double m_negInertialAccumulator = 0; // Accumulates our current inertia value
+
   public Drive(Sensors sensors) {
     m_sensors = sensors;
 
     m_driveConfiguration = new DriveConfiguration();
 
-    leftVelPIDConstants = new PIDPreferenceConstants("L Drive Vel", 0, 0.015, 0, 0, 2, 2, 0);
-    rightVelPIDConstants = new PIDPreferenceConstants("R Drive Vel", 0, 0.015, 0, 0, 2, 2, 0);
-    turnSpeedPIDConstants = new PIDPreferenceConstants("Turn Speed", 0, 0, 0, 0, 0, 0, 0);
-    headingPIDConstants = new PIDPreferenceConstants("Heading", 0, 0, 0, 0, 0, 0, 0);
-    downshiftSpeed = new DoublePreferenceConstant("Downshift Speed", 4);
+    velPIDConstants = new PIDPreferenceConstants("Drive Vel", 0, 0.02, 0, 0, 2, 2, 0);
+    headingPIDConstants = new PIDPreferenceConstants("Heading", .01, .0005, 0, 0, 3, 1, 0.25);
+    downshiftSpeed = new DoublePreferenceConstant("Downshift Speed", 4.5);
     upshiftSpeed = new DoublePreferenceConstant("UpshiftSpeed", 6);
-    commandDownshiftSpeed = new DoublePreferenceConstant("Command Downshift Speed", 6);
+    commandDownshiftSpeed = new DoublePreferenceConstant("Command Downshift Speed", 5);
     commandDownshiftCommandValue = new DoublePreferenceConstant("Command Downshift Command Value", 0.1);
 
     m_leftTransmission = new ShiftingTransmission(new Falcon500(), Constants.NUM_DRIVE_MOTORS_PER_SIDE,
@@ -73,8 +79,8 @@ public class Drive extends SubsystemBase {
         Constants.DRIVE_LOW_STATIC_FRICTION_VOLTAGE, Constants.DRIVE_HIGH_STATIC_FRICTION_VOLTAGE,
         Constants.DRIVE_RIGHT_LOW_EFFICIENCY, Constants.DRIVE_RIGHT_HIGH_EFFICIENCY);
 
-    m_leftVelPID = new SyncPIDController(leftVelPIDConstants);
-    m_rightVelPID = new SyncPIDController(rightVelPIDConstants);
+    m_leftVelPID = new SyncPIDController(velPIDConstants);
+    m_rightVelPID = new SyncPIDController(velPIDConstants);
     m_leftTransmission.setVelocityPID(m_leftVelPID);
     m_rightTransmission.setVelocityPID(m_rightVelPID);
 
@@ -95,8 +101,7 @@ public class Drive extends SubsystemBase {
     m_rightShifter = new DoubleSolenoid(Constants.SHIFTER_RIGHT_PCM, Constants.SHIFTER_RIGHT_OUT,
         Constants.SHIFTER_RIGHT_IN);
 
-    m_turnSpeedPID = new SyncPIDController(turnSpeedPIDConstants);
-    m_headingPID = new SyncPIDController(headingPIDConstants);
+    m_headingPID = new WrappingPIDController(180, -180, headingPIDConstants);
 
     shiftToLow();
 
@@ -144,15 +149,12 @@ public class Drive extends SubsystemBase {
    */
   public void arcadeDrive(double speed, double turn) {
 
-    // Convert speed to degrees per second and turn to degrees per second
+    // Apply negative intertia
+    turn = negativeInertia(speed, turn);
+
+    // Convert to feet per second
     speed *= Constants.MAX_SPEED_HIGH;
-    turn *= Constants.MAX_SPEED_HIGH / (Constants.WHEEL_BASE_WIDTH * Math.PI) * 360;
-
-    // Apply turn speed PID
-    turn += m_turnSpeedPID.calculateOutput(m_sensors.m_navx.getYawRate(), turn);
-
-    // Convert turn to feet per second
-    turn *= Constants.WHEEL_BASE_WIDTH * Math.PI / 360;
+    turn *= Constants.MAX_SPEED_HIGH;
 
     // Calculate left and right speed
     double leftSpeed = (speed + turn);
@@ -160,6 +162,15 @@ public class Drive extends SubsystemBase {
 
     // Apply values
     basicDriveLimited(leftSpeed, rightSpeed);
+  }
+
+  public void turnToHeading(double heading) {
+    double turnRate = m_headingPID.calculateOutput(m_sensors.m_navx.getYaw(), heading);
+    basicDrive(turnRate, -turnRate);
+  }
+
+  public void resetHeadingPID() {
+    m_headingPID.reset();
   }
 
   public boolean autoshift(double commandedValue) {
@@ -225,6 +236,51 @@ public class Drive extends SubsystemBase {
   public void setCoastMode() {
     m_leftDrive.coastAll();
     m_rightDrive.coastAll();
+  }
+
+  // Negative inertia! The idea is that the robot has some inertia
+  // which theoretically is based on previously commanded values. Returns an
+  // updated turn value
+  private double negativeInertia(double throttle, double turn) {
+
+      // How much we are currently trying to change the turn value
+      double turnDiff = turn - m_prevTurn;
+      m_prevTurn = turn;
+
+      // Determine which scaling constant to use based on how we are moving
+      double negInertiaScalar;
+      if (turn * turnDiff > 0) {
+          // We are trying to increase our turning rate
+          negInertiaScalar = INCREASE_TURN_SCALAR;
+      } else {
+          if (Math.abs(turn) < LARGE_TURN_RATE_THRESHOLD) {
+              // We are trying to reduce our turning rate to something
+              // relatively close to 0
+              negInertiaScalar = SMALL_DECREASE_TURN_SCALAR;
+          } else {
+              // We are trying to reduce our turning rate, but still want to
+              // be turning fairly fast
+              negInertiaScalar = LARGE_DECREASE_TURN_SCALAR;
+          }
+      }
+
+      // Apply the scalar, and add it to the accumulator
+      double negInertiaPower = turnDiff * negInertiaScalar;
+      m_negInertialAccumulator += negInertiaPower;
+
+      // Add the current negative inertia value to the turn
+      double updatedTurn = turn + m_negInertialAccumulator;
+
+      // Reduce our current inertia
+      if (m_negInertialAccumulator > 1) {
+          m_negInertialAccumulator -= 1;
+      } else if (m_negInertialAccumulator < -1) {
+          m_negInertialAccumulator += 1;
+      } else {
+          m_negInertialAccumulator = 0;
+      }
+
+      return updatedTurn;
   }
 
   @Override

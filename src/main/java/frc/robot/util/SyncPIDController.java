@@ -342,7 +342,6 @@ public class SyncPIDController {
                 m_accum = Math.max(m_accum, -iMax / kI);
             }
         }
-
         return kI * m_accum;
     }
 
@@ -357,7 +356,7 @@ public class SyncPIDController {
 
         long curTime = RobotController.getFPGATime();
 
-        double ret = kD * (error - m_prevError) / ((curTime - m_lastLoopTime) / 1e6);
+        double ret = kD * (error - m_prevError) / ((curTime - m_lastLoopTime) / 1.e6);
 
         m_prevError = error;
         m_lastLoopTime = curTime;

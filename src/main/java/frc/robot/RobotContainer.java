@@ -26,6 +26,7 @@ import frc.robot.commands.drive.ArcadeDrive;
 import frc.robot.commands.drive.CalculateDriveEfficiency;
 import frc.robot.commands.drive.TankDrive;
 import frc.robot.commands.drive.TestDriveStaticFriction;
+import frc.robot.commands.drive.TurnToHeading;
 import frc.robot.driveutil.DriveUtils;
 import frc.robot.subsystems.ControlPanelManipulator;
 import frc.robot.subsystems.Drive;
@@ -33,6 +34,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Sensors;
 import frc.robot.util.TJController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 /**
@@ -131,6 +133,9 @@ public class RobotContainer {
     SmartDashboard.putNumber("SetTestDriveTurn", 0);
     SmartDashboard.putBoolean("SetTestShiftHigh", false);
     SmartDashboard.putData("TestArcadeDrive", m_testArcadeDrive);
+
+    SmartDashboard.putNumber("SetTestHeading", 0);
+    SmartDashboard.putData("TestTurnToHeading", new InstantCommand(() -> (new TurnToHeading(m_drive, m_sensors, SmartDashboard.getNumber("SetTestHeading", 0))).schedule()));
   }
 
   /**
