@@ -45,26 +45,32 @@ public class MoveColorWheelToTargetColor extends CommandBase {
         if((cpm.isEngaged())&&(cpm.getFMSColorTarget().length()>0)) {
           controller.startLightRumble();
           state = 1;
+          System.out.println("CPM: MoveColorWheelToTargetColor "+ Integer.toString(state));
         }
+        System.out.println("CPM: MoveColorWheelToTargetColor "+Integer.toString(state));
         break;
       case 1: // freezes drive, move to case 2 when stopped
         controller.stopRumble();
         // TODO: take control from the driver
         cpm.setWheelPosition(0);
         cpm.getColor();
+        System.out.println("CPM: MoveColorWheelToTargetColor "+Integer.toString(state));
         state = 2;
         break;
       case 2: // start spinning motor, spins motor extra distance to target color if already received
         cpm.moveWheelToPosition(cpm.calcPositionControlTargetPosition());
+        System.out.println("CPM: MoveColorWheelToTargetColor "+Integer.toString(state));
         state = 3;
         break;
       case 3: // give control back to the driver + rumble 
         controller.startHeavyRumble();
+        System.out.println("CPM: MoveColorWheelToTargetColor "+Integer.toString(state));
         // TODO: give back control to driver
         state = 4;
         break;
       case 4: // stop heavy rumble after driver gets control back
         controller.stopRumble();
+        System.out.println("CPM: MoveColorWheelToTargetColor in state: "+Integer.toString(state));
         break;
     }
   }

@@ -37,15 +37,14 @@ public class SetColorWheelPosition extends CommandBase {
     switch(state) {
       case 0: //wait to be engaged
         if(cpm.isEngaged()) {
-          controller.startLightRumble();
+          //controller.startLightRumble();
           state = 1;
         }
         break;
       case 1: //freezes drive, move to case 2 when stopped
-        controller.stopRumble();
+        //controller.stopRumble();
         // TODO: take control from the driver
         cpm.setWheelPosition(0);
-        cpm.getColor();
         state = 2;
         break;
       case 2: //start spinning motor, spins motor extra distance to target color if already received
@@ -53,12 +52,12 @@ public class SetColorWheelPosition extends CommandBase {
         state = 3;
         break;
       case 3: //give control back to the driver + rumble 
-        controller.startHeavyRumble();
+        //controller.startHeavyRumble();
         // TODO: give back control to driver
         state = 4;
         break;
       case 4: //stop heavy rumble after driver gets control back
-        controller.stopRumble();
+        //controller.stopRumble();
         break;
     }
 

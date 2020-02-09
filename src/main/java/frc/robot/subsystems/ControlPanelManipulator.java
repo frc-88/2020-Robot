@@ -82,7 +82,6 @@ public class ControlPanelManipulator extends SubsystemBase {
     m_spinner.configMotionCruiseVelocity(convertWheelVelocityToMotorVelocity(MAXIMUM_WHEEL_VELOCITY));
     m_spinner.configMotionAcceleration(convertWheelVelocityToMotorVelocity(MAXIMUM_WHEEL_ACCELERATION.getValue()));
     m_spinner.selectProfileSlot(0, 0);
-
     SmartDashboard.putBoolean("Zero CPM", false);
   }
 
@@ -207,9 +206,9 @@ public class ControlPanelManipulator extends SubsystemBase {
 
   public void moveWheelToPosition(double wheelPosition) {
     m_spinner.set(ControlMode.MotionMagic, convertWheelPositionToMotorPosition(wheelPosition));
-    //System.out.println(convertWheelPositionToMotorPosition(wheelPosition));
-    System.out.println(m_spinner.getControlMode());
-
+    System.out.println("CPM: convert while postion to motor postion"+convertWheelPositionToMotorPosition(wheelPosition));
+    System.out.println("CPM: "+ m_spinner.getControlMode());
+    SmartDashboard.putNumber("CPM W2M Conversion",convertWheelPositionToMotorPosition(wheelPosition));
   }
 
   @Override
@@ -220,13 +219,16 @@ public class ControlPanelManipulator extends SubsystemBase {
     SmartDashboard.putNumber("CPM Target Position", convertMotorPositionToWheelPosition(m_spinner.getActiveTrajectoryPosition()));
     SmartDashboard.putNumber("CPM Target Velocity", convertMotorVelocityToWheelVelocity(m_spinner.getActiveTrajectoryVelocity()));
 
-    SmartDashboard.putString("robot sensor color", getColor());
+    SmartDashboard.putString("Robot sensor color", getColor());
     SmartDashboard.putNumber("Red", getRawColor().red);
     SmartDashboard.putNumber("Green", getRawColor().green);
     SmartDashboard.putNumber("Blue", getRawColor().blue);
 
+    SmartDashboard.putBoolean("CPM Is Engaged", isEngaged());
+
     if(SmartDashboard.getBoolean("Zero CPM", false)) {
       setWheelPosition(0);
+      System.out.println("CPM: Setting wheel postion to 0");
     }
 
     m_spinner.config_kP(0, spinner_kP.getValue());

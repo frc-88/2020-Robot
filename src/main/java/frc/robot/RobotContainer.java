@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.DeployIntake;
-import frc.robot.commands.cpm.ReportColor;
 import frc.robot.commands.cpm.MoveColorWheelToTargetColor;
 import frc.robot.commands.RetractIntake;
 import frc.robot.commands.cpm.RotateColorWheel;
@@ -48,8 +47,8 @@ public class RobotContainer {
 
   private final Sensors m_sensors = new Sensors();
 
-  private final TJController m_driverController = new TJController(0);
-  private final TJController m_operatorController = new TJController(1);
+  private final TJController m_driverController = new TJController(1);
+  private final TJController m_operatorController = new TJController(0);
 
   // Subsystems
   private final ControlPanelManipulator m_cpm = new ControlPanelManipulator();

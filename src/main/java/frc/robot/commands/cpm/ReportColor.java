@@ -29,11 +29,11 @@ public class ReportColor extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    SmartDashboard.putString("robot sensor color", cpm.getColor());
+    SmartDashboard.putString("CPM sensor color", cpm.getColor());
     SmartDashboard.putNumber("Red", cpm.getRawColor().red);
     SmartDashboard.putNumber("Green", cpm.getRawColor().green);
     SmartDashboard.putNumber("Blue", cpm.getRawColor().blue);
-    SmartDashboard.putBoolean("CPM Contact", cpm.isEngaged());
+    SmartDashboard.putBoolean("CPM Contact Sensor", cpm.isEngaged());
   }
 
   // Called once the command ends or is interrupted.

@@ -20,13 +20,17 @@ package frc.robot;
 public final class Constants {
  
 	// CPM constants
+	//--CPM CAN IDs
 	public static final int CPM_MOTOR = 3;
-	public static final int CPM_JOINT_ENCODER_CHANNEL_1A = 01;
-	public static final int CPM_JOINT_ENCODER_CHANNEL_1B = 02;
-	public static final int CPM_PNEUMATICS_FORWARD = 03;
-	public static final int CPM_PNEUMATICS_REVERSE = 04;
-	public static final int CPM_DIGITAL_INPUT_CHANNEL = 05;
-	public static final int CPM_WRIST_ENCODER_COUNTS_PER_REV = 06;
+
+	//--DIO IDs
+	public static final int CPM_DIGITAL_INPUT_CHANNEL = 0;
+	public static final int CPM_JOINT_ENCODER_CHANNEL_1A = 1;
+	public static final int CPM_JOINT_ENCODER_CHANNEL_1B = 2;
+	public static final int CPM_PNEUMATICS_FORWARD = 3;
+	public static final int CPM_PNEUMATICS_REVERSE = 4;
+	//--Constants
+	public static final int CPM_WRIST_ENCODER_COUNTS_PER_REV = 2048;
 	public static final double CPM_PHASE_2_WHEEL_ROTATIONS = 3.5;
 	public static final double CPM_INCHES_PER_SLICE = 12.5;
 	public static final int CPM_NUM_SLICES = 8;
