@@ -19,7 +19,7 @@ public class DriveUtils{
     }
 
     public static double deadbandExponential(double spd, int exp, double deadband) {
-        return Math.abs(spd)<deadband ? 0 : DriveUtils.signedPow(spd, exp) * (1 - deadband) + Math.signum(spd) * deadband;
+        return Math.abs(spd)<deadband ? 0 : DriveUtils.signedPow(spd - deadband, exp) / (1 - deadband);
     }
 
     public static DoubleSupplier deadbandExponential(DoubleSupplier input, int exp, double deadband) {
