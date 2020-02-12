@@ -16,6 +16,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.NavX;
 import frc.robot.util.Limelight;
 
+/**
+ * we gather data
+ * about the world around us
+ * to make good choices
+ */
+
 public class Sensors extends SubsystemBase {
   public final NavX m_navx;
   public final Limelight m_limelight;
