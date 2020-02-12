@@ -24,6 +24,6 @@ public class DisengageRatchets extends InstantCommand {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    climber.retractRatchets();
+    climber.disengageRatchets();
   }
 }

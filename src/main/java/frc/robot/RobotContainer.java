@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.DeployIntake;
+import frc.robot.commands.climber.DisengageRatchets;
+import frc.robot.commands.climber.EngageRatchets;
 import frc.robot.commands.climber.RunClimber;
 import frc.robot.commands.MoveColorWheelToTargetColor;
 import frc.robot.commands.ReportColor;
@@ -72,6 +74,8 @@ public class RobotContainer {
   // Climber Commands
 
   private final RunClimber m_runClimber;
+  private final EngageRatchets m_engageRatchets = new EngageRatchets(m_climber);
+  private final DisengageRatchets m_disengageRatchets = new DisengageRatchets(m_climber);
 
   private final ReportColor m_reportColor = new ReportColor(m_cpm);
 
@@ -123,7 +127,7 @@ public class RobotContainer {
 
     m_intake.setDefaultCommand(m_stopIntake);
 
-    m_climber.setDefaultCommand(m_runClimber);
+    // m_climber.setDefaultCommand(m_runClimber);
     
     m_drive.setDefaultCommand(m_arcadeDrive);
   }
@@ -150,6 +154,9 @@ public class RobotContainer {
     SmartDashboard.putNumber("SetTestDriveTurn", 0);
     SmartDashboard.putBoolean("SetTestShiftHigh", false);
     SmartDashboard.putData("TestArcadeDrive", m_testArcadeDrive);
+
+    SmartDashboard.putData("Engage ratchets", m_engageRatchets);
+    SmartDashboard.putData("Disengage ratchets", m_disengageRatchets);
   }
 
   /**

@@ -37,14 +37,13 @@ public final class Constants {
     //Climber constants
     public static final int CLIMBER_MOTOR_LEFT = 88;
 	public static final int CLIMBER_MOTOR_RIGHT = 882;
-	public static final int CLIMBER_PNEUMATICS_RIGHT_FORWARD = 00;
-	public static final int CLIMBER_PNEUMATICS_RIGHT_REVERSE = 01;
-	public static final int CLIMBER_PNEUMATICS_LEFT_FORWARD = 02;
-	public static final int CLIMBER_PNEUMATICS_LEFT_REVERSE = 03;
+	public static final int CLIMBER_PNEUMATICS_FORWARD = 00;
+	public static final int CLIMBER_PNEUMATICS_REVERSE = 01;
+	public static final int CLIMBER_MIN_POSITION = 0;
+	public static final int CLIMBER_MAX_POSITION = 10000;
 
     //Controller constants
     public static final double CONTROLLER_DEADZONE = 0.1;
-
 
   // Shooter constants
 	public static final int SHOOTER_MOTOR = 07;
@@ -54,7 +53,6 @@ public final class Constants {
 	public static final int SHOOTER_FEEDER_MOTOR = 0;
 	public static final int SHOOTER_ROTATOR_MOTOR = 0;
   
-
 	/********************************************************************
     * 
     *                ____       _          

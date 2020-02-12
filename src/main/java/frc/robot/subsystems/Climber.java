@@ -9,6 +9,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -23,8 +24,7 @@ public class Climber extends SubsystemBase{
     private TalonFX m_climber_motor_left = new TalonFX(Constants.CLIMBER_MOTOR_LEFT);
     private TalonFX m_climber_motor_right = new TalonFX(Constants.CLIMBER_MOTOR_RIGHT);
 
-    private DoubleSolenoid m_climber_ratchet_right = new DoubleSolenoid(Constants.CLIMBER_PNEUMATICS_RIGHT_FORWARD, Constants.CLIMBER_PNEUMATICS_RIGHT_REVERSE);
-    private DoubleSolenoid m_climber_ratchet_left = new DoubleSolenoid(Constants.CLIMBER_PNEUMATICS_LEFT_FORWARD, Constants.CLIMBER_PNEUMATICS_LEFT_REVERSE);
+    private DoubleSolenoid m_climber_ratchet = new DoubleSolenoid(Constants.CLIMBER_PNEUMATICS_FORWARD, Constants.CLIMBER_PNEUMATICS_REVERSE);
 
     public Climber() {
         m_climber_motor_left.configFactoryDefault();
@@ -33,6 +33,25 @@ public class Climber extends SubsystemBase{
         m_climber_motor_right.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
         m_climber_motor_left.setSelectedSensorPosition(0);
         m_climber_motor_right.setSelectedSensorPosition(0);
+
+        SupplyCurrentLimitConfiguration currentLimit = new SupplyCurrentLimitConfiguration();
+        currentLimit.enable = true;
+        currentLimit.currentLimit = 40;
+        currentLimit.triggerThresholdCurrent = 40;
+        currentLimit.triggerThresholdTime = 0.001;
+        m_climber_motor_left.configSupplyCurrentLimit(currentLimit);
+        m_climber_motor_right.configSupplyCurrentLimit(currentLimit);
+
+        m_climber_motor_left.configForwardSoftLimitEnable(true);
+        m_climber_motor_left.configForwardSoftLimitThreshold(Constants.CLIMBER_MAX_POSITION);
+        m_climber_motor_left.configReverseSoftLimitEnable(true);
+        m_climber_motor_left.configReverseSoftLimitThreshold(Constants.CLIMBER_MIN_POSITION);
+        
+        m_climber_motor_right.configForwardSoftLimitEnable(true);
+        m_climber_motor_right.configForwardSoftLimitThreshold(Constants.CLIMBER_MAX_POSITION);
+        m_climber_motor_right.configReverseSoftLimitEnable(true);
+        m_climber_motor_right.configReverseSoftLimitThreshold(Constants.CLIMBER_MIN_POSITION);
+
     }
     public void setMotors(final double speed) {
         m_climber_motor_left.set(ControlMode.PercentOutput, speed);
@@ -47,13 +66,15 @@ public class Climber extends SubsystemBase{
         m_climber_motor_right.set(ControlMode.PercentOutput, speed);
     }
 
-    public void deployRatchets() {
-        m_climber_ratchet_left.set(Value.kForward);
-        m_climber_ratchet_right.set(Value.kForward);
+    public void engageRatchets() {
+        m_climber_motor_left.configPeakOutputForward(0);
+        m_climber_motor_right.configPeakOutputForward(0);
+        m_climber_ratchet.set(Value.kReverse);
     }
 
-    public void retractRatchets() {
-        m_climber_ratchet_left.set(Value.kReverse);
-        m_climber_ratchet_right.set(Value.kReverse);
+    public void disengageRatchets() {
+        m_climber_motor_left.configPeakOutputForward(1);
+        m_climber_motor_right.configPeakOutputForward(1);
+        m_climber_ratchet.set(Value.kForward);
     }
 }
