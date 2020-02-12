@@ -10,6 +10,9 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -19,6 +22,9 @@ import frc.robot.Constants;
 public class Climber extends SubsystemBase{
     private TalonFX m_climber_motor_left = new TalonFX(Constants.CLIMBER_MOTOR_LEFT);
     private TalonFX m_climber_motor_right = new TalonFX(Constants.CLIMBER_MOTOR_RIGHT);
+
+    private DoubleSolenoid m_climber_ratchet_right = new DoubleSolenoid(Constants.CLIMBER_PNEUMATICS_RIGHT_FORWARD, Constants.CLIMBER_PNEUMATICS_RIGHT_REVERSE);
+    private DoubleSolenoid m_climber_ratchet_left = new DoubleSolenoid(Constants.CLIMBER_PNEUMATICS_LEFT_FORWARD, Constants.CLIMBER_PNEUMATICS_LEFT_REVERSE);
 
     public Climber() {
         m_climber_motor_left.configFactoryDefault();
@@ -41,4 +47,13 @@ public class Climber extends SubsystemBase{
         m_climber_motor_right.set(ControlMode.PercentOutput, speed);
     }
 
+    public void deployRatchets() {
+        m_climber_ratchet_left.set(Value.kForward);
+        m_climber_ratchet_right.set(Value.kForward);
+    }
+
+    public void retractRatchets() {
+        m_climber_ratchet_left.set(Value.kReverse);
+        m_climber_ratchet_right.set(Value.kReverse);
+    }
 }

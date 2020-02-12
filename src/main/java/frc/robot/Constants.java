@@ -36,7 +36,11 @@ public final class Constants {
     
     //Climber constants
     public static final int CLIMBER_MOTOR_LEFT = 88;
-    public static final int CLIMBER_MOTOR_RIGHT = 882;
+	public static final int CLIMBER_MOTOR_RIGHT = 882;
+	public static final int CLIMBER_PNEUMATICS_RIGHT_FORWARD = 00;
+	public static final int CLIMBER_PNEUMATICS_RIGHT_REVERSE = 01;
+	public static final int CLIMBER_PNEUMATICS_LEFT_FORWARD = 02;
+	public static final int CLIMBER_PNEUMATICS_LEFT_REVERSE = 03;
 
     //Controller constants
     public static final double CONTROLLER_DEADZONE = 0.1;

@@ -123,7 +123,6 @@ public class RobotContainer {
 
     m_intake.setDefaultCommand(m_stopIntake);
 
-
     m_climber.setDefaultCommand(m_runClimber);
     
     m_drive.setDefaultCommand(m_arcadeDrive);
