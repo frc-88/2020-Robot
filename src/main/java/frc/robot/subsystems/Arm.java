@@ -7,14 +7,37 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.util.ArmConfig;
 
 public class Arm extends SubsystemBase {
   /**
    * Creates a new Arm.
    */
-  public Arm() {
 
+  private double speed;
+
+  private TalonFX m_rotator = new TalonFX(Constants.ARM_MOTOR);
+
+  private ArmConfig armConfig;
+
+  public Arm() {
+    m_rotator.configFactoryDefault();
+    m_rotator.configAllSettings(armConfig.armConfiguration);
+
+    m_rotator.enableVoltageCompensation(true);
+    m_rotator.setInverted(false);
+    m_rotator.setSensorPhase(false);
+    m_rotator.setNeutralMode(NeutralMode.Brake);
+  }
+
+  private void rotateArm(double speed) {
+    m_rotator.set(ControlMode.PercentOutput, speed);
   }
 
   @Override
