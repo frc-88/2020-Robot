@@ -12,19 +12,13 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DeployIntake;
-import frc.robot.commands.climber.ExtendClimber;
-import frc.robot.commands.climber.ExtendLeftClimber;
-import frc.robot.commands.climber.ExtendRightClimber;
+import frc.robot.commands.climber.RunClimber;
 import frc.robot.commands.MoveColorWheelToTargetColor;
 import frc.robot.commands.ReportColor;
-import frc.robot.commands.climber.RetractClimber;
-import frc.robot.commands.climber.StopClimber;
 import frc.robot.commands.RetractIntake;
 import frc.robot.commands.RotateColorWheel;
 import frc.robot.commands.RunIntake;
 import frc.robot.commands.StopIntake;
-import frc.robot.commands.climber.TiltClimberLeft;
-import frc.robot.commands.climber.TiltClimberRight;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.ControlPanelManipulator;
 import frc.robot.subsystems.Intake;
@@ -63,70 +57,26 @@ public class RobotContainer {
   private final TJController m_operatorController = new TJController(1);
 
   // Climber Commands
-  private final ExtendClimber m_extendClimber;
-  private final RetractClimber m_retractClimber;
-  private final TiltClimberLeft m_tiltClimberLeft;
-  private final TiltClimberRight m_tiltClimberRight;
-  private final ExtendRightClimber m_extendRightClimber;
-  private final ExtendLeftClimber m_extendLeftClimber;
 
-
-  private final StopClimber m_stopClimber = new StopClimber(m_climber);
+  private final RunClimber m_runClimber;
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
 
-    DoubleSupplier climbSpeedSingleSupplier = m_driverController::getRightStickX;
-    DoubleSupplier climbSpeedSupplier = m_driverController::getRightStickY;
-    
-    m_extendClimber = new ExtendClimber(m_climber, climbSpeedSupplier);
-    m_retractClimber = new RetractClimber(m_climber, climbSpeedSupplier);
-    m_tiltClimberLeft = new TiltClimberLeft(m_climber, climbSpeedSingleSupplier);
-    m_tiltClimberRight = new TiltClimberRight(m_climber, climbSpeedSingleSupplier);
-    m_extendLeftClimber = new ExtendLeftClimber(m_climber, climbSpeedSingleSupplier);
-    m_extendRightClimber = new ExtendRightClimber(m_climber, climbSpeedSingleSupplier);
+    DoubleSupplier climbSpeedXSupplier = m_driverController::getRightStickX;
+    DoubleSupplier climbSpeedYSupplier = m_driverController::getRightStickY;    
 
-    
+    m_runClimber = new RunClimber(m_climber, climbSpeedXSupplier, climbSpeedYSupplier);
 
     // Configure the button bindings
     configureButtonBindings();
 
     m_intake.setDefaultCommand(m_stopIntake);
 
-    m_climber.setDefaultCommand(m_stopClimber);
-
-
-    /**
-     * Climber Commands
-     * 
-     * If the left trigger is held, the right stick will move both climbers.
-     * If it is not held, the right climber is controlled by the right stick y-axis, and
-     * the left climber is controlled by the right stick x-axis.
-     * 
-     * Can be implemented onto the button box; trigger replaced with button held, and 
-     * controller stick replaced by operator console joystick.
-     */
-
-    if(m_driverController.getLeftTrigger() != 0) {
-      if(m_driverController.getRightStickY() > Constants.CONTROLLER_DEADZONE) {
-        m_extendClimber.execute();
-      } else {
-        m_retractClimber.execute();
-      }
-    } else {
-      if(m_driverController.getRightStickY() > Constants.CONTROLLER_DEADZONE) {
-        m_extendRightClimber.execute();
-      } else if (m_driverController.getRightStickY() < -1 * Constants.CONTROLLER_DEADZONE) {
-        m_extendLeftClimber.execute();
-      } else if (m_driverController.getRightStickX() > Constants.CONTROLLER_DEADZONE) {
-        m_tiltClimberRight.execute();
-      } else if (m_driverController.getRightStickX() < -1 * Constants.CONTROLLER_DEADZONE) {
-        m_tiltClimberLeft.execute();
-      }
-    }
-
+    m_climber.setDefaultCommand(m_runClimber);
+    
   }
 
   /**

@@ -13,14 +13,19 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Climber;
 
-public class TiltClimberRight extends CommandBase {
+public class RunClimber extends CommandBase {
   private Climber climber;
-  private DoubleSupplier speed;
-
-  public TiltClimberRight(Climber climber, DoubleSupplier speed) {
+  private DoubleSupplier xSpeed;
+  private DoubleSupplier ySpeed;
+  /**
+   * Creates a new RunClimber.
+   */
+  public RunClimber(Climber climber, DoubleSupplier xSpeed, DoubleSupplier ySpeed) {
     this.climber=climber;
-    this.speed=speed;
+    this.xSpeed=xSpeed;
+    this.ySpeed=ySpeed;
     addRequirements(climber);
+    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
@@ -31,12 +36,32 @@ public class TiltClimberRight extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    climber.setRightMotor(speed.getAsDouble() * Constants.CLIMBER_MAX_RETRACT_SPEED);
+
+    double tilt;
+    double speed;
+
+    //Sets speed value
+    if(Math.abs(ySpeed.getAsDouble()) >= Constants.CONTROLLER_DEADZONE) {
+      speed = ySpeed.getAsDouble();
+    } else {
+      speed = 0;
+    }
+
+    //Sets tilt value
+    if(Math.abs(xSpeed.getAsDouble()) >= Constants.CONTROLLER_DEADZONE) {
+      tilt = xSpeed.getAsDouble();
+    } else {
+      tilt = 0;
+    }
+
+    climber.setRightMotor(speed + tilt);
+    climber.setLeftMotor(speed - tilt);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    climber.setMotors(0);
   }
 
   // Returns true when the command should end.
