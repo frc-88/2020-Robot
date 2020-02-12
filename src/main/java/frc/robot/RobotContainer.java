@@ -13,13 +13,13 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.DeployIntake;
+import frc.robot.commands.Intake.DeployIntake;
 import frc.robot.commands.MoveColorWheelToTargetColor;
 import frc.robot.commands.ReportColor;
-import frc.robot.commands.RetractIntake;
+import frc.robot.commands.Intake.RetractIntake;
 import frc.robot.commands.RotateColorWheel;
-import frc.robot.commands.RunIntake;
-import frc.robot.commands.StopIntake;
+import frc.robot.commands.Intake.RunIntake;
+import frc.robot.commands.Intake.StopIntake;
 import frc.robot.commands.vision.SetToFrontCamera;
 import frc.robot.commands.vision.SetToRearCamera;
 import frc.robot.commands.drive.ArcadeDrive;
@@ -53,17 +53,17 @@ public class RobotContainer {
 
   // Subsystems
   // private final ControlPanelManipulator m_cpm = new ControlPanelManipulator();
-  // private final Intake m_intake = new Intake();
+  private final Intake m_intake = new Intake();
   private final Drive m_drive = new Drive(m_sensors);
 
   // Commands
   private final Command m_autoCommand = new WaitCommand(1);
 
-  // private final DeployIntake m_deployIntake = new DeployIntake(m_intake);
-  // private final RetractIntake m_retractIntake = new RetractIntake(m_intake);
-  // private final StopIntake m_stopIntake = new StopIntake(m_intake);
-  // private final RunIntake m_runIntake = new RunIntake(m_intake, 1);
-  // private final RunIntake m_ejectIntake = new RunIntake(m_intake, -1);
+  private final DeployIntake m_deployIntake = new DeployIntake(m_intake);
+  private final RetractIntake m_retractIntake = new RetractIntake(m_intake);
+  private final StopIntake m_stopIntake = new StopIntake(m_intake);
+  private final RunIntake m_runIntake = new RunIntake(m_intake, 1);
+  private final RunIntake m_ejectIntake = new RunIntake(m_intake, -1);
 
   // private final ReportColor m_reportColor = new ReportColor(m_cpm);
 
@@ -136,6 +136,15 @@ public class RobotContainer {
 
     SmartDashboard.putNumber("SetTestHeading", 0);
     SmartDashboard.putData("TestTurnToHeading", new InstantCommand(() -> (new TurnToHeading(m_drive, m_sensors, SmartDashboard.getNumber("SetTestHeading", 0))).schedule()));
+  
+    SmartDashboard.putData("Deploy Intake", m_deployIntake);
+    SmartDashboard.putData("Retract Intake", m_retractIntake);
+    SmartDashboard.putData("Run Intake", m_runIntake);
+    SmartDashboard.putData("Stop Intake", m_stopIntake);
+    SmartDashboard.putData("Eject Intake", m_ejectIntake);
+
+
+
   }
 
   /**
