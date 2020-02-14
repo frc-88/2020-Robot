@@ -7,10 +7,13 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.CANifier;
+import com.ctre.phoenix.VelocityPeriod;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.ArmConfig;
@@ -30,12 +33,17 @@ public class Arm extends SubsystemBase {
   private DoublePreferenceConstant rotator_kD;
   private DoublePreferenceConstant rotator_kF;
 
-
   private TalonFX m_rotator = new TalonFX(Constants.ARM_MOTOR);
+  private CANifier m_armEncoder = new CANifier(Constants.ARM_CANIFIER);
 
   private ArmConfig armConfig;
 
   public Arm() {
+    m_armEncoder.configFactoryDefault();
+    /* Configure velocity measurements to be what we want */
+		m_armEncoder.configVelocityMeasurementPeriod(VelocityPeriod.Period_100Ms);
+		m_armEncoder.configVelocityMeasurementWindow(64);
+
     m_rotator.configFactoryDefault();
     m_rotator.configAllSettings(armConfig.armConfiguration);
 
@@ -109,5 +117,7 @@ public class Arm extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Arm Falcon Position", m_rotator.getSelectedSensorPosition());
+    SmartDashboard.putNumber("Arm Canifier Position", m_armEncoder.getQuadraturePosition());
   }
 }
