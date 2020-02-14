@@ -36,7 +36,8 @@ public final class Constants {
 	public static final double SHOOTER_FLYWHEEL_MAX_SPEED = 0;
 
 	// Arm constants
-	public static final int ARM_MOTOR = 00;
+	public static final int ARM_MOTOR = 4;
+	public static final int ARM_CANIFIER = 4;
 
 	// Intake constants
 	public static final int ROLLER_ID = 5;
