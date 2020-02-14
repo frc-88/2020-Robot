@@ -37,6 +37,14 @@ public final class Constants {
 
 	// Arm constants
 	public static final int ARM_MOTOR = 00;
+	public static final double ARM_SHOOTER_ANGLE_1 = 0;
+	public static final double ARM_SHOOTER_ANGLE_2 = 45;
+	public static final double ARM_SHOOTER_ANGLE_3 = 90;
+	public static final int ARM_ENCODER_TICKS_PER_ROTATION = 1024;
+	public static final int ARM_ENCODER_RATIO = 70;
+	public static final int ARM_TOTAL_RATIO = 210;
+
+
 
 	// Intake constants
 	public static final int ROLLER_ID = 5;
