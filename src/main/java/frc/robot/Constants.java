@@ -30,8 +30,8 @@ public final class Constants {
 	public static final float CPM_PHASE_2_WHEEL_ROTATIONS = 4;
 
 	// Shooter constants
-	public static final int SHOOTER_MOTOR = 07;
-	public static final int SHOOTER_MOTOR_2 = 8;
+	public static final int SHOOTER_MOTOR = 12;
+	public static final int SHOOTER_MOTOR_2 = 3;
 	public static final int SHOOTER_ANGLE_ENCODER_CHANNEL_1A = 9;
 	public static final int SHOOTER_ANGLE_ENCODER_CHANNEL_1B = 10;
 	public static final int SHOOTER_FEEDER_MOTOR = 0;
@@ -53,17 +53,17 @@ public final class Constants {
 	*/
 	
 	// Drive CAN IDs
-	public static final int LEFT_MASTER_DRIVE_ID = 13;
-	public static final int LEFT_FOLLOWER_DRIVE_ID = 12;
-	public static final int RIGHT_MASTER_DRIVE_ID = 2;
-	public static final int RIGHT_FOLLOWER_DRIVE_ID = 3;
-	public static final int LEFT_DRIVE_ENCODER_ID = 43;
-	public static final int RIGHT_DRIVE_ENCODER_ID = 32;
-	public static final int SHIFTER_LEFT_PCM = 21;
-	public static final int SHIFTER_LEFT_OUT = 4;
-	public static final int SHIFTER_LEFT_IN = 5;
-	public static final int SHIFTER_RIGHT_PCM = 21;
-	public static final int SHIFTER_RIGHT_OUT = 6;
+	public static final int LEFT_MASTER_DRIVE_ID = 15;
+	public static final int LEFT_FOLLOWER_DRIVE_ID = 14;
+	public static final int RIGHT_MASTER_DRIVE_ID = 0;
+	public static final int RIGHT_FOLLOWER_DRIVE_ID = 1;
+	public static final int LEFT_DRIVE_ENCODER_ID = 15;
+	public static final int RIGHT_DRIVE_ENCODER_ID = 0;
+	public static final int SHIFTER_LEFT_PCM = 0;
+	public static final int SHIFTER_LEFT_OUT = 1;
+	public static final int SHIFTER_LEFT_IN = 6;
+	public static final int SHIFTER_RIGHT_PCM = 0;
+	public static final int SHIFTER_RIGHT_OUT = 0;
 	public static final int SHIFTER_RIGHT_IN = 7;
 
 	// Drive Configuration
