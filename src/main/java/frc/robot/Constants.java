@@ -64,12 +64,12 @@ public final class Constants {
 	*/
 	
 	// Drive CAN IDs
-	public static final int LEFT_MASTER_DRIVE_ID = 2;
-	public static final int LEFT_FOLLOWER_DRIVE_ID = 3;
-	public static final int RIGHT_MASTER_DRIVE_ID = 13;
-	public static final int RIGHT_FOLLOWER_DRIVE_ID = 12;
-	public static final int LEFT_DRIVE_ENCODER_ID = 32;
-	public static final int RIGHT_DRIVE_ENCODER_ID = 43;
+	public static final int LEFT_MASTER_DRIVE_ID = 13;
+	public static final int LEFT_FOLLOWER_DRIVE_ID = 12;
+	public static final int RIGHT_MASTER_DRIVE_ID = 2;
+	public static final int RIGHT_FOLLOWER_DRIVE_ID = 3;
+	public static final int LEFT_DRIVE_ENCODER_ID = 43;
+	public static final int RIGHT_DRIVE_ENCODER_ID = 32;
 	public static final int SHIFTER_LEFT_PCM = 21;
 	public static final int SHIFTER_LEFT_OUT = 4;
 	public static final int SHIFTER_LEFT_IN = 5;
@@ -90,9 +90,10 @@ public final class Constants {
 	public static final double DRIVE_RIGHT_HIGH_EFFICIENCY = 1.02;
 	public static final double MAX_SPEED_LOW = 8.8;
 	public static final double MAX_SPEED_HIGH = 18;
+	public static final double WHEEL_BASE_WIDTH = (25. + 5./16.) / 12.; // feet
 	public static final double DRIVE_CURRENT_LIMIT = 250;
-	public static final int DRIVE_SPEED_EXP = 3;
-	public static final int DRIVE_TURN_EXP = 3;
+	public static final int DRIVE_SPEED_EXP = 2;
+	public static final int DRIVE_TURN_EXP = 2;
 	public static final double DRIVE_JOYSTICK_DEADBAND = 0.12;
 	public static final double CHEESY_DRIVE_MIN_TURN = 0.4;
 	public static final double CHEESY_DRIVE_MAX_TURN = 0.6;

@@ -89,8 +89,20 @@ public class SyncPIDController {
         constants.getKI().addChangeHandler(this::setKI);
         constants.getKD().addChangeHandler(this::setKD);
         constants.getKF().addChangeHandler(this::setKF);
-        constants.getIZone().addChangeHandler(this::setIZone);
-        constants.getIMax().addChangeHandler(this::setIMax);
+        constants.getIZone().addChangeHandler((value) -> {
+            if (value == 0.) {
+                this.disableIZone();
+            } else {
+                this.setIZone(value);
+            }
+        });
+        constants.getIMax().addChangeHandler((value) -> {
+            if (value == 0.) {
+                this.disableIMax();
+            } else {
+                this.setIMax(value);
+            }
+        });
         constants.getTolerance().addChangeHandler(this::setTolerance);
     }
 
@@ -330,7 +342,6 @@ public class SyncPIDController {
                 m_accum = Math.max(m_accum, -iMax / kI);
             }
         }
-
         return kI * m_accum;
     }
 
@@ -345,7 +356,7 @@ public class SyncPIDController {
 
         long curTime = RobotController.getFPGATime();
 
-        double ret = kD * (error - m_prevError) / ((curTime - m_lastLoopTime) / 1e6);
+        double ret = kD * (error - m_prevError) / ((curTime - m_lastLoopTime) / 1.e6);
 
         m_prevError = error;
         m_lastLoopTime = curTime;

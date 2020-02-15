@@ -9,13 +9,18 @@ package frc.robot.subsystems;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoSink;
-import edu.wpi.cscore.VideoSource.ConnectionStrategy;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.util.NavX;
 import frc.robot.util.Limelight;
+
+/**
+ * we gather data
+ * about the world around us
+ * to make good choices
+ */
 
 public class Sensors extends SubsystemBase {
   public final NavX m_navx;
@@ -34,7 +39,7 @@ public class Sensors extends SubsystemBase {
 
     m_limelight = new Limelight();
     m_limelight.camVision();
-    m_limelight.ledOff();
+    m_limelight.ledOn();
 
     setToFrontCamera();
     // frontCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
@@ -56,6 +61,7 @@ public class Sensors extends SubsystemBase {
 
     // NavX data
     SmartDashboard.putNumber("NavX Yaw", m_navx.getYaw());
+    SmartDashboard.putNumber("NavX Yaw Rate", m_navx.getYawRate());
     SmartDashboard.putNumber("NavX Pitch", m_navx.getPitch());
     SmartDashboard.putNumber("NavX Roll", m_navx.getRoll());
 
