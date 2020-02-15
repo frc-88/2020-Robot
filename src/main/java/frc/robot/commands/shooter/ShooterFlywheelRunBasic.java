@@ -7,26 +7,28 @@
 
 package frc.robot.commands.shooter;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Shooter;
 
 public class ShooterFlywheelRunBasic extends CommandBase {
   private Shooter m_shooter;
-  private double m_percentOutput;
+  private DoubleSupplier m_percentOutput;
 
   /**
    * Sets flywheel to desired velocity
    */
-  public ShooterFlywheelRunBasic(Shooter shooter, double velocity) {
+  public ShooterFlywheelRunBasic(Shooter shooter, DoubleSupplier percentOutput) {
     m_shooter = shooter;
-    m_percentOutput = velocity;
+    m_percentOutput = percentOutput;
     addRequirements(m_shooter);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_shooter.setFlywheelBasic(m_percentOutput);
+    m_shooter.setFlywheelBasic(m_percentOutput.getAsDouble());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
