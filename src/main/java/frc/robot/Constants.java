@@ -59,9 +59,12 @@ public final class Constants {
 	public static final int RIGHT_FOLLOWER_DRIVE_ID = 1;
 	public static final int LEFT_DRIVE_ENCODER_ID = 15;
 	public static final int RIGHT_DRIVE_ENCODER_ID = 0;
-	public static final int SHIFTER_PCM = 0;
-	public static final int SHIFTER_OUT = 2;
-	public static final int SHIFTER_IN = 5;
+	public static final int SHIFTER_LEFT_PCM = 0;
+	public static final int SHIFTER_LEFT_OUT = 1;
+	public static final int SHIFTER_LEFT_IN = 6;
+	public static final int SHIFTER_RIGHT_PCM = 0;
+	public static final int SHIFTER_RIGHT_OUT = 0;
+	public static final int SHIFTER_RIGHT_IN = 7;
 
 	// Drive Configuration
 	public static final int NUM_DRIVE_MOTORS_PER_SIDE = 2;

@@ -37,7 +37,7 @@ public class Drive extends SubsystemBase {
   private SyncPIDController m_leftVelPID, m_rightVelPID;
   private WrappingPIDController m_headingPID;
   private DriveConfiguration m_driveConfiguration;
-  private DoubleSolenoid m_shifter;
+  private DoubleSolenoid m_leftShifter, m_rightShifter;
 
   private double m_currentLimit = Constants.DRIVE_CURRENT_LIMIT;
   private double m_leftCommandedSpeed = 0;
@@ -96,8 +96,10 @@ public class Drive extends SubsystemBase {
     m_leftDrive.configRemoteFeedbackFilter(m_leftEncoder, 0);
     m_rightDrive.configRemoteFeedbackFilter(m_rightEncoder, 0);
 
-    m_shifter = new DoubleSolenoid(Constants.SHIFTER_PCM, Constants.SHIFTER_OUT,
-        Constants.SHIFTER_IN);
+    m_leftShifter = new DoubleSolenoid(Constants.SHIFTER_LEFT_PCM, Constants.SHIFTER_LEFT_OUT,
+        Constants.SHIFTER_LEFT_IN);
+    m_rightShifter = new DoubleSolenoid(Constants.SHIFTER_RIGHT_PCM, Constants.SHIFTER_RIGHT_OUT,
+        Constants.SHIFTER_RIGHT_IN);
 
     m_headingPID = new WrappingPIDController(180, -180, headingPIDConstants);
 
@@ -187,14 +189,16 @@ public class Drive extends SubsystemBase {
   }
 
   public void shiftToLow() {
-    m_shifter.set(Value.kForward);
+    m_leftShifter.set(Value.kForward);
+    m_rightShifter.set(Value.kForward);
 
     m_leftTransmission.shiftToLow();
     m_rightTransmission.shiftToLow();
   }
 
   public void shiftToHigh() {
-    m_shifter.set(Value.kReverse);
+    m_leftShifter.set(Value.kReverse);
+    m_rightShifter.set(Value.kReverse);
 
     m_leftTransmission.shiftToHigh();
     m_rightTransmission.shiftToHigh();
