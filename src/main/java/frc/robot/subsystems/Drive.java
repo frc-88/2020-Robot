@@ -297,6 +297,7 @@ public class Drive extends SubsystemBase {
     SmartDashboard.putNumber("R Drive Command Speed", m_rightCommandedSpeed);
     SmartDashboard.putNumber("L Drive Voltage", m_leftDrive.getMotorOutputVoltage());
     SmartDashboard.putNumber("R Drive Voltage", m_rightDrive.getMotorOutputVoltage());
+    SmartDashboard.putBoolean("In High Gear?", isInHighGear());
 
     if (DriverStation.getInstance().isEnabled()) {
       this.setBrakeMode();
