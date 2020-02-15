@@ -22,7 +22,7 @@ public class ArmConfig {
 
         // arm - TalonFX
         // TODO - change to use Rev 1024 encoder on canifier
-        armConfiguration.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
+        armConfiguration.primaryPID.selectedFeedbackSensor = FeedbackDevice.RemoteSensor0;
         // armConfiguration.primaryPID.selectedFeedbackCoefficient = 0.328293;
         armConfiguration.peakOutputForward = 1.0;
         armConfiguration.peakOutputReverse = -1.0;
