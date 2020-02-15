@@ -56,4 +56,12 @@ public class ButtonBox extends Joystick {
 	public ButtonBox(int port) {
 		super(port);
 	}
+
+	public double getClimberSpeedAxis() {
+		return this.getRawAxis(0);
+	}
+
+	public double getClimberTiltAxis() {
+		return this.getRawAxis(1);
+	}
 }
