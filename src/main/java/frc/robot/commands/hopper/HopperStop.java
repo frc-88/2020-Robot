@@ -10,12 +10,12 @@ package frc.robot.commands.hopper;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Hopper;
 
-public class Stop extends CommandBase {
+public class HopperStop extends CommandBase {
   private Hopper m_hopper;
   /**
    * Creates a new Stop.
    */
-  public Stop(Hopper hopper) {
+  public HopperStop(Hopper hopper) {
     m_hopper = hopper;
     addRequirements(m_hopper);
   }

@@ -15,15 +15,15 @@ import frc.robot.subsystems.Hopper;
  * Run each side slowly in opposite directions until a ball 
  * is found in the center (nearest shooter) position
  */
-public class Intake extends CommandBase {
+public class HopperIntakeMode extends CommandBase {
   private Hopper m_hopper;
   private double m_percentOutput;
 
-  public Intake(Hopper hopper) {
+  public HopperIntakeMode(Hopper hopper) {
     this(hopper, Constants.HOPPER_INTAKE_PERCENT_OUTPUT);
   }
 
-  public Intake(Hopper hopper, double percentOutput) {
+  public HopperIntakeMode(Hopper hopper, double percentOutput) {
     m_hopper = hopper;
     m_percentOutput = percentOutput;
     addRequirements(m_hopper);

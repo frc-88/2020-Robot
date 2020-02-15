@@ -10,56 +10,32 @@ package frc.robot;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.DeployIntake;
-import frc.robot.commands.MoveColorWheelToTargetColor;
-import frc.robot.commands.ReportColor;
-import frc.robot.commands.RetractIntake;
-import frc.robot.commands.RotateColorWheel;
-import frc.robot.commands.RunIntake;
-import frc.robot.commands.StopIntake;
-import frc.robot.commands.arm.ArmMotionMagic;
-import frc.robot.commands.arm.RotateArm;
-import frc.robot.commands.vision.SetToFrontCamera;
-import frc.robot.commands.vision.SetToRearCamera;
-import frc.robot.commands.drive.ArcadeDrive;
-import frc.robot.commands.drive.CalculateDriveEfficiency;
-import frc.robot.commands.drive.TankDrive;
-import frc.robot.commands.drive.TestDriveStaticFriction;
-import frc.robot.commands.drive.TurnToHeading;
+import frc.robot.commands.drive.*;
+import frc.robot.commands.hopper.*;
+import frc.robot.commands.arm.*;
 import frc.robot.driveutil.DriveUtils;
-import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.ControlPanelManipulator;
 import frc.robot.subsystems.Drive;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Sensors;
 import frc.robot.util.TJController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
-/**
- * This class is where the bulk of the robot should be declared. Since
- * Command-based is a "declarative" paradigm, very little robot logic should
- * actually be handled in the {@link Robot} periodic methods (other than the
- * scheduler calls). Instead, the structure of the robot (including subsystems,
- * commands, and button mappings) should be declared here.
- */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
-
-  private final Sensors m_sensors = new Sensors();
-
-  private final TJController m_driverController = new TJController(0);
-  private final TJController m_testController = new TJController(1);
-
   // Subsystems
+  private final Sensors m_sensors = new Sensors();
+  private final Drive m_drive = new Drive(m_sensors);
+  private final Hopper m_hopper = new Hopper();
+  private final Arm m_arm = new Arm();
   // private final ControlPanelManipulator m_cpm = new ControlPanelManipulator();
   // private final Intake m_intake = new Intake();
-  private final Drive m_drive = new Drive(m_sensors);
-  private final Arm m_arm = new Arm();
+
+  // Controllers
+  private final TJController m_driverController = new TJController(0);
+  private final TJController m_testController = new TJController(1);
 
   // Commands
   private final Command m_autoCommand = new WaitCommand(1);
@@ -82,8 +58,8 @@ public class RobotContainer {
   // private final MoveColorWheelToTargetColor m_moveColorWheelToTargetColor = new MoveColorWheelToTargetColor(m_cpm);
   // private final RotateColorWheel m_rotateColorWheel = new RotateColorWheel(m_cpm);
 
-  private final SetToFrontCamera m_setToFrontCamera = new SetToFrontCamera(m_sensors);
-  private final SetToRearCamera m_setToRearCamera = new SetToRearCamera(m_sensors);
+  // private final SetToFrontCamera m_setToFrontCamera = new SetToFrontCamera(m_sensors);
+  // private final SetToRearCamera m_setToRearCamera = new SetToRearCamera(m_sensors);
 
   private final ArmMotionMagic m_armMotionMagic;
   private final RotateArm m_rotateArm;
@@ -94,13 +70,15 @@ public class RobotContainer {
   public RobotContainer() {
 
     // Initialize everything
-    DoubleSupplier arcadeDriveSpeedSupplier = DriveUtils.deadbandExponential(
-        m_driverController::getLeftStickY, Constants.DRIVE_SPEED_EXP, Constants.DRIVE_JOYSTICK_DEADBAND);
-    DoubleSupplier arcadeDriveTurnSupplier = DriveUtils.cheesyTurn(arcadeDriveSpeedSupplier, 
-        DriveUtils.deadbandExponential(m_driverController::getRightStickX, Constants.DRIVE_SPEED_EXP, Constants.DRIVE_JOYSTICK_DEADBAND),
+    DoubleSupplier arcadeDriveSpeedSupplier = DriveUtils.deadbandExponential(m_driverController::getLeftStickY,
+        Constants.DRIVE_SPEED_EXP, Constants.DRIVE_JOYSTICK_DEADBAND);
+    DoubleSupplier arcadeDriveTurnSupplier = DriveUtils.cheesyTurn(
+        arcadeDriveSpeedSupplier, DriveUtils.deadbandExponential(m_driverController::getRightStickX,
+            Constants.DRIVE_SPEED_EXP, Constants.DRIVE_JOYSTICK_DEADBAND),
         Constants.CHEESY_DRIVE_MIN_TURN, Constants.CHEESY_DRIVE_MAX_TURN);
     BooleanSupplier arcadeDriveShiftSupplier = () -> m_drive.autoshift(arcadeDriveSpeedSupplier.getAsDouble());
-    m_arcadeDrive = new ArcadeDrive(m_drive, arcadeDriveSpeedSupplier, arcadeDriveTurnSupplier, arcadeDriveShiftSupplier);
+    m_arcadeDrive = new ArcadeDrive(m_drive, arcadeDriveSpeedSupplier, arcadeDriveTurnSupplier,
+        arcadeDriveShiftSupplier);
 
     DoubleSupplier tankDriveLeftSupplier = m_driverController::getLeftStickY;
     DoubleSupplier tankDriveRightSupplier = m_driverController::getRightStickY;
@@ -110,9 +88,12 @@ public class RobotContainer {
     m_calculateDriveEfficiency = new CalculateDriveEfficiency(m_drive);
 
     BooleanSupplier testArcadeDriveShiftSupplier = () -> SmartDashboard.getBoolean("SetTestShiftHigh", false);
-    DoubleSupplier testArcadeDriveSpeedSupplier = () -> SmartDashboard.getNumber("SetTestDriveSpeed", 0) / Constants.MAX_SPEED_HIGH;
-    DoubleSupplier testArcadeDriveTurnSupplier = () -> SmartDashboard.getNumber("SetTestDriveTurn", 0) * (Constants.WHEEL_BASE_WIDTH * Math.PI) / Constants.MAX_SPEED_HIGH / 360;
-    m_testArcadeDrive = new ArcadeDrive(m_drive, testArcadeDriveSpeedSupplier, testArcadeDriveTurnSupplier, testArcadeDriveShiftSupplier);
+    DoubleSupplier testArcadeDriveSpeedSupplier = () -> SmartDashboard.getNumber("SetTestDriveSpeed", 0)
+        / Constants.MAX_SPEED_HIGH;
+    DoubleSupplier testArcadeDriveTurnSupplier = () -> SmartDashboard.getNumber("SetTestDriveTurn", 0)
+        * (Constants.WHEEL_BASE_WIDTH * Math.PI) / Constants.MAX_SPEED_HIGH / 360;
+    m_testArcadeDrive = new ArcadeDrive(m_drive, testArcadeDriveSpeedSupplier, testArcadeDriveTurnSupplier,
+        testArcadeDriveShiftSupplier);
 
     DoubleSupplier armPositionSupplier = () -> SmartDashboard.getNumber("ArmMotionMagic", 0);
     m_armMotionMagic = new ArmMotionMagic(m_arm, armPositionSupplier);
@@ -123,28 +104,24 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
-    // m_intake.setDefaultCommand(m_stopIntake);
-    m_drive.setDefaultCommand(m_arcadeDrive);
+    configureSmartDashboardButtons();
+    configureDefaultCommands();
   }
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be
-   * created by instantiating a {@link GenericHID} or one of its subclasses
-   * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then
-   * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
   private void configureButtonBindings() {
     // m_driverController.buttonB.whileHeld(m_reportColor);
     // m_driverController.buttonA.whenPressed(m_moveColorWheelToTargetColor);
     // m_driverController.buttonY.whenPressed(m_rotateColorWheel);
 
-    m_driverController.buttonRightBumper.whenPressed(m_setToFrontCamera);
-    m_driverController.buttonRightBumper.whenReleased(m_setToRearCamera);
+    // m_driverController.buttonRightBumper.whenPressed(m_setToFrontCamera);
+    // m_driverController.buttonRightBumper.whenReleased(m_setToRearCamera);
+  }
 
+  private void configureSmartDashboardButtons() {
     SmartDashboard.putData("TestDriveStaticFriction", m_testDriveStaticFriction);
     SmartDashboard.putData("CalculateDriveEfficiency", m_calculateDriveEfficiency);
 
-    SmartDashboard.putNumber("SetTestDriveSpeed", 0); 
+    SmartDashboard.putNumber("SetTestDriveSpeed", 0);
     SmartDashboard.putNumber("SetTestDriveTurn", 0);
     SmartDashboard.putBoolean("SetTestShiftHigh", false);
     SmartDashboard.putData("TestArcadeDrive", m_testArcadeDrive);
@@ -154,6 +131,14 @@ public class RobotContainer {
 
     SmartDashboard.putData("ArmMotionMagic", m_armMotionMagic);
     SmartDashboard.putNumber("SetArmPosition", 0);
+    SmartDashboard.putData("Hopper Intake", new HopperIntakeMode(m_hopper));
+    SmartDashboard.putData("Hopper Shoot", new HopperShootMode(m_hopper));
+    SmartDashboard.putData("Hopper Stop", new HopperStop(m_hopper));
+  }
+
+  private void configureDefaultCommands() {
+    // m_intake.setDefaultCommand(m_stopIntake);
+    m_drive.setDefaultCommand(m_arcadeDrive);
   }
 
   /**

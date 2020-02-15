@@ -15,15 +15,15 @@ import frc.robot.subsystems.Hopper;
  * Run both sides at the same speed forward to feed power cells into the
  * shooter.
  */
-public class Shoot extends CommandBase {
+public class HopperShootMode extends CommandBase {
   private Hopper m_hopper;
   private double m_percentOutput;
 
-  public Shoot(Hopper hopper) {
+  public HopperShootMode(Hopper hopper) {
     this(hopper, Constants.HOPPER_SHOOT_PERCENT_OUTPUT);
   }
 
-  public Shoot(Hopper hopper, double percentOutput) {
+  public HopperShootMode(Hopper hopper, double percentOutput) {
     m_hopper = hopper;
     m_percentOutput = percentOutput;
     addRequirements(m_hopper);
