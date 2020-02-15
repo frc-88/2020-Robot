@@ -15,12 +15,18 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.ShooterConfig;
+import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 
 public class Shooter extends SubsystemBase {
   private TalonFX m_flywheelMaster = new TalonFX(Constants.SHOOTER_FLYWHEEL_MASTER);
   private TalonFX m_flywheelFollower = new TalonFX(Constants.SHOOTER_FLYWHEEL_FOLLOWER);
   private TalonSRX m_feeder = new TalonSRX(Constants.SHOOTER_FEEDER_MOTOR);
   private ShooterConfig m_shooterConfig = new ShooterConfig();
+
+  private DoublePreferenceConstant flywheel_kP;
+  private DoublePreferenceConstant flywheel_kI;
+  private DoublePreferenceConstant flywheel_kD;
+  private DoublePreferenceConstant flywheel_kF;
 
   /**
    * Creates a new Shooter.
@@ -45,14 +51,24 @@ public class Shooter extends SubsystemBase {
     m_feeder.setInverted(false);
     m_feeder.setSensorPhase(false);
     m_feeder.setNeutralMode(NeutralMode.Brake);
+
+    flywheel_kP = new DoublePreferenceConstant("Shooter flywheel kP", 0);
+    flywheel_kP.addChangeHandler((Double kP) -> m_flywheelMaster.config_kP(0, kP));
+    flywheel_kI = new DoublePreferenceConstant("Shooter flywheel kI", 0);
+    flywheel_kI.addChangeHandler((Double kI) -> m_flywheelMaster.config_kI(0, kI));
+    flywheel_kD = new DoublePreferenceConstant("Shooter flywheel kD", 0);
+    flywheel_kD.addChangeHandler((Double kD) -> m_flywheelMaster.config_kD(0, kD));
+    flywheel_kF = new DoublePreferenceConstant("Shooter flywheel kF", 0);
+    flywheel_kF.addChangeHandler((Double kF) -> m_flywheelMaster.config_kF(0, kF));
+
   }
 
   public void setFlywheel(double velocity) {
-    m_flywheelMaster.set(ControlMode.Velocity, velocity * Constants.SHOOTER_FLYWHEEL_MAX_SPEED);
+    m_flywheelMaster.set(ControlMode.Velocity, convertFlywheelVelocityToEncoderVelocity(velocity));
   }
 
   public boolean flywheelOnTarget() {
-    return Math.abs(m_flywheelMaster.getClosedLoopError()) < Constants.SHOOTER_FLYWHEEL_TOLERANCE;
+    return Math.abs(convertEncoderVelocityToFlywheelVelocity(m_flywheelMaster.getClosedLoopError())) < Constants.SHOOTER_FLYWHEEL_TOLERANCE;
   }
 
   public void setFlywheelBasic(double percentOutput) {
@@ -61,6 +77,14 @@ public class Shooter extends SubsystemBase {
 
   public void setFeeder(double percentOutput) {
     m_feeder.set(ControlMode.PercentOutput, percentOutput);
+  }
+
+  public double convertEncoderVelocityToFlywheelVelocity(int ticks) {
+    return (ticks * 10. * 60. * (1. / Constants.SHOOTER_MOTOR_TICKS_PER_ROTATION) * Constants.SHOOTER_MOTOR_TO_FLYWHEEL_RATIO);
+  }
+
+  public int convertFlywheelVelocityToEncoderVelocity(double rpm) {
+    return (int)(rpm * (1. / 10.) * (1. / 60.) * Constants.SHOOTER_MOTOR_TICKS_PER_ROTATION * (1. / Constants.SHOOTER_MOTOR_TO_FLYWHEEL_RATIO));
   }
 
   @Override

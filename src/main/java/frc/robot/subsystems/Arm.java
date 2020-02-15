@@ -60,7 +60,7 @@ public class Arm extends SubsystemBase {
     MAXIMUM_ARM_VELOCITY = new DoublePreferenceConstant("Arm velocity", 60);
     MAXIMUM_ARM_VELOCITY.addChangeHandler(
       (Double velocity) -> m_rotator.configMotionCruiseVelocity(convertArmVelocityToEncoderVelocity(velocity)));
-    MAXIMUM_ARM_ACCELERATION = new DoublePreferenceConstant("Arm Acceleration", 15);
+    MAXIMUM_ARM_ACCELERATION = new DoublePreferenceConstant("Arm Acceleration", 120);
     MAXIMUM_ARM_ACCELERATION.addChangeHandler(
       (Double acceleration) -> m_rotator.configMotionAcceleration(convertArmVelocityToEncoderVelocity(acceleration)));
     rotator_kP = new DoublePreferenceConstant("Arm rotator kP", 0);
@@ -132,7 +132,7 @@ public class Arm extends SubsystemBase {
    */
 
   public double convertEncoderVelocityToArmVelocity(int encoderVelocity) {
-    return (encoderVelocity * (1. / 10.) * (1. / Constants.ARM_ENCODER_TICKS_PER_ROTATION) * (1. / Constants.ENCODER_TO_ARM_RATIO) * 360.);
+    return (encoderVelocity * 10. * (1. / Constants.ARM_ENCODER_TICKS_PER_ROTATION) * (1. / Constants.ENCODER_TO_ARM_RATIO) * 360.);
   }
 
   /**
@@ -142,7 +142,7 @@ public class Arm extends SubsystemBase {
    */
 
   public int convertArmVelocityToEncoderVelocity(double armVelocity) {
-    return (int)(armVelocity * (1. / 360.) * Constants.ENCODER_TO_ARM_RATIO * 10. * Constants.ARM_ENCODER_TICKS_PER_ROTATION);
+    return (int)(armVelocity * (1. / 360.) * Constants.ENCODER_TO_ARM_RATIO * (1. / 10.) * Constants.ARM_ENCODER_TICKS_PER_ROTATION);
   }
 
   // public int convertArmDegreesToMotorTicks(double armPosition) {
