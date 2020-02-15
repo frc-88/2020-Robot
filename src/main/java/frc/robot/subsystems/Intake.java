@@ -25,15 +25,14 @@ import frc.robot.Constants;
 public class Intake extends SubsystemBase {
 
   private TalonSRX rollerMotor;
-  private DoubleSolenoid leftDeployPiston, rightDeployPiston;
+  private DoubleSolenoid deployPiston;
 
   /**
    * Creates a new Intake.
    */
   public Intake() {
     rollerMotor = new TalonSRX(Constants.ROLLER_ID);
-    leftDeployPiston = new DoubleSolenoid(Constants.INTAKE_LEFT_DEPLOY_PISTON, Constants.INTAKE_LEFT_RETRACT_PISTON);
-    rightDeployPiston = new DoubleSolenoid(Constants.INTAKE_RIGHT_DEPLOY_PISTON, Constants.INTAKE_RIGHT_RETRACT_PISTON);
+    deployPiston = new DoubleSolenoid(Constants.INTAKE_DEPLOY_PISTON, Constants.INTAKE_RETRACT_PISTON);
   }
 
   @Override
@@ -52,17 +51,15 @@ public class Intake extends SubsystemBase {
 
 
   public void deploy() {
-    leftDeployPiston.set(Value.kForward);
-    rightDeployPiston.set(Value.kForward);
+    deployPiston.set(Value.kForward);
   }
 
 
   public void retract(){
-    leftDeployPiston.set(Value.kReverse);
-    rightDeployPiston.set(Value.kReverse);
+    deployPiston.set(Value.kReverse);
   }
 
   public boolean isDeployed() {
-    return leftDeployPiston.get() == Value.kForward;
+    return deployPiston.get() == Value.kForward;
   }
 }
