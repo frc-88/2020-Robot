@@ -14,11 +14,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.drive.*;
 import frc.robot.commands.hopper.*;
 import frc.robot.commands.arm.*;
+import frc.robot.commands.shooter.*;
 import frc.robot.driveutil.DriveUtils;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Sensors;
+import frc.robot.subsystems.Shooter;
 import frc.robot.util.TJController;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -32,6 +34,7 @@ public class RobotContainer {
   private final Drive m_drive = new Drive(m_sensors);
   private final Hopper m_hopper = new Hopper();
   private final Arm m_arm = new Arm();
+  private final Shooter m_shooter = new Shooter();
   // private final ControlPanelManipulator m_cpm = new ControlPanelManipulator();
   // private final Intake m_intake = new Intake();
 
@@ -111,7 +114,6 @@ public class RobotContainer {
 
     DoubleSupplier armSpeedSupplier = DriveUtils.deadbandExponential(m_testController::getRightStickY, Constants.ARM_SPEED_EXP, Constants.TEST_JOYSTICK_DEADBAND);
     m_rotateArm = new RotateArm(m_arm, armSpeedSupplier);
-    
 
     // Configure the button bindings
     configureButtonBindings();
@@ -140,14 +142,20 @@ public class RobotContainer {
     SmartDashboard.putNumber("SetTestHeading", 0);
     SmartDashboard.putData("TestTurnToHeading", new InstantCommand(() -> (new TurnToHeading(m_drive, m_sensors, SmartDashboard.getNumber("SetTestHeading", 0))).schedule()));
 
-    // SmartDashboard.putData("ArmMotionMagic", m_stowArm);
-    // SmartDashboard.putNumber("SetArmPosition", 0);
     SmartDashboard.putData("Hopper Intake", new HopperIntakeMode(m_hopper));
     SmartDashboard.putData("Hopper Shoot", new HopperShootMode(m_hopper));
     SmartDashboard.putData("Hopper Stop", new HopperStop(m_hopper));
 
     SmartDashboard.putNumber("ArmDashboardPosition", 0);
     SmartDashboard.putData("Arm to Position", m_armToSmartDashboard);
+    SmartDashboard.putNumber("ShooterTestFeederSpeed", 0);
+    SmartDashboard.putNumber("ShooterTestFlywheelSpeed", 0);
+    SmartDashboard.putData("ShooterTestFeeder", new InstantCommand(() -> (new ShooterFeederRun(m_shooter, SmartDashboard.getNumber("ShooterTestFeederSpeed", 0))).schedule()));
+    SmartDashboard.putData("ShooterTestFlywheel", new InstantCommand(() -> (new ShooterFlywheelRun(m_shooter, SmartDashboard.getNumber("ShooterTestFlywheelSpeed", 0))).schedule()));
+    SmartDashboard.putData("ShooterStopFeeder", new ShooterFeederRun(m_shooter, 0));
+    SmartDashboard.putData("ShooterStopFlywheel", new ShooterFlywheelRun(m_shooter, 0));
+    SmartDashboard.putData("ShooterStopAll", new ShooterStop(m_shooter));
+    SmartDashboard.putData("ShooterFlywheelBasic", new ShooterFlywheelRunBasic(m_shooter, DriveUtils.deadbandExponential(m_testController::getLeftStickY, Constants.SHOOTER_FLYWHEEL_SPEED_EXP, Constants.TEST_JOYSTICK_DEADBAND)));
   }
 
   private void configureDefaultCommands() {
