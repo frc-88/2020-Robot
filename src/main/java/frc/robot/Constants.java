@@ -28,11 +28,6 @@ public final class Constants {
 	public static final int CPM_DIGITAL_INPUT_CHANNEL = 00;
 	public static final int CPM_WRIST_ENCODER_COUNTS_PER_REV = 06;
 	public static final float CPM_PHASE_2_WHEEL_ROTATIONS = 4;
-
-    //Intake constants
-    public static final int ROLLER_ID = 5;
-    public static final int INTAKE_DEPLOY_PISTON = 0;
-    public static final int INTAKE_RETRACT_PISTON = 7;
     
     //Climber constants
     public static final int CLIMBER_MOTOR_LEFT = 88;
@@ -52,6 +47,11 @@ public final class Constants {
 	public static final int SHOOTER_ANGLE_ENCODER_CHANNEL_1B = 10;
 	public static final int SHOOTER_FEEDER_MOTOR = 0;
 	public static final int SHOOTER_ROTATOR_MOTOR = 0;
+
+    //Intake constants
+    public static final int ROLLER_ID = 5;
+    public static final int INTAKE_DEPLOY_PISTON = 0;
+    public static final int INTAKE_RETRACT_PISTON = 7;
   
 	/********************************************************************
     * 
