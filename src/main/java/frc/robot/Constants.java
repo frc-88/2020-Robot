@@ -51,8 +51,10 @@ public final class Constants {
 	public static final int INTAKE_RETRACT_PISTON = 7;
 
 	// Hopper constants
-	public static final int HOPPER_FEEDER_1 = 0;
-	public static final int HOPPER_FEEDER_2 = 0;
+	public static final int HOPPER_FEEDER_1 = 9;
+	public static final int HOPPER_FEEDER_2 = 10;
+	public static final double HOPPER_SHOOT_PERCENT_OUTPUT = 0.5;
+	public static final double HOPPER_INTAKE_PERCENT_OUTPUT = 0.1;
 
 
 	/********************************************************************
