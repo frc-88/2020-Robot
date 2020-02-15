@@ -7,18 +7,16 @@
 
 package frc.robot.commands.arm;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Arm;
 
 public class ArmMotionMagic extends CommandBase {
   private Arm arm;
-  private DoubleSupplier position;
+  private double position;
   /**
    * Creates a new ArmMotionMagic.
    */
-  public ArmMotionMagic(Arm arm, DoubleSupplier position) {
+  public ArmMotionMagic(Arm arm, double position) {
     this.arm=arm;
     this.position=position;
     addRequirements(arm);
@@ -33,7 +31,7 @@ public class ArmMotionMagic extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    arm.setArmPosition(position.getAsDouble());
+    arm.setArmPosition(position);
   }
 
   // Called once the command ends or is interrupted.

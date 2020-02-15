@@ -20,7 +20,9 @@ import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Sensors;
 import frc.robot.util.TJController;
+import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
@@ -61,8 +63,14 @@ public class RobotContainer {
   // private final SetToFrontCamera m_setToFrontCamera = new SetToFrontCamera(m_sensors);
   // private final SetToRearCamera m_setToRearCamera = new SetToRearCamera(m_sensors);
 
-  private final ArmMotionMagic m_armMotionMagic;
+  private final ArmMotionMagic m_stowArm;
+  private final ArmMotionMagic m_armToLayup;
+  private final CommandBase m_armToSmartDashboard;
+  private final CommandBase m_armHoldCurrentPosition;
   private final RotateArm m_rotateArm;
+
+  private final DoublePreferenceConstant m_armStowAngle = new DoublePreferenceConstant("Arm Stow Angle", 0);
+  private final DoublePreferenceConstant m_armLayupAngle = new DoublePreferenceConstant("Arm Layup Angle", 45);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -95,8 +103,11 @@ public class RobotContainer {
     m_testArcadeDrive = new ArcadeDrive(m_drive, testArcadeDriveSpeedSupplier, testArcadeDriveTurnSupplier,
         testArcadeDriveShiftSupplier);
 
-    DoubleSupplier armPositionSupplier = () -> SmartDashboard.getNumber("ArmMotionMagic", 0);
-    m_armMotionMagic = new ArmMotionMagic(m_arm, armPositionSupplier);
+    m_stowArm = new ArmMotionMagic(m_arm, m_armStowAngle.getValue());
+    m_armToLayup = new ArmMotionMagic(m_arm, m_armLayupAngle.getValue());
+
+    m_armToSmartDashboard = new InstantCommand(() -> new ArmMotionMagic(m_arm, SmartDashboard.getNumber("ArmDashboardPosition", 0)).schedule());
+    m_armHoldCurrentPosition = new InstantCommand(() -> new ArmMotionMagic(m_arm, m_arm.getCurrentArmPosition()).schedule());
 
     DoubleSupplier armSpeedSupplier = DriveUtils.deadbandExponential(m_testController::getRightStickY, Constants.ARM_SPEED_EXP, Constants.TEST_JOYSTICK_DEADBAND);
     m_rotateArm = new RotateArm(m_arm, armSpeedSupplier);
@@ -129,16 +140,20 @@ public class RobotContainer {
     SmartDashboard.putNumber("SetTestHeading", 0);
     SmartDashboard.putData("TestTurnToHeading", new InstantCommand(() -> (new TurnToHeading(m_drive, m_sensors, SmartDashboard.getNumber("SetTestHeading", 0))).schedule()));
 
-    SmartDashboard.putData("ArmMotionMagic", m_armMotionMagic);
-    SmartDashboard.putNumber("SetArmPosition", 0);
+    // SmartDashboard.putData("ArmMotionMagic", m_stowArm);
+    // SmartDashboard.putNumber("SetArmPosition", 0);
     SmartDashboard.putData("Hopper Intake", new HopperIntakeMode(m_hopper));
     SmartDashboard.putData("Hopper Shoot", new HopperShootMode(m_hopper));
     SmartDashboard.putData("Hopper Stop", new HopperStop(m_hopper));
+
+    SmartDashboard.putNumber("ArmDashboardPosition", 0);
+    SmartDashboard.putData("Arm to Position", m_armToSmartDashboard);
   }
 
   private void configureDefaultCommands() {
     // m_intake.setDefaultCommand(m_stopIntake);
     m_drive.setDefaultCommand(m_arcadeDrive);
+    m_arm.setDefaultCommand(m_armHoldCurrentPosition);
   }
 
   /**

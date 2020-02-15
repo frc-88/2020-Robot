@@ -101,6 +101,10 @@ public class Arm extends SubsystemBase {
     m_rotator.setSelectedSensorPosition(convertArmDegreesToEncoderTicks(angle));
   }
 
+  public double getCurrentArmPosition() {
+    return convertEncoderTicksToArmDegrees(m_rotator.getSelectedSensorPosition());
+  }
+
   /**
    * Converts encoder position to arm position
    * @param encoderPosition, in ticks
