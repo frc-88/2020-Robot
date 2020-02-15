@@ -51,6 +51,10 @@ public class Shooter extends SubsystemBase {
     m_flywheelMaster.set(ControlMode.Velocity, velocity * Constants.SHOOTER_FLYWHEEL_MAX_SPEED);
   }
 
+  public boolean flywheelOnTarget() {
+    return Math.abs(m_flywheelMaster.getClosedLoopError()) < Constants.SHOOTER_FLYWHEEL_TOLERANCE;
+  }
+
   public void setFlywheelBasic(double percentOutput) {
     m_flywheelMaster.set(ControlMode.PercentOutput, percentOutput);
   }
