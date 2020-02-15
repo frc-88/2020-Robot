@@ -27,6 +27,8 @@ public class Shooter extends SubsystemBase {
   private DoublePreferenceConstant flywheel_kI;
   private DoublePreferenceConstant flywheel_kD;
   private DoublePreferenceConstant flywheel_kF;
+  private DoublePreferenceConstant flywheel_iZone;
+  private DoublePreferenceConstant flywheel_iMax;
 
   /**
    * Creates a new Shooter.
@@ -60,6 +62,10 @@ public class Shooter extends SubsystemBase {
     flywheel_kD.addChangeHandler((Double kD) -> m_flywheelMaster.config_kD(0, kD));
     flywheel_kF = new DoublePreferenceConstant("Shooter flywheel kF", 0);
     flywheel_kF.addChangeHandler((Double kF) -> m_flywheelMaster.config_kF(0, kF));
+    flywheel_iZone = new DoublePreferenceConstant("Shooter flywheel iZone", 0);
+    flywheel_iZone.addChangeHandler((Double iZone) -> m_flywheelMaster.config_IntegralZone(0, convertFlywheelVelocityToEncoderVelocity(iZone)));
+    flywheel_iMax = new DoublePreferenceConstant("Shooter flywheel iMax", 0);
+    flywheel_iMax.addChangeHandler((Double iMax) -> m_flywheelMaster.configMaxIntegralAccumulator(0, iMax));
 
   }
 
