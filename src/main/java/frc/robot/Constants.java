@@ -42,7 +42,7 @@ public final class Constants {
 	public static final double ARM_SHOOTER_ANGLE_1 = 0;
 	public static final double ARM_SHOOTER_ANGLE_2 = 45;
 	public static final double ARM_SHOOTER_ANGLE_3 = 90;
-	public static final int ARM_ENCODER_TICKS_PER_ROTATION = 1024;
+	public static final int ARM_ENCODER_TICKS_PER_ROTATION = 4096;
 	public static final int FALCON_TO_ENCODER_RATIO = 2;
 	public static final int ENCODER_TO_ARM_RATIO = 3;
 	public static final int FALCON_TO_ARM_RATIO = 6;

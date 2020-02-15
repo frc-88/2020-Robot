@@ -28,7 +28,6 @@ public class Arm extends SubsystemBase {
   private double MAXIMUM_ARM_VELOCITY = 60; //degrees per second
   private DoublePreferenceConstant MAXIMUM_ARM_ACCELERATION;
 
-  private double speed;
   private DoublePreferenceConstant rotator_kP;
   private DoublePreferenceConstant rotator_kI;
   private DoublePreferenceConstant rotator_kD;
@@ -40,7 +39,6 @@ public class Arm extends SubsystemBase {
   private ArmConfig armConfig;
 
   private int remoteSensorID = 0;
-
 
   public Arm() {
     m_armEncoder.configFactoryDefault();
@@ -56,13 +54,11 @@ public class Arm extends SubsystemBase {
     m_rotator.setSensorPhase(false);
     m_rotator.setNeutralMode(NeutralMode.Brake);
 
-    
-
     //Motion magic **woosh**
 
-    MAXIMUM_ARM_ACCELERATION = new DoublePreferenceConstant("CPM Acceleration", 2);
+    MAXIMUM_ARM_ACCELERATION = new DoublePreferenceConstant("Arm Acceleration", 15);
     MAXIMUM_ARM_ACCELERATION.addChangeHandler(
-      (Double acceleration) -> m_rotator.configMotionAcceleration(convertArmVelocityToMotorVelocity(acceleration)));
+      (Double acceleration) -> m_rotator.configMotionAcceleration(convertArmVelocityToEncoderVelocity(acceleration)));
     rotator_kP = new DoublePreferenceConstant("Arm rotator kP", 0);
     rotator_kP.addChangeHandler((Double kP) -> m_rotator.config_kP(0, kP));
     rotator_kI = new DoublePreferenceConstant("Arm rotator kI", 0);
@@ -72,8 +68,8 @@ public class Arm extends SubsystemBase {
     rotator_kF = new DoublePreferenceConstant("Arm rotator kF", 0);
     rotator_kF.addChangeHandler((Double kF) -> m_rotator.config_kF(0, kF));
 
-    m_rotator.configMotionCruiseVelocity(convertArmVelocityToMotorVelocity(MAXIMUM_ARM_VELOCITY));
-    m_rotator.configMotionAcceleration(convertArmVelocityToMotorVelocity(MAXIMUM_ARM_ACCELERATION.getValue()));
+    m_rotator.configMotionCruiseVelocity(convertArmVelocityToEncoderVelocity(MAXIMUM_ARM_VELOCITY));
+    m_rotator.configMotionAcceleration(convertArmVelocityToEncoderVelocity(MAXIMUM_ARM_ACCELERATION.getValue()));
 
     m_rotator.configRemoteFeedbackFilter(m_armEncoder.getDeviceID(), RemoteSensorSource.CANifier_PWMInput0, remoteSensorID);
     m_rotator.configForwardSoftLimitEnable(true);
@@ -83,11 +79,11 @@ public class Arm extends SubsystemBase {
   }
 
   private void setArmPosition(double armPosition) {
-    m_rotator.set(ControlMode.MotionMagic, convertArmDegreesToMotorTicks(armPosition));
+    m_rotator.set(ControlMode.MotionMagic, convertArmDegreesToEncoderTicks(armPosition));
   }
 
-  private void moveArmToPosition(double armPosition) {
-    m_rotator.set(ControlMode.PercentOutput, convertArmDegreesToMotorTicks(armPosition));
+  private void setBasicPosition(double armPosition) {
+    m_rotator.set(ControlMode.PercentOutput, convertArmDegreesToEncoderTicks(armPosition));
   }
   
   private double getArmPosition() {
@@ -139,7 +135,7 @@ public class Arm extends SubsystemBase {
   }
 
   private int convertArmVelocityToMotorVelocity(double armVelocity) {
-    return (int)(armVelocity * (1. / 360.) * Constants.FALCON_TO_ARM_RATIO * 10. * 2. * Constants.ARM_ENCODER_TICKS_PER_ROTATION);
+    return (int)(armVelocity * (1. / 360.) * Constants.FALCON_TO_ARM_RATIO * 10. * Constants.FALCON_TO_ENCODER_RATIO * Constants.ARM_ENCODER_TICKS_PER_ROTATION);
   }
 
   @Override
