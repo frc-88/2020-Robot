@@ -84,15 +84,15 @@ public class Arm extends SubsystemBase {
     zeroArm();
   }
 
-  private void setArmPosition(double armPosition) {
+  public void setArmPosition(double armPosition) {
     m_rotator.set(ControlMode.MotionMagic, convertArmDegreesToEncoderTicks(armPosition));
   }
 
-  private void setPercentOutput(double percent) {
+  public void setPercentOutput(double percent) {
     m_rotator.set(ControlMode.PercentOutput, percent);
   }
   
-  private void zeroArm() {
+  public void zeroArm() {
     double angle = (convertEncoderTicksToArmDegrees(m_rotator.getSelectedSensorPosition()) + Constants.ARM_ENCODER_SHIFT) % (360. / Constants.ENCODER_TO_ARM_RATIO);
     if(angle < 0) {
       angle += 360. / Constants.ENCODER_TO_ARM_RATIO;
@@ -107,7 +107,7 @@ public class Arm extends SubsystemBase {
    * @return armPosition, in degrees
    */
 
-  private double convertEncoderTicksToArmDegrees(int encoderPosition) {
+  public double convertEncoderTicksToArmDegrees(int encoderPosition) {
     return (encoderPosition * (1. / Constants.ARM_ENCODER_TICKS_PER_ROTATION) * 360. * (1. / Constants.ENCODER_TO_ARM_RATIO));
   }
 
@@ -117,7 +117,7 @@ public class Arm extends SubsystemBase {
    * @return motorPosition, in ticks
    */
 
-  private int convertArmDegreesToEncoderTicks(double armPosition) {
+  public int convertArmDegreesToEncoderTicks(double armPosition) {
     return (int)(armPosition * (1. / 360.) * Constants.ENCODER_TO_ARM_RATIO * Constants.ARM_ENCODER_TICKS_PER_ROTATION);
   }
 
@@ -127,7 +127,7 @@ public class Arm extends SubsystemBase {
    * @return armVelocity, in degrees per second
    */
 
-  private double convertEncoderVelocityToArmVelocity(int encoderVelocity) {
+  public double convertEncoderVelocityToArmVelocity(int encoderVelocity) {
     return (encoderVelocity * (1. / 10.) * (1. / Constants.ARM_ENCODER_TICKS_PER_ROTATION) * (1. / Constants.ENCODER_TO_ARM_RATIO) * 360.);
   }
 
@@ -137,17 +137,17 @@ public class Arm extends SubsystemBase {
    * @return motorVelocity, in ticks per 100ms
    */
 
-  private int convertArmVelocityToEncoderVelocity(double armVelocity) {
+  public int convertArmVelocityToEncoderVelocity(double armVelocity) {
     return (int)(armVelocity * (1. / 360.) * Constants.ENCODER_TO_ARM_RATIO * 10. * Constants.ARM_ENCODER_TICKS_PER_ROTATION);
   }
 
-  private int convertArmDegreesToMotorTicks(double armPosition) {
-    return (int)(armPosition * (1. / 360.) * Constants.FALCON_TO_ARM_RATIO * 2. * Constants.ARM_ENCODER_TICKS_PER_ROTATION);
-  }
+  // public int convertArmDegreesToMotorTicks(double armPosition) {
+  //   return (int)(armPosition * (1. / 360.) * Constants.FALCON_TO_ARM_RATIO * 2. * Constants.ARM_ENCODER_TICKS_PER_ROTATION);
+  // }
 
-  private int convertArmVelocityToMotorVelocity(double armVelocity) {
-    return (int)(armVelocity * (1. / 360.) * Constants.FALCON_TO_ARM_RATIO * 10. * Constants.FALCON_TO_ENCODER_RATIO * Constants.ARM_ENCODER_TICKS_PER_ROTATION);
-  }
+  // public int convertArmVelocityToMotorVelocity(double armVelocity) {
+  //   return (int)(armVelocity * (1. / 360.) * Constants.FALCON_TO_ARM_RATIO * 10. * Constants.FALCON_TO_ENCODER_RATIO * Constants.ARM_ENCODER_TICKS_PER_ROTATION);
+  // }
 
   @Override
   public void periodic() {

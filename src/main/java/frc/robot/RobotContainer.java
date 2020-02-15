@@ -20,6 +20,8 @@ import frc.robot.commands.RetractIntake;
 import frc.robot.commands.RotateColorWheel;
 import frc.robot.commands.RunIntake;
 import frc.robot.commands.StopIntake;
+import frc.robot.commands.arm.ArmMotionMagic;
+import frc.robot.commands.arm.RotateArm;
 import frc.robot.commands.vision.SetToFrontCamera;
 import frc.robot.commands.vision.SetToRearCamera;
 import frc.robot.commands.drive.ArcadeDrive;
@@ -28,6 +30,7 @@ import frc.robot.commands.drive.TankDrive;
 import frc.robot.commands.drive.TestDriveStaticFriction;
 import frc.robot.commands.drive.TurnToHeading;
 import frc.robot.driveutil.DriveUtils;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ControlPanelManipulator;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
@@ -50,11 +53,13 @@ public class RobotContainer {
   private final Sensors m_sensors = new Sensors();
 
   private final TJController m_driverController = new TJController(0);
+  private final TJController m_testController = new TJController(1);
 
   // Subsystems
   // private final ControlPanelManipulator m_cpm = new ControlPanelManipulator();
   // private final Intake m_intake = new Intake();
   private final Drive m_drive = new Drive(m_sensors);
+  private final Arm m_arm = new Arm();
 
   // Commands
   private final Command m_autoCommand = new WaitCommand(1);
@@ -79,6 +84,9 @@ public class RobotContainer {
 
   private final SetToFrontCamera m_setToFrontCamera = new SetToFrontCamera(m_sensors);
   private final SetToRearCamera m_setToRearCamera = new SetToRearCamera(m_sensors);
+
+  private final ArmMotionMagic m_armMotionMagic;
+  private final RotateArm m_rotateArm;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -105,6 +113,13 @@ public class RobotContainer {
     DoubleSupplier testArcadeDriveSpeedSupplier = () -> SmartDashboard.getNumber("SetTestDriveSpeed", 0) / Constants.MAX_SPEED_HIGH;
     DoubleSupplier testArcadeDriveTurnSupplier = () -> SmartDashboard.getNumber("SetTestDriveTurn", 0) * (Constants.WHEEL_BASE_WIDTH * Math.PI) / Constants.MAX_SPEED_HIGH / 360;
     m_testArcadeDrive = new ArcadeDrive(m_drive, testArcadeDriveSpeedSupplier, testArcadeDriveTurnSupplier, testArcadeDriveShiftSupplier);
+
+    DoubleSupplier armPositionSupplier = () -> SmartDashboard.getNumber("ArmMotionMagic", 0);
+    m_armMotionMagic = new ArmMotionMagic(m_arm, armPositionSupplier);
+
+    DoubleSupplier armSpeedSupplier = DriveUtils.deadbandExponential(m_testController::getRightStickY, Constants.ARM_SPEED_EXP, Constants.TEST_JOYSTICK_DEADBAND);
+    m_rotateArm = new RotateArm(m_arm, armSpeedSupplier);
+    
 
     // Configure the button bindings
     configureButtonBindings();
@@ -136,6 +151,9 @@ public class RobotContainer {
 
     SmartDashboard.putNumber("SetTestHeading", 0);
     SmartDashboard.putData("TestTurnToHeading", new InstantCommand(() -> (new TurnToHeading(m_drive, m_sensors, SmartDashboard.getNumber("SetTestHeading", 0))).schedule()));
+
+    SmartDashboard.putData("ArmMotionMagic", m_armMotionMagic);
+    SmartDashboard.putNumber("SetArmPosition", 0);
   }
 
   /**

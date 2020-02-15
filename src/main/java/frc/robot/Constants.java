@@ -50,6 +50,7 @@ public final class Constants {
 	public static final double ARM_LOW_LIMIT = 0;
 	public static final double ARM_HIGH_LIMIT = 90;
 	public static final double ARM_ENCODER_SHIFT = 15;
+	public static final int ARM_SPEED_EXP = 1;
 
 	// Intake constants
 	public static final int ROLLER_ID = 5;
@@ -107,6 +108,9 @@ public final class Constants {
 	public static final double DRIVE_JOYSTICK_DEADBAND = 0.12;
 	public static final double CHEESY_DRIVE_MIN_TURN = 0.4;
 	public static final double CHEESY_DRIVE_MAX_TURN = 0.6;
+
+	//Test
+	public static final double TEST_JOYSTICK_DEADBAND = 0.1;
 
 	/*******************************************************************/
 
