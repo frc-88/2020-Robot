@@ -39,8 +39,11 @@ public final class Constants {
 
 	// Intake constants
 	public static final int ROLLER_ID = 11;
-	public static final int INTAKE_DEPLOY_PISTON = 2;
-	public static final int INTAKE_RETRACT_PISTON = 5;
+	public static final int INTAKE_LEFT_DEPLOY_PISTON = 1;
+	public static final int INTAKE_LEFT_RETRACT_PISTON = 6;
+	public static final int INTAKE_RIGHT_DEPLOY_PISTON = 0;
+	public static final int INTAKE_RIGHT_RETRACT_PISTON = 7;
+
 
 	/********************************************************************
     * 
