@@ -32,9 +32,12 @@ import frc.robot.subsystems.ControlPanelManipulator;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Sensors;
+import frc.robot.util.ButtonBox;
 import frc.robot.util.TJController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 /**
@@ -50,6 +53,7 @@ public class RobotContainer {
   private final Sensors m_sensors = new Sensors();
 
   private final TJController m_driverController = new TJController(0);
+  private final ButtonBox m_buttonBox = new ButtonBox(1);
 
   // Subsystems
   // private final ControlPanelManipulator m_cpm = new ControlPanelManipulator();
@@ -125,6 +129,9 @@ public class RobotContainer {
 
     m_driverController.buttonRightBumper.whenPressed(m_setToFrontCamera);
     m_driverController.buttonRightBumper.whenReleased(m_setToRearCamera);
+
+    m_buttonBox.button4.whenPressed(new SequentialCommandGroup(m_deployIntake, m_runIntake));
+    m_buttonBox.button4.whenReleased(new SequentialCommandGroup(m_retractIntake, m_stopIntake));
 
     SmartDashboard.putData("TestDriveStaticFriction", m_testDriveStaticFriction);
     SmartDashboard.putData("CalculateDriveEfficiency", m_calculateDriveEfficiency);
