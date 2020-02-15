@@ -17,7 +17,9 @@ public class Hopper extends SubsystemBase {
   private TalonSRX m_feederLeft, m_feederRight;
 
   /**
-   * Creates a new Hopper.
+   * we can count to five
+   * which differs from a certain
+   * holy hand grenade
    */
   public Hopper() {
     m_feederLeft = new TalonSRX(Constants.HOPPER_FEEDER_1);
