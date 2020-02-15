@@ -21,7 +21,6 @@ public class ArmConfig {
         armConfiguration = new TalonFXConfiguration();
 
         // arm - TalonFX
-        // TODO - change to use Rev 1024 encoder on canifier
         armConfiguration.primaryPID.selectedFeedbackSensor = FeedbackDevice.RemoteSensor0;
         // armConfiguration.primaryPID.selectedFeedbackCoefficient = 0.328293;
         armConfiguration.peakOutputForward = 1.0;
@@ -29,10 +28,10 @@ public class ArmConfig {
         armConfiguration.nominalOutputForward = 1.0;
         armConfiguration.nominalOutputReverse = -1.0;
         armConfiguration.neutralDeadband = 0.001;
-        armConfiguration.slot0.kP = 0.00000;
-        armConfiguration.slot0.kI = 0.00000;
-        armConfiguration.slot0.kD = 0.00000;
-        armConfiguration.slot0.kF = 1.00000;
+        // armConfiguration.slot0.kP = 0.00000;
+        // armConfiguration.slot0.kI = 0.00000;
+        // armConfiguration.slot0.kD = 0.00000;
+        // armConfiguration.slot0.kF = 1.00000;
         // armConfiguration.slot0.integralZone = 900;
         // armConfiguration.slot0.allowableClosedloopError = 217;
         // armConfiguration.slot0.maxIntegralAccumulator = 254.000000;

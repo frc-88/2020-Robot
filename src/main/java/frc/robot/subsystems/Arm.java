@@ -13,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.sensors.CANCoder;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -25,7 +26,7 @@ public class Arm extends SubsystemBase {
    * Creates a new Arm.
    */
 
-  private double MAXIMUM_ARM_VELOCITY = 60; //degrees per second
+  private DoublePreferenceConstant MAXIMUM_ARM_VELOCITY; //degrees per second
   private DoublePreferenceConstant MAXIMUM_ARM_ACCELERATION;
 
   private DoublePreferenceConstant rotator_kP;
@@ -34,7 +35,7 @@ public class Arm extends SubsystemBase {
   private DoublePreferenceConstant rotator_kF;
 
   private TalonFX m_rotator = new TalonFX(Constants.ARM_MOTOR);
-  private CANifier m_armEncoder = new CANifier(Constants.ARM_CANIFIER);
+  private CANCoder m_armEncoder = new CANCoder(Constants.ARM_CANCODER);
 
   private ArmConfig armConfig;
 
@@ -43,8 +44,8 @@ public class Arm extends SubsystemBase {
   public Arm() {
     m_armEncoder.configFactoryDefault();
     /* Configure velocity measurements to be what we want */
-		m_armEncoder.configVelocityMeasurementPeriod(VelocityPeriod.Period_100Ms);
-    m_armEncoder.configVelocityMeasurementWindow(64);
+		// m_armEncoder.configVelocityMeasurementPeriod(VelocityPeriod.Period_100Ms);
+    // m_armEncoder.configVelocityMeasurementWindow(64);
 
     m_rotator.configFactoryDefault();
     m_rotator.configAllSettings(armConfig.armConfiguration);
@@ -56,6 +57,9 @@ public class Arm extends SubsystemBase {
 
     //Motion magic **woosh**
 
+    MAXIMUM_ARM_VELOCITY = new DoublePreferenceConstant("Arm velocity", 60);
+    MAXIMUM_ARM_VELOCITY.addChangeHandler(
+      (Double velocity) -> m_rotator.configMotionCruiseVelocity(convertArmVelocityToEncoderVelocity(velocity)));
     MAXIMUM_ARM_ACCELERATION = new DoublePreferenceConstant("Arm Acceleration", 15);
     MAXIMUM_ARM_ACCELERATION.addChangeHandler(
       (Double acceleration) -> m_rotator.configMotionAcceleration(convertArmVelocityToEncoderVelocity(acceleration)));
@@ -68,26 +72,33 @@ public class Arm extends SubsystemBase {
     rotator_kF = new DoublePreferenceConstant("Arm rotator kF", 0);
     rotator_kF.addChangeHandler((Double kF) -> m_rotator.config_kF(0, kF));
 
-    m_rotator.configMotionCruiseVelocity(convertArmVelocityToEncoderVelocity(MAXIMUM_ARM_VELOCITY));
+    m_rotator.configMotionCruiseVelocity(convertArmVelocityToEncoderVelocity(MAXIMUM_ARM_VELOCITY.getValue()));
     m_rotator.configMotionAcceleration(convertArmVelocityToEncoderVelocity(MAXIMUM_ARM_ACCELERATION.getValue()));
 
-    m_rotator.configRemoteFeedbackFilter(m_armEncoder.getDeviceID(), RemoteSensorSource.CANifier_PWMInput0, remoteSensorID);
+    m_rotator.configRemoteFeedbackFilter(m_armEncoder.getDeviceID(), RemoteSensorSource.CANCoder, remoteSensorID);
     m_rotator.configForwardSoftLimitEnable(true);
-    m_rotator.configForwardSoftLimitThreshold(Constants.CANIFIER_HIGH_LIMIT);
+    m_rotator.configForwardSoftLimitThreshold(convertArmDegreesToEncoderTicks(Constants.ARM_HIGH_LIMIT));
     m_rotator.configReverseSoftLimitEnable(true);
-    m_rotator.configReverseSoftLimitThreshold(Constants.CANIFIER_LOW_LIMIT);
+    m_rotator.configReverseSoftLimitThreshold(convertArmDegreesToEncoderTicks(Constants.ARM_LOW_LIMIT));
+
+    zeroArm();
   }
 
   private void setArmPosition(double armPosition) {
     m_rotator.set(ControlMode.MotionMagic, convertArmDegreesToEncoderTicks(armPosition));
   }
 
-  private void setBasicPosition(double armPosition) {
-    m_rotator.set(ControlMode.PercentOutput, convertArmDegreesToEncoderTicks(armPosition));
+  private void setPercentOutput(double percent) {
+    m_rotator.set(ControlMode.PercentOutput, percent);
   }
   
-  private double getArmPosition() {
-    return ((m_armEncoder.getQuadraturePosition() + Constants.ARM_ENCODER_SHIFT) % (360. / Constants.ENCODER_TO_ARM_RATIO)) - Constants.ARM_ENCODER_SHIFT;
+  private void zeroArm() {
+    double angle = (convertEncoderTicksToArmDegrees(m_rotator.getSelectedSensorPosition()) + Constants.ARM_ENCODER_SHIFT) % (360. / Constants.ENCODER_TO_ARM_RATIO);
+    if(angle < 0) {
+      angle += 360. / Constants.ENCODER_TO_ARM_RATIO;
+    } 
+    angle -= Constants.ARM_ENCODER_SHIFT;
+    m_rotator.setSelectedSensorPosition(convertArmDegreesToEncoderTicks(angle));
   }
 
   /**
@@ -141,7 +152,11 @@ public class Arm extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Arm Falcon Position", m_rotator.getSelectedSensorPosition());
-    SmartDashboard.putNumber("Arm Canifier Position", m_armEncoder.getQuadraturePosition());
+    SmartDashboard.putNumber("Arm Position", convertEncoderTicksToArmDegrees(m_rotator.getSelectedSensorPosition()));
+    SmartDashboard.putNumber("Arm Velocity", convertEncoderVelocityToArmVelocity(m_rotator.getSelectedSensorVelocity()));
+    SmartDashboard.putNumber("Expected Arm Position", convertEncoderTicksToArmDegrees(m_rotator.getActiveTrajectoryPosition()));
+    SmartDashboard.putNumber("Expected Arm Velocity", convertEncoderVelocityToArmVelocity(m_rotator.getActiveTrajectoryVelocity()));
+
+    SmartDashboard.putNumber("Arm Current Use", m_rotator.getSupplyCurrent());
   }
 }

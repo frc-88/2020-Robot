@@ -38,7 +38,7 @@ public final class Constants {
 
 	// Arm constants
 	public static final int ARM_MOTOR = 4;
-	public static final int ARM_CANIFIER = 4;
+	public static final int ARM_CANCODER = 4;
 	public static final double ARM_SHOOTER_ANGLE_1 = 0;
 	public static final double ARM_SHOOTER_ANGLE_2 = 45;
 	public static final double ARM_SHOOTER_ANGLE_3 = 90;
@@ -47,9 +47,9 @@ public final class Constants {
 	public static final int ENCODER_TO_ARM_RATIO = 3;
 	public static final int FALCON_TO_ARM_RATIO = 6;
 	public static final double ARM_MAXIMUM_VELOCITY = 60;
-	public static final int CANIFIER_LOW_LIMIT = 0;
-	public static final int CANIFIER_HIGH_LIMIT = 0;
-	public static final int ARM_ENCODER_SHIFT = 15;
+	public static final double ARM_LOW_LIMIT = 0;
+	public static final double ARM_HIGH_LIMIT = 90;
+	public static final double ARM_ENCODER_SHIFT = 15;
 
 	// Intake constants
 	public static final int ROLLER_ID = 5;
