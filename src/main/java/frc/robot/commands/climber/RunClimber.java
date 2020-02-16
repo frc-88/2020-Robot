@@ -25,7 +25,6 @@ public class RunClimber extends CommandBase {
     this.xSpeed=xSpeed;
     this.ySpeed=ySpeed;
     addRequirements(climber);
-    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.

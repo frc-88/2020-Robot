@@ -17,6 +17,7 @@ import frc.robot.commands.arm.*;
 import frc.robot.commands.climber.DisengageRatchets;
 import frc.robot.commands.climber.EngageRatchets;
 import frc.robot.commands.climber.RunClimber;
+import frc.robot.commands.climber.ZeroClimber;
 import frc.robot.commands.climber.DisengageRatchets;
 import frc.robot.commands.climber.EngageRatchets;
 import frc.robot.commands.climber.RunClimber;
@@ -78,6 +79,7 @@ public class RobotContainer {
 
   // Climber Commands
 
+  private final ZeroClimber m_zeroClimber;
   private final RunClimber m_runClimber;
   private final EngageRatchets m_engageRatchets = new EngageRatchets(m_climber);
   private final DisengageRatchets m_disengageRatchets = new DisengageRatchets(m_climber);
@@ -132,6 +134,7 @@ public class RobotContainer {
     DoubleSupplier climbSpeedYSupplier = DriveUtils.deadbandExponential(m_testController::getLeftStickY, Constants.CLIMBER_EXPONENTIAL, Constants.CLIMBER_CONTROLLER_DEADZONE);
 
     m_runClimber = new RunClimber(m_climber, climbSpeedXSupplier, climbSpeedYSupplier);
+    m_zeroClimber = new ZeroClimber(m_climber);
 
     DoubleSupplier arcadeDriveSpeedSupplier = DriveUtils.deadbandExponential(m_driverController::getLeftStickY,
         Constants.DRIVE_SPEED_EXP, Constants.DRIVE_JOYSTICK_DEADBAND);
@@ -210,6 +213,7 @@ public class RobotContainer {
 
     SmartDashboard.putData("Engage ratchets", m_engageRatchets);
     SmartDashboard.putData("Disengage ratchets", m_disengageRatchets);
+    SmartDashboard.putData("Zero climber", m_zeroClimber);
 
     SmartDashboard.putNumber("SetTestHeading", 0);
     SmartDashboard.putData("TestTurnToHeading", new InstantCommand(() -> (new TurnToHeading(m_drive, m_sensors, SmartDashboard.getNumber("SetTestHeading", 0))).schedule()));

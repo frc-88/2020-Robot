@@ -9,7 +9,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -32,16 +32,10 @@ public class Climber extends SubsystemBase{
         m_climber_motor_right.configFactoryDefault();
         m_climber_motor_left.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
         m_climber_motor_right.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-        m_climber_motor_left.setSelectedSensorPosition(0);
-        m_climber_motor_right.setSelectedSensorPosition(0);
+        m_climber_motor_left.setInverted(true);
+        m_climber_motor_right.setInverted(false);
 
-        SupplyCurrentLimitConfiguration currentLimit = new SupplyCurrentLimitConfiguration();
-        currentLimit.enable = true;
-        currentLimit.currentLimit = 40;
-        currentLimit.triggerThresholdCurrent = 40;
-        currentLimit.triggerThresholdTime = 0.001;
-        m_climber_motor_left.configSupplyCurrentLimit(currentLimit);
-        m_climber_motor_right.configSupplyCurrentLimit(currentLimit);
+        exitZeroMode();
 
         m_climber_motor_left.configForwardSoftLimitEnable(true);
         m_climber_motor_left.configForwardSoftLimitThreshold(Constants.CLIMBER_MAX_POSITION);
@@ -79,13 +73,48 @@ public class Climber extends SubsystemBase{
         m_climber_ratchet.set(Value.kForward);
     }
 
-    public void runClimberOnVoltage(double current) {
-        m_climber_motor_left.set(ControlMode.Current, current);
-        m_climber_motor_right.set(ControlMode.Current, current);
+    public void zero() {
+        m_climber_motor_left.setSelectedSensorPosition(0);
+        m_climber_motor_right.setSelectedSensorPosition(0);
+    }
+
+    public void enterZeroMode() {
+        StatorCurrentLimitConfiguration currentLimit = new StatorCurrentLimitConfiguration();
+        currentLimit.enable = true;
+        currentLimit.currentLimit = 10;
+        currentLimit.triggerThresholdCurrent = 10;
+        currentLimit.triggerThresholdTime = 0.001;
+        m_climber_motor_left.configStatorCurrentLimit(currentLimit);
+        m_climber_motor_right.configStatorCurrentLimit(currentLimit);  
+        m_climber_motor_left.configReverseSoftLimitEnable(false);   
+        m_climber_motor_right.configReverseSoftLimitEnable(false);   
+
+    }
+
+    public void exitZeroMode() {
+        StatorCurrentLimitConfiguration currentLimit = new StatorCurrentLimitConfiguration();
+        currentLimit.enable = true;
+        currentLimit.currentLimit = 40;
+        currentLimit.triggerThresholdCurrent = 40;
+        currentLimit.triggerThresholdTime = 0.001;
+        m_climber_motor_left.configStatorCurrentLimit(currentLimit);
+        m_climber_motor_right.configStatorCurrentLimit(currentLimit);   
+        m_climber_motor_left.configReverseSoftLimitEnable(true);   
+        m_climber_motor_right.configReverseSoftLimitEnable(true); 
+    }
+
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Left Motor Position", m_climber_motor_left.getSelectedSensorPosition());
-        SmartDashboard.putNumber("Right Motor Position", m_climber_motor_right.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Left Climber Position", m_climber_motor_left.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Right Climber Position", m_climber_motor_right.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Left Climber Velocity", m_climber_motor_left.getSelectedSensorVelocity() / 10);
+        SmartDashboard.putNumber("Right Climber Velocity", m_climber_motor_right.getSelectedSensorVelocity() / 10);
+        SmartDashboard.putNumber("Left Climber Stator", m_climber_motor_left.getStatorCurrent());
+        SmartDashboard.putNumber("Right Climber Stator", m_climber_motor_right.getStatorCurrent());
+        SmartDashboard.putNumber("Left Climber Supply", m_climber_motor_left.getSupplyCurrent());
+        SmartDashboard.putNumber("Right Climber Supply", m_climber_motor_right.getSupplyCurrent());
 
+        SmartDashboard.putNumber("Right climber output voltage", m_climber_motor_right.getMotorOutputVoltage());
+        SmartDashboard.putNumber("Left climber output voltage", m_climber_motor_left.getMotorOutputVoltage());
     }
 }

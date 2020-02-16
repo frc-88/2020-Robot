@@ -18,6 +18,7 @@ public class ZeroClimber extends CommandBase {
    * Creates a new ZeroClimber.
    */
   public ZeroClimber(Climber climber) {
+    this.climber=climber;
     addRequirements(climber);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -25,24 +26,27 @@ public class ZeroClimber extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    climber.enterZeroMode();
     startTime = RobotController.getFPGATime();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    climber.runClimberOnVoltage(-0.1);
+    climber.setMotors(-0.1);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    
+    climber.exitZeroMode();
+    climber.setMotors(0);
+    climber.zero();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-      return RobotController.getFPGATime() - startTime == 10000000;
+      return RobotController.getFPGATime() - startTime >= 10 * 1_000_000;
   }
 }
