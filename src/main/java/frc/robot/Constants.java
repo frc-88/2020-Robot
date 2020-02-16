@@ -42,6 +42,10 @@ public final class Constants {
 	public static final int INTAKE_DEPLOY_PISTON = 0;
 	public static final int INTAKE_RETRACT_PISTON = 7;
 
+	// Sensor constants
+	public static final int PCC_IMAGE_WIDTH = 240;
+	public static final int PCC_IMAGE_HEIGHT = 240;
+
 	/********************************************************************
     * 
     *                ____       _          

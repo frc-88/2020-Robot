@@ -7,14 +7,21 @@
 
 package frc.robot.subsystems;
 
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
+
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoSink;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import frc.robot.util.NavX;
 import frc.robot.util.Limelight;
+import frc.robot.util.NavX;
 
 /**
  * we gather data
@@ -44,7 +51,34 @@ public class Sensors extends SubsystemBase {
     setToFrontCamera();
     // frontCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
     // rearCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+
+    startCounter(frontCamera);
   }
+
+  public void startCounter(UsbCamera camera) {
+    new Thread(() -> {
+      camera.setResolution(640, 480);
+
+      CvSink cvSink = CameraServer.getInstance().getVideo();
+      CvSource outputStream = CameraServer.getInstance().putVideo("Blur", 640, 480);
+
+      Mat source = new Mat();
+      Mat output = new Mat();
+
+      while(!Thread.interrupted()) {
+        if (cvSink.grabFrame(source) == 0) {
+          continue;
+        }
+        Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2HSV);
+				Imgproc.blur(output, output, new Size(20, 20));
+        Core.inRange(output, new Scalar(20, 100, 0),
+              new Scalar(50, 255, 255), output);
+              
+        outputStream.putFrame(output);
+      }
+    }).start();
+  }
+
 
   public void setToFrontCamera() {
     server.setSource(frontCamera);
@@ -54,11 +88,8 @@ public class Sensors extends SubsystemBase {
     server.setSource(rearCamera);
   }
 
-
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-
     // NavX data
     SmartDashboard.putNumber("NavX Yaw", m_navx.getYaw());
     SmartDashboard.putNumber("NavX Yaw Rate", m_navx.getYawRate());
@@ -68,5 +99,8 @@ public class Sensors extends SubsystemBase {
     // Limelight data
     SmartDashboard.putBoolean("Limelight connected?", m_limelight.isConnected());
     SmartDashboard.putBoolean("Limelight has target?", m_limelight.hasTarget());
+
+    // PCC data
+    // SmartDashboard.putNumber("PCC Yellow", m_pccThread.getYellowPercentage());
   }
 }
