@@ -5,26 +5,26 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.arm;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Arm;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class RetractIntake extends InstantCommand {
-  private Intake intake;
+public class CalibrateArm extends InstantCommand {
 
-  public RetractIntake(Intake intake) {
-    this.intake=intake;
-    addRequirements(intake);
-    // Use addRequirements() here to declare subsystem dependencies.
+  private final Arm arm;
+
+  public CalibrateArm(Arm arm) {
+    this.arm = arm;
+    addRequirements(arm);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    intake.retract();
+    arm.calibrateArm();
   }
 }

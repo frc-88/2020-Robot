@@ -5,28 +5,24 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.climber;
+package frc.robot.commands.arm;
 
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
-import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.Arm;
 
-public class RunClimber extends CommandBase {
-  private Climber climber;
-  private DoubleSupplier xSpeed;
-  private DoubleSupplier ySpeed;
+public class RotateArm extends CommandBase {
+  private Arm arm;
+  private DoubleSupplier speed;
   /**
-   * Creates a new RunClimber.
+   * Creates a new RotateArm.
    */
-  public RunClimber(Climber climber, DoubleSupplier xSpeed, DoubleSupplier ySpeed) {
-    this.climber=climber;
-    this.xSpeed=xSpeed;
-    this.ySpeed=ySpeed;
-    addRequirements(climber);
-    // Use addRequirements() here to declare subsystem dependencies.
-  }
+  public RotateArm(Arm arm, DoubleSupplier speed) {
+    this.arm=arm;
+    this.speed=speed;
+    addRequirements(arm);
+    }
 
   // Called when the command is initially scheduled.
   @Override
@@ -36,32 +32,12 @@ public class RunClimber extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-    double tilt;
-    double speed;
-
-    //Sets speed value
-    if(Math.abs(ySpeed.getAsDouble()) >= Constants.CLIMBER_CONTROLLER_DEADZONE) {
-      speed = ySpeed.getAsDouble();
-    } else {
-      speed = 0;
-    }
-
-    //Sets tilt value
-    if(Math.abs(xSpeed.getAsDouble()) >= Constants.CLIMBER_CONTROLLER_DEADZONE) {
-      tilt = xSpeed.getAsDouble();
-    } else {
-      tilt = 0;
-    }
-
-    climber.setRightMotor(speed + tilt);
-    climber.setLeftMotor(speed - tilt);
+      arm.setPercentOutput(speed.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    climber.setMotors(0);
   }
 
   // Returns true when the command should end.

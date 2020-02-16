@@ -5,63 +5,41 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.climber;
+package frc.robot.commands.shooter;
 
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
-import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.Shooter;
 
-public class RunClimber extends CommandBase {
-  private Climber climber;
-  private DoubleSupplier xSpeed;
-  private DoubleSupplier ySpeed;
+public class ShooterFlywheelRunBasic extends CommandBase {
+  private Shooter m_shooter;
+  private DoubleSupplier m_percentOutput;
+
   /**
-   * Creates a new RunClimber.
+   * Sets flywheel to desired velocity
    */
-  public RunClimber(Climber climber, DoubleSupplier xSpeed, DoubleSupplier ySpeed) {
-    this.climber=climber;
-    this.xSpeed=xSpeed;
-    this.ySpeed=ySpeed;
-    addRequirements(climber);
-    // Use addRequirements() here to declare subsystem dependencies.
+  public ShooterFlywheelRunBasic(Shooter shooter, DoubleSupplier percentOutput) {
+    m_shooter = shooter;
+    m_percentOutput = percentOutput;
+    addRequirements(m_shooter);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    m_shooter.setFlywheelBasic(m_percentOutput.getAsDouble());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-    double tilt;
-    double speed;
-
-    //Sets speed value
-    if(Math.abs(ySpeed.getAsDouble()) >= Constants.CLIMBER_CONTROLLER_DEADZONE) {
-      speed = ySpeed.getAsDouble();
-    } else {
-      speed = 0;
-    }
-
-    //Sets tilt value
-    if(Math.abs(xSpeed.getAsDouble()) >= Constants.CLIMBER_CONTROLLER_DEADZONE) {
-      tilt = xSpeed.getAsDouble();
-    } else {
-      tilt = 0;
-    }
-
-    climber.setRightMotor(speed + tilt);
-    climber.setLeftMotor(speed - tilt);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    climber.setMotors(0);
+    m_shooter.setFlywheelBasic(0);
   }
 
   // Returns true when the command should end.
