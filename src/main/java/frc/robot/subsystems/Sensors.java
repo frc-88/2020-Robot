@@ -13,6 +13,7 @@ import java.util.List;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
@@ -42,6 +43,8 @@ public class Sensors extends SubsystemBase {
   UsbCamera rearCamera = CameraServer.getInstance().startAutomaticCapture(1);
   VideoSink server = CameraServer.getInstance().getServer();
   private double m_totalYellow = 0.0;
+  private double m_totalYellowChamber = 0.0;
+  private boolean m_cellInChamber = false;
 
   /**
    * Creates a new Sensors subsystem
@@ -71,6 +74,8 @@ public class Sensors extends SubsystemBase {
       Mat source = new Mat();
       Mat output = new Mat();
       Mat hierarchy = new Mat();
+      Mat chamber;
+
       List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 
       while(!Thread.interrupted()) {
@@ -87,8 +92,19 @@ public class Sensors extends SubsystemBase {
         for (MatOfPoint contour: contours) {
           area += Imgproc.contourArea(contour);
         }
-
         m_totalYellow = area;
+
+        area = 0.0;
+        chamber = new Mat(output, new Rect(200,285,185,185));
+        contours.clear();        
+        Imgproc.findContours(chamber, contours, hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+        for (MatOfPoint contour: contours) {
+          area += Imgproc.contourArea(contour);
+        }
+
+        m_totalYellowChamber = area;
+        m_cellInChamber = area > Constants.PCC_CHAMBER_THRESHOLD;
+
         outputStream.putFrame(output);
       }
     }).start();
@@ -101,6 +117,10 @@ public class Sensors extends SubsystemBase {
 
   public void setToRearCamera() {
     server.setSource(rearCamera);
+  }
+
+  public boolean isCellInChamber() {
+    return m_cellInChamber;
   }
 
   @Override
@@ -117,5 +137,7 @@ public class Sensors extends SubsystemBase {
 
     // PCC data
     SmartDashboard.putNumber("PCC Total Yellow", m_totalYellow);
+    SmartDashboard.putBoolean("PCC Chamber Loaded?", m_cellInChamber);
+    SmartDashboard.putNumber("PCC Total Yellow (Chamber)", m_totalYellowChamber);
   }
 }

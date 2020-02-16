@@ -45,6 +45,7 @@ public final class Constants {
 	// Sensor constants
 	public static final int PCC_IMAGE_WIDTH = 240;
 	public static final int PCC_IMAGE_HEIGHT = 240;
+	public static final double PCC_CHAMBER_THRESHOLD = 30000;
 
 	/********************************************************************
     * 
