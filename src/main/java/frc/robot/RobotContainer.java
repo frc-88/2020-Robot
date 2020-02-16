@@ -12,29 +12,16 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-<<<<<<< HEAD
-import frc.robot.commands.DeployIntake;
+import frc.robot.commands.hopper.*;
+import frc.robot.commands.arm.*;
 import frc.robot.commands.climber.DisengageRatchets;
 import frc.robot.commands.climber.EngageRatchets;
 import frc.robot.commands.climber.RunClimber;
-import frc.robot.commands.MoveColorWheelToTargetColor;
-import frc.robot.commands.ReportColor;
-import frc.robot.commands.RetractIntake;
-import frc.robot.commands.RotateColorWheel;
-import frc.robot.commands.RunIntake;
-import frc.robot.commands.StopIntake;
-import frc.robot.subsystems.Climber;
-import frc.robot.commands.vision.SetToFrontCamera;
-import frc.robot.commands.vision.SetToRearCamera;
-=======
-import frc.robot.commands.hopper.*;
-import frc.robot.commands.arm.*;
 import frc.robot.commands.shooter.*;
 import frc.robot.commands.Intake.DeployIntake;
 import frc.robot.commands.Intake.RetractIntake;
 import frc.robot.commands.Intake.RunIntake;
 import frc.robot.commands.Intake.StopIntake;
->>>>>>> master
 import frc.robot.commands.drive.ArcadeDrive;
 import frc.robot.commands.drive.CalculateDriveEfficiency;
 import frc.robot.commands.drive.TankDrive;
@@ -45,11 +32,9 @@ import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Sensors;
-<<<<<<< HEAD
-=======
 import frc.robot.subsystems.Shooter;
->>>>>>> master
 import frc.robot.util.ButtonBox;
 import frc.robot.util.TJController;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
@@ -65,29 +50,21 @@ public class RobotContainer {
   private final Sensors m_sensors = new Sensors();
 
   private final TJController m_driverController = new TJController(0);
-<<<<<<< HEAD
-  private final ButtonBox m_buttonBox = new ButtonBox();
-=======
   private final ButtonBox m_buttonBox = new ButtonBox(1);
   private final TJController m_testController = new TJController(2);
->>>>>>> master
 
   // Subsystems
   private final Drive m_drive = new Drive(m_sensors);
-<<<<<<< HEAD
   private final Climber m_climber = new Climber();
-=======
   private final Hopper m_hopper = new Hopper();
   private final Arm m_arm = new Arm(m_driverController::isButtonStartPressed);
   private final Shooter m_shooter = new Shooter();
   // private final ControlPanelManipulator m_cpm = new ControlPanelManipulator();
   private final Intake m_intake = new Intake();
->>>>>>> master
 
   // Commands
   private final Command m_autoCommand = new WaitCommand(1);
 
-<<<<<<< HEAD
   // Climber Commands
 
   private final RunClimber m_runClimber;
@@ -99,13 +76,11 @@ public class RobotContainer {
   // private final StopIntake m_stopIntake = new StopIntake(m_intake);
   // private final RunIntake m_runIntake = new RunIntake(m_intake, 1);
   // private final RunIntake m_ejectIntake = new RunIntake(m_intake, -1);
-=======
   private final DeployIntake m_deployIntake = new DeployIntake(m_intake);
   private final RetractIntake m_retractIntake = new RetractIntake(m_intake);
   private final StopIntake m_stopIntake = new StopIntake(m_intake);
   private final RunIntake m_runIntake = new RunIntake(m_intake, 1);
   private final RunIntake m_ejectIntake = new RunIntake(m_intake, -1);
->>>>>>> master
 
   // private final ReportColor m_reportColor = new ReportColor(m_cpm);
 
@@ -140,23 +115,17 @@ public class RobotContainer {
   public RobotContainer() {
 
     // Initialize everything
-<<<<<<< HEAD
+
     DoubleSupplier climbSpeedXSupplier = m_buttonBox::getClimberTiltAxis;
     DoubleSupplier climbSpeedYSupplier = m_buttonBox::getClimberSpeedAxis;    
 
     m_runClimber = new RunClimber(m_climber, climbSpeedXSupplier, climbSpeedYSupplier);
 
-    DoubleSupplier arcadeDriveSpeedSupplier = DriveUtils.deadbandExponential(
-        m_driverController::getLeftStickY, Constants.DRIVE_SPEED_EXP, Constants.DRIVE_JOYSTICK_DEADBAND);
-    DoubleSupplier arcadeDriveTurnSupplier = DriveUtils.cheesyTurn(arcadeDriveSpeedSupplier, 
-        DriveUtils.deadbandExponential(m_driverController::getRightStickX, Constants.DRIVE_SPEED_EXP, Constants.DRIVE_JOYSTICK_DEADBAND),
-=======
     DoubleSupplier arcadeDriveSpeedSupplier = DriveUtils.deadbandExponential(m_driverController::getLeftStickY,
         Constants.DRIVE_SPEED_EXP, Constants.DRIVE_JOYSTICK_DEADBAND);
     DoubleSupplier arcadeDriveTurnSupplier = DriveUtils.cheesyTurn(
         arcadeDriveSpeedSupplier, DriveUtils.deadbandExponential(m_driverController::getRightStickX,
             Constants.DRIVE_SPEED_EXP, Constants.DRIVE_JOYSTICK_DEADBAND),
->>>>>>> master
         Constants.CHEESY_DRIVE_MIN_TURN, Constants.CHEESY_DRIVE_MAX_TURN);
     BooleanSupplier arcadeDriveShiftSupplier = () -> m_drive.autoshift(arcadeDriveSpeedSupplier.getAsDouble());
     m_arcadeDrive = new ArcadeDrive(m_drive, arcadeDriveSpeedSupplier, arcadeDriveTurnSupplier,
@@ -190,43 +159,33 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
-<<<<<<< HEAD
 
     m_climber.setDefaultCommand(m_runClimber);
     // m_intake.setDefaultCommand(m_stopIntake);
     m_drive.setDefaultCommand(m_arcadeDrive);
-=======
     configureSmartDashboardButtons();
     configureDefaultCommands();
->>>>>>> master
   }
 
   private void configureButtonBindings() {
-<<<<<<< HEAD
-    // Driver Controller
-=======
 
     m_buttonBox.button4.whenPressed(new SequentialCommandGroup(new DeployIntake(m_intake), new RunIntake(m_intake, 1.)));
     m_buttonBox.button4.whenReleased(new SequentialCommandGroup(new RetractIntake(m_intake), new StopIntake(m_intake)));
 
     m_driverController.buttonStart.whenHeld(m_testBrakeMode);
 
->>>>>>> master
     // m_driverController.buttonB.whileHeld(m_reportColor);
     // m_driverController.buttonA.whenPressed(m_moveColorWheelToTargetColor);
     // m_driverController.buttonY.whenPressed(m_rotateColorWheel);
 
     // m_driverController.buttonRightBumper.whenPressed(m_setToFrontCamera);
     // m_driverController.buttonRightBumper.whenReleased(m_setToRearCamera);
-  }
 
-<<<<<<< HEAD
     m_buttonBox.button8.whenPressed(m_engageRatchets);
     m_buttonBox.button8.whenReleased(m_disengageRatchets);
+  }
 
-=======
   private void configureSmartDashboardButtons() {
->>>>>>> master
     SmartDashboard.putData("TestDriveStaticFriction", m_testDriveStaticFriction);
     SmartDashboard.putData("CalculateDriveEfficiency", m_calculateDriveEfficiency);
 

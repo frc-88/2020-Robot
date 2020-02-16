@@ -77,4 +77,10 @@ public class Climber extends SubsystemBase{
         m_climber_motor_right.configPeakOutputForward(1);
         m_climber_ratchet.set(Value.kForward);
     }
+
+    public void runClimberOnVoltage(double current) {
+        m_climber_motor_left.set(ControlMode.Current, current);
+        m_climber_motor_right.set(ControlMode.Current, current);
+
+    }
 }
