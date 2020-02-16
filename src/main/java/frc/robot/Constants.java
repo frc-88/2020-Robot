@@ -43,8 +43,20 @@ public final class Constants {
 	public static final int INTAKE_RETRACT_PISTON = 7;
 
 	// Sensor constants
-	public static final int PCC_IMAGE_WIDTH = 240;
-	public static final int PCC_IMAGE_HEIGHT = 240;
+	public static final int PCC_CAMERA_ID = 2;
+	public static final int PCC_IMAGE_WIDTH = 640;
+	public static final int PCC_IMAGE_HEIGHT = 480;
+	public static final int PCC_HUE_LO = 10;
+	public static final int PCC_HUE_HI = 60;
+	public static final int PCC_SAT_LO = 0; 
+	public static final int PCC_SAT_HI = 255;
+	public static final int PCC_VAL_LO = 0;
+	public static final int PCC_VAL_HI = 255;
+
+	public static final int PCC_CHAMBER_X = 200;
+	public static final int PCC_CHAMBER_Y = 285;
+	public static final int PCC_CHAMBER_WIDTH = 185;
+	public static final int PCC_CHAMBER_HEIGHT = 185;
 	public static final double PCC_CHAMBER_THRESHOLD = 30000;
 
 	/********************************************************************

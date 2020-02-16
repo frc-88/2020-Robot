@@ -39,9 +39,8 @@ public class Sensors extends SubsystemBase {
   public final NavX m_navx;
   public final Limelight m_limelight;
 
-  UsbCamera frontCamera = CameraServer.getInstance().startAutomaticCapture(0);
-  UsbCamera rearCamera = CameraServer.getInstance().startAutomaticCapture(1);
-  VideoSink server = CameraServer.getInstance().getServer();
+  private UsbCamera frontCamera, rearCamera, hopperCamera;
+
   private double m_totalYellow = 0.0;
   private double m_totalYellowChamber = 0.0;
   private boolean m_cellInChamber = false;
@@ -57,19 +56,24 @@ public class Sensors extends SubsystemBase {
     m_limelight.camVision();
     m_limelight.ledOn();
 
+    frontCamera = CameraServer.getInstance().startAutomaticCapture(0);
+    rearCamera = CameraServer.getInstance().startAutomaticCapture(1);
+    hopperCamera = CameraServer.getInstance().startAutomaticCapture(Constants.PCC_CAMERA_ID);
+    
     setToFrontCamera();
     // frontCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
     // rearCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
 
-    startCounter(frontCamera);
+    startCounter(hopperCamera);
   }
 
   public void startCounter(UsbCamera camera) {
     new Thread(() -> {
-      camera.setResolution(640, 480);
+      camera.setResolution(Constants.PCC_IMAGE_WIDTH, Constants.PCC_IMAGE_HEIGHT);
 
       CvSink cvSink = CameraServer.getInstance().getVideo();
-      CvSource outputStream = CameraServer.getInstance().putVideo("Blur", 640, 480);
+      CvSource outputStream = CameraServer.getInstance().putVideo("PCC", Constants.PCC_IMAGE_WIDTH,
+          Constants.PCC_IMAGE_HEIGHT);
 
       Mat source = new Mat();
       Mat output = new Mat();
@@ -78,27 +82,28 @@ public class Sensors extends SubsystemBase {
 
       List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 
-      while(!Thread.interrupted()) {
+      while (!Thread.interrupted()) {
         if (cvSink.grabFrame(source) == 0) {
           continue;
         }
         double area = 0.0;
         Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2HSV);
-				Imgproc.blur(output, output, new Size(32, 32));
-        Core.inRange(output, new Scalar(10, 0, 0),
-              new Scalar(60, 255, 255), output);
-        contours.clear();        
+        Imgproc.blur(output, output, new Size(32, 32));
+        Core.inRange(output, new Scalar(Constants.PCC_HUE_LO, Constants.PCC_SAT_LO, Constants.PCC_VAL_LO),
+            new Scalar(Constants.PCC_HUE_HI, Constants.PCC_SAT_HI, Constants.PCC_VAL_HI), output);
+        contours.clear();
         Imgproc.findContours(output, contours, hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
-        for (MatOfPoint contour: contours) {
+        for (MatOfPoint contour : contours) {
           area += Imgproc.contourArea(contour);
         }
         m_totalYellow = area;
 
         area = 0.0;
-        chamber = new Mat(output, new Rect(200,285,185,185));
-        contours.clear();        
+        chamber = new Mat(output, new Rect(Constants.PCC_CHAMBER_X, Constants.PCC_CHAMBER_Y,
+            Constants.PCC_CHAMBER_WIDTH, Constants.PCC_CHAMBER_HEIGHT));
+        contours.clear();
         Imgproc.findContours(chamber, contours, hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
-        for (MatOfPoint contour: contours) {
+        for (MatOfPoint contour : contours) {
           area += Imgproc.contourArea(contour);
         }
 
@@ -110,13 +115,12 @@ public class Sensors extends SubsystemBase {
     }).start();
   }
 
-
   public void setToFrontCamera() {
-    server.setSource(frontCamera);
+    CameraServer.getInstance().getServer().setSource(frontCamera);
   }
 
   public void setToRearCamera() {
-    server.setSource(rearCamera);
+    CameraServer.getInstance().getServer().setSource(rearCamera);
   }
 
   public boolean isCellInChamber() {
