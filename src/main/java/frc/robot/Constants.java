@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean constants. This class should not be used for any other
@@ -30,17 +31,42 @@ public final class Constants {
 	public static final float CPM_PHASE_2_WHEEL_ROTATIONS = 4;
 
 	// Shooter constants
-	public static final int SHOOTER_MOTOR = 12;
-	public static final int SHOOTER_MOTOR_2 = 3;
-	public static final int SHOOTER_ANGLE_ENCODER_CHANNEL_1A = 9;
-	public static final int SHOOTER_ANGLE_ENCODER_CHANNEL_1B = 10;
+	public static final int SHOOTER_FLYWHEEL_MASTER = 7;
+	public static final int SHOOTER_FLYWHEEL_FOLLOWER = 8;
 	public static final int SHOOTER_FEEDER_MOTOR = 0;
-	public static final int SHOOTER_ROTATOR_MOTOR = 0;
+	public static final double SHOOTER_FLYWHEEL_MAX_SPEED = 1;
+	public static final double SHOOTER_FLYWHEEL_TOLERANCE = 25;
+	public static final int SHOOTER_FLYWHEEL_SPEED_EXP = 1;
+	public static final double SHOOTER_MOTOR_TO_FLYWHEEL_RATIO = 1.5;
+	public static final int SHOOTER_MOTOR_TICKS_PER_ROTATION = 2048;
+
+	// Arm constants
+	public static final int ARM_MOTOR = 4;
+	public static final int ARM_CANCODER = 4;
+	public static final double ARM_SHOOTER_ANGLE_1 = 0;
+	public static final double ARM_SHOOTER_ANGLE_2 = 45;
+	public static final double ARM_SHOOTER_ANGLE_3 = 90;
+	public static final int ARM_ENCODER_TICKS_PER_ROTATION = 4096;
+	public static final int FALCON_TO_ENCODER_RATIO = 2;
+	public static final int ENCODER_TO_ARM_RATIO = 3;
+	public static final int FALCON_TO_ARM_RATIO = 6;
+	public static final double ARM_MAXIMUM_VELOCITY = 60;
+	public static final double ARM_LOW_LIMIT = 0;
+	public static final double ARM_HIGH_LIMIT = 90;
+	public static final double ARM_ENCODER_SHIFT = 15;
+	public static final int ARM_SPEED_EXP = 2;
 
 	// Intake constants
 	public static final int ROLLER_ID = 11;
 	public static final int INTAKE_DEPLOY_PISTON = 0;
 	public static final int INTAKE_RETRACT_PISTON = 7;
+
+	// Hopper constants
+	public static final int HOPPER_FEEDER_1 = 9;
+	public static final int HOPPER_FEEDER_2 = 10;
+	public static final double HOPPER_SHOOT_PERCENT_OUTPUT = 0.5;
+	public static final double HOPPER_INTAKE_PERCENT_OUTPUT = 0.1;
+
 
 	/********************************************************************
     * 
@@ -86,6 +112,9 @@ public final class Constants {
 	public static final double DRIVE_JOYSTICK_DEADBAND = 0.12;
 	public static final double CHEESY_DRIVE_MIN_TURN = 0.4;
 	public static final double CHEESY_DRIVE_MAX_TURN = 0.6;
+
+	//Test
+	public static final double TEST_JOYSTICK_DEADBAND = 0.12;
 
 	/*******************************************************************/
 
