@@ -38,7 +38,7 @@ public final class Constants {
 	public static final int SHOOTER_ROTATOR_MOTOR = 0;
 
 	// Intake constants
-	public static final int ROLLER_ID = 5;
+	public static final int ROLLER_ID = 11;
 	public static final int INTAKE_DEPLOY_PISTON = 0;
 	public static final int INTAKE_RETRACT_PISTON = 7;
 

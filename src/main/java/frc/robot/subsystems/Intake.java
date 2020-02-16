@@ -42,7 +42,11 @@ public class Intake extends SubsystemBase {
 
 
   public void setRoller(double speed) {
-    rollerMotor.set(ControlMode.PercentOutput, speed);
+    if (isDeployed()) {
+      rollerMotor.set(ControlMode.PercentOutput, speed);
+    } else {
+      rollerMotor.set(ControlMode.PercentOutput, 0);
+    }
   }
 
 
@@ -53,5 +57,9 @@ public class Intake extends SubsystemBase {
 
   public void retract(){
     deployPiston.set(Value.kReverse);
+  }
+
+  public boolean isDeployed() {
+    return deployPiston.get() == Value.kForward;
   }
 }
