@@ -39,6 +39,7 @@ public class Sensors extends SubsystemBase {
   public final NavX m_navx;
   public final Limelight m_limelight;
 
+  private CameraServer cameraServer = CameraServer.getInstance();
   private UsbCamera frontCamera, rearCamera, hopperCamera;
 
   private double m_totalYellow = 0.0;
@@ -56,9 +57,9 @@ public class Sensors extends SubsystemBase {
     m_limelight.camVision();
     m_limelight.ledOn();
 
-    frontCamera = CameraServer.getInstance().startAutomaticCapture(0);
-    rearCamera = CameraServer.getInstance().startAutomaticCapture(1);
-    hopperCamera = CameraServer.getInstance().startAutomaticCapture(Constants.PCC_CAMERA_ID);
+    frontCamera = cameraServer.startAutomaticCapture(0);
+    rearCamera = cameraServer.startAutomaticCapture(1);
+    hopperCamera = cameraServer.startAutomaticCapture(Constants.PCC_CAMERA_NAME, Constants.PCC_CAMERA_ID);
     
     setToFrontCamera();
     // frontCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
@@ -71,8 +72,9 @@ public class Sensors extends SubsystemBase {
     new Thread(() -> {
       camera.setResolution(Constants.PCC_IMAGE_WIDTH, Constants.PCC_IMAGE_HEIGHT);
 
-      CvSink cvSink = CameraServer.getInstance().getVideo();
-      CvSource outputStream = CameraServer.getInstance().putVideo("PCC", Constants.PCC_IMAGE_WIDTH,
+      CvSink cvSink = cameraServer.getVideo(Constants.PCC_CAMERA_NAME);
+      CvSource outputStream = cameraServer.putVideo(Constants.PCC_STREAM_NAME, 
+      Constants.PCC_IMAGE_WIDTH,
           Constants.PCC_IMAGE_HEIGHT);
 
       Mat source = new Mat();
@@ -116,11 +118,11 @@ public class Sensors extends SubsystemBase {
   }
 
   public void setToFrontCamera() {
-    CameraServer.getInstance().getServer().setSource(frontCamera);
+    cameraServer.getServer().setSource(frontCamera);
   }
 
   public void setToRearCamera() {
-    CameraServer.getInstance().getServer().setSource(rearCamera);
+    cameraServer.getServer().setSource(rearCamera);
   }
 
   public boolean isCellInChamber() {
