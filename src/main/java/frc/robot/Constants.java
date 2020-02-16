@@ -31,7 +31,7 @@ public final class Constants {
 	public static final float CPM_PHASE_2_WHEEL_ROTATIONS = 4;
 
 	// Shooter constants
-	public static final int SHOOTER_FLYWHEEL_MASTER = 07;
+	public static final int SHOOTER_FLYWHEEL_MASTER = 7;
 	public static final int SHOOTER_FLYWHEEL_FOLLOWER = 8;
 	public static final int SHOOTER_FEEDER_MOTOR = 0;
 	public static final double SHOOTER_FLYWHEEL_MAX_SPEED = 1;
@@ -57,7 +57,7 @@ public final class Constants {
 	public static final int ARM_SPEED_EXP = 1;
 
 	// Intake constants
-	public static final int ROLLER_ID = 5;
+	public static final int ROLLER_ID = 11;
 	public static final int INTAKE_DEPLOY_PISTON = 0;
 	public static final int INTAKE_RETRACT_PISTON = 7;
 
@@ -79,18 +79,18 @@ public final class Constants {
 	*/
 	
 	// Drive CAN IDs
-	public static final int LEFT_MASTER_DRIVE_ID = 13;
-	public static final int LEFT_FOLLOWER_DRIVE_ID = 12;
-	public static final int RIGHT_MASTER_DRIVE_ID = 2;
-	public static final int RIGHT_FOLLOWER_DRIVE_ID = 3;
-	public static final int LEFT_DRIVE_ENCODER_ID = 43;
-	public static final int RIGHT_DRIVE_ENCODER_ID = 32;
-	public static final int SHIFTER_LEFT_PCM = 21;
-	public static final int SHIFTER_LEFT_OUT = 4;
+	public static final int LEFT_MASTER_DRIVE_ID = 15;
+	public static final int LEFT_FOLLOWER_DRIVE_ID = 14;
+	public static final int RIGHT_MASTER_DRIVE_ID = 0;
+	public static final int RIGHT_FOLLOWER_DRIVE_ID = 1;
+	public static final int LEFT_DRIVE_ENCODER_ID = 15;
+	public static final int RIGHT_DRIVE_ENCODER_ID = 0;
+	public static final int SHIFTER_LEFT_PCM = 0;
+	public static final int SHIFTER_LEFT_OUT = 2;
 	public static final int SHIFTER_LEFT_IN = 5;
-	public static final int SHIFTER_RIGHT_PCM = 21;
-	public static final int SHIFTER_RIGHT_OUT = 6;
-	public static final int SHIFTER_RIGHT_IN = 7;
+	public static final int SHIFTER_RIGHT_PCM = 0;
+	public static final int SHIFTER_RIGHT_OUT = 1;
+	public static final int SHIFTER_RIGHT_IN = 6;
 
 	// Drive Configuration
 	public static final int NUM_DRIVE_MOTORS_PER_SIDE = 2;
