@@ -85,6 +85,7 @@ public class RobotContainer {
   private final CommandBase m_armToSmartDashboard;
   private final CommandBase m_armHoldCurrentPosition;
   private final RotateArm m_rotateArm;
+  private final CalibrateArm m_calibrateArm;
 
   private final DoublePreferenceConstant m_armStowAngle = new DoublePreferenceConstant("Arm Stow Angle", 0);
   private final DoublePreferenceConstant m_armLayupAngle = new DoublePreferenceConstant("Arm Layup Angle", 45);
@@ -129,6 +130,8 @@ public class RobotContainer {
     DoubleSupplier armSpeedSupplier = DriveUtils.deadbandExponential(m_testController::getRightStickY, Constants.ARM_SPEED_EXP, Constants.TEST_JOYSTICK_DEADBAND);
     m_rotateArm = new RotateArm(m_arm, armSpeedSupplier);
 
+    m_calibrateArm = new CalibrateArm(m_arm);
+
     // Configure the button bindings
     configureButtonBindings();
     configureSmartDashboardButtons();
@@ -170,8 +173,13 @@ public class RobotContainer {
     SmartDashboard.putData("Hopper Shoot", new HopperShootMode(m_hopper));
     SmartDashboard.putData("Hopper Stop", new HopperStop(m_hopper));
 
+    SmartDashboard.putData("Arm Manual", m_rotateArm);
+
     SmartDashboard.putNumber("ArmDashboardPosition", 0);
     SmartDashboard.putData("Arm to Position", m_armToSmartDashboard);
+
+    SmartDashboard.putData("Calibrate Arm", m_calibrateArm);
+
     SmartDashboard.putNumber("ShooterTestFeederSpeed", 0);
     SmartDashboard.putNumber("ShooterTestFlywheelSpeed", 0);
     SmartDashboard.putData("ShooterTestFeeder", new InstantCommand(() -> (new ShooterFeederRun(m_shooter, SmartDashboard.getNumber("ShooterTestFeederSpeed", 0))).schedule()));

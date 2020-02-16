@@ -25,8 +25,8 @@ public class ArmConfig {
         // armConfiguration.primaryPID.selectedFeedbackCoefficient = 0.328293;
         armConfiguration.peakOutputForward = 1.0;
         armConfiguration.peakOutputReverse = -1.0;
-        armConfiguration.nominalOutputForward = 1.0;
-        armConfiguration.nominalOutputReverse = -1.0;
+        armConfiguration.nominalOutputForward = 0;
+        armConfiguration.nominalOutputReverse = 0;
         armConfiguration.neutralDeadband = 0.001;
         // armConfiguration.slot0.kP = 0.00000;
         // armConfiguration.slot0.kI = 0.00000;
