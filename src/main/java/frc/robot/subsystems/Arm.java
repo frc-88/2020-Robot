@@ -7,6 +7,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.VelocityPeriod;
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -17,6 +19,7 @@ import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -47,7 +50,11 @@ public class Arm extends SubsystemBase {
 
   private int armOffsetTicks = 0;
 
-  public Arm() {
+  BooleanSupplier coastEnabled;
+
+  public Arm(BooleanSupplier coastEnabled) {
+    this.coastEnabled=coastEnabled;
+
     m_armEncoder.configFactoryDefault();
     m_armEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
     m_armEncoder.configSensorDirection(true);
@@ -121,6 +128,10 @@ public class Arm extends SubsystemBase {
     m_rotator.setNeutralMode(NeutralMode.Brake);
   }
 
+  public void setToCoastMode() {
+    m_rotator.setNeutralMode(NeutralMode.Coast);
+  }
+
   public double getCurrentArmPosition() {
     return convertEncoderTicksToArmDegrees(m_rotator.getSelectedSensorPosition());
   }
@@ -184,5 +195,11 @@ public class Arm extends SubsystemBase {
 
     SmartDashboard.putNumber("Arm Current Use", m_rotator.getSupplyCurrent());
     SmartDashboard.putNumber("Arm Abs Encoder Pos", m_armEncoder.getAbsolutePosition() / Constants.ENCODER_TO_ARM_RATIO);
+
+    if(coastEnabled.getAsBoolean() && DriverStation.getInstance().isDisabled()) {
+      setToCoastMode();
+    } else {
+      setToBrakeMode();
+    }
   }
 }

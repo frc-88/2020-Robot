@@ -51,7 +51,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive m_drive = new Drive(m_sensors);
   private final Hopper m_hopper = new Hopper();
-  private final Arm m_arm = new Arm();
+  private final Arm m_arm = new Arm(m_driverController::isButtonStartPressed);
   private final Shooter m_shooter = new Shooter();
   // private final ControlPanelManipulator m_cpm = new ControlPanelManipulator();
   private final Intake m_intake = new Intake();
