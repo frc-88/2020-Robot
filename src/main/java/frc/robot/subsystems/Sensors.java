@@ -7,8 +7,12 @@
 
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
@@ -20,6 +24,7 @@ import edu.wpi.cscore.VideoSink;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.util.Limelight;
 import frc.robot.util.NavX;
 
@@ -36,6 +41,7 @@ public class Sensors extends SubsystemBase {
   UsbCamera frontCamera = CameraServer.getInstance().startAutomaticCapture(0);
   UsbCamera rearCamera = CameraServer.getInstance().startAutomaticCapture(1);
   VideoSink server = CameraServer.getInstance().getServer();
+  private double m_totalYellow = 0.0;
 
   /**
    * Creates a new Sensors subsystem
@@ -64,16 +70,25 @@ public class Sensors extends SubsystemBase {
 
       Mat source = new Mat();
       Mat output = new Mat();
+      Mat hierarchy = new Mat();
+      List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 
       while(!Thread.interrupted()) {
         if (cvSink.grabFrame(source) == 0) {
           continue;
         }
+        double area = 0.0;
         Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2HSV);
-				Imgproc.blur(output, output, new Size(20, 20));
-        Core.inRange(output, new Scalar(20, 100, 0),
-              new Scalar(50, 255, 255), output);
-              
+				Imgproc.blur(output, output, new Size(32, 32));
+        Core.inRange(output, new Scalar(10, 0, 0),
+              new Scalar(60, 255, 255), output);
+        contours.clear();        
+        Imgproc.findContours(output, contours, hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+        for (MatOfPoint contour: contours) {
+          area += Imgproc.contourArea(contour);
+        }
+
+        m_totalYellow = area;
         outputStream.putFrame(output);
       }
     }).start();
@@ -101,6 +116,6 @@ public class Sensors extends SubsystemBase {
     SmartDashboard.putBoolean("Limelight has target?", m_limelight.hasTarget());
 
     // PCC data
-    // SmartDashboard.putNumber("PCC Yellow", m_pccThread.getYellowPercentage());
+    SmartDashboard.putNumber("PCC Total Yellow", m_totalYellow);
   }
 }
