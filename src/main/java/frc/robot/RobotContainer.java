@@ -112,7 +112,7 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
-    // m_intake.setDefaultCommand(m_stopIntake);
+    m_intake.setDefaultCommand(m_stopIntake);
     m_drive.setDefaultCommand(m_arcadeDrive);
   }
 
@@ -130,8 +130,8 @@ public class RobotContainer {
     m_driverController.buttonRightBumper.whenPressed(m_setToFrontCamera);
     m_driverController.buttonRightBumper.whenReleased(m_setToRearCamera);
 
-    m_buttonBox.button4.whenPressed(new SequentialCommandGroup(m_deployIntake, m_runIntake));
-    m_buttonBox.button4.whenReleased(new SequentialCommandGroup(m_retractIntake, m_stopIntake));
+    m_buttonBox.button4.whenPressed(new SequentialCommandGroup(new DeployIntake(m_intake), new RunIntake(m_intake, 1.)));
+    m_buttonBox.button4.whenReleased(new SequentialCommandGroup(new RetractIntake(m_intake), new StopIntake(m_intake)));
 
     SmartDashboard.putData("TestDriveStaticFriction", m_testDriveStaticFriction);
     SmartDashboard.putData("CalculateDriveEfficiency", m_calculateDriveEfficiency);
