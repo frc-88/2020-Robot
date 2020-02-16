@@ -32,7 +32,7 @@ public class RotateArm extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    arm.setPercentOutput(speed.getAsDouble());
+      arm.setPercentOutput(speed.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.
