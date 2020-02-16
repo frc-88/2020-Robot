@@ -124,7 +124,7 @@ public class RobotContainer {
     m_armToLayup = new ArmMotionMagic(m_arm, m_armLayupAngle.getValue());
 
     m_armToSmartDashboard = new InstantCommand(() -> new ArmMotionMagic(m_arm, SmartDashboard.getNumber("ArmDashboardPosition", 0)).schedule());
-    m_armHoldCurrentPosition = new InstantCommand(() -> new ArmMotionMagic(m_arm, m_arm.getCurrentArmPosition()).schedule());
+    m_armHoldCurrentPosition = new InstantCommand(() -> new ArmMotionMagic(m_arm, m_arm.getCurrentArmPosition()).schedule(), m_arm);
 
     DoubleSupplier armSpeedSupplier = DriveUtils.deadbandExponential(m_testController::getRightStickY, Constants.ARM_SPEED_EXP, Constants.TEST_JOYSTICK_DEADBAND);
     m_rotateArm = new RotateArm(m_arm, armSpeedSupplier);
@@ -185,7 +185,7 @@ public class RobotContainer {
   private void configureDefaultCommands() {
     // m_intake.setDefaultCommand(m_stopIntake);
     m_drive.setDefaultCommand(m_arcadeDrive);
-    m_arm.setDefaultCommand(m_armHoldCurrentPosition);
+    // m_arm.setDefaultCommand(m_armHoldCurrentPosition);
     m_intake.setDefaultCommand(m_stopIntake);
   }
 

@@ -37,7 +37,7 @@ public class Arm extends SubsystemBase {
   private TalonFX m_rotator = new TalonFX(Constants.ARM_MOTOR);
   private CANCoder m_armEncoder = new CANCoder(Constants.ARM_CANCODER);
 
-  private ArmConfig armConfig;
+  private ArmConfig armConfig = new ArmConfig();
 
   private int remoteSensorID = 0;
 
@@ -51,7 +51,7 @@ public class Arm extends SubsystemBase {
     m_rotator.configAllSettings(armConfig.armConfiguration);
 
     m_rotator.enableVoltageCompensation(true);
-    m_rotator.setInverted(false);
+    m_rotator.setInverted(true);
     m_rotator.setSensorPhase(false);
     m_rotator.setNeutralMode(NeutralMode.Brake);
 
