@@ -90,6 +90,8 @@ public class RobotContainer {
   private final DoublePreferenceConstant m_armStowAngle = new DoublePreferenceConstant("Arm Stow Angle", 0);
   private final DoublePreferenceConstant m_armLayupAngle = new DoublePreferenceConstant("Arm Layup Angle", 45);
 
+  private TestBrakeMode m_testBrakeMode = new TestBrakeMode(m_arm);
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -142,6 +144,8 @@ public class RobotContainer {
 
     m_buttonBox.button4.whenPressed(new SequentialCommandGroup(new DeployIntake(m_intake), new RunIntake(m_intake, 1.)));
     m_buttonBox.button4.whenReleased(new SequentialCommandGroup(new RetractIntake(m_intake), new StopIntake(m_intake)));
+
+    m_driverController.buttonStart.whenHeld(m_testBrakeMode);
 
     // m_driverController.buttonB.whileHeld(m_reportColor);
     // m_driverController.buttonA.whenPressed(m_moveColorWheelToTargetColor);

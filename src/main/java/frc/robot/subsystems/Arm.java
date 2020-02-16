@@ -117,6 +117,10 @@ public class Arm extends SubsystemBase {
     zeroArm();
   }
 
+  public void setToBrakeMode() {
+    m_rotator.setNeutralMode(NeutralMode.Brake);
+  }
+
   public double getCurrentArmPosition() {
     return convertEncoderTicksToArmDegrees(m_rotator.getSelectedSensorPosition());
   }
