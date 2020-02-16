@@ -106,17 +106,27 @@ public class Arm extends SubsystemBase {
   }
   
   public void zeroArm() {
+    armOffsetTicks = convertArmDegreesToEncoderTicks(getAngleFromAbsolute()) - m_rotator.getSelectedSensorPosition();
+    m_rotator.configForwardSoftLimitEnable(true);
+    m_rotator.configForwardSoftLimitThreshold(convertArmDegreesToEncoderTicks(Constants.ARM_HIGH_LIMIT));
+    m_rotator.configReverseSoftLimitEnable(true);
+    m_rotator.configReverseSoftLimitThreshold(convertArmDegreesToEncoderTicks(Constants.ARM_LOW_LIMIT));
+  }
+
+  public void zeroArmIfOff() {
+    if(Math.abs(getAngleFromAbsolute() - getCurrentArmPosition()) <= 5) {
+      zeroArm();
+    }
+  }
+
+  public double getAngleFromAbsolute() {
     double angle = (m_armEncoder.getAbsolutePosition() / Constants.ENCODER_TO_ARM_RATIO) + ARM_OFFSET.getValue();
     angle = (angle + Constants.ARM_ENCODER_SHIFT) % (360. / Constants.ENCODER_TO_ARM_RATIO);
     if(angle < 0) {
       angle += 360. / Constants.ENCODER_TO_ARM_RATIO;
     }
     angle -= Constants.ARM_ENCODER_SHIFT;
-    armOffsetTicks = convertArmDegreesToEncoderTicks(angle) - m_rotator.getSelectedSensorPosition();
-    m_rotator.configForwardSoftLimitEnable(true);
-    m_rotator.configForwardSoftLimitThreshold(convertArmDegreesToEncoderTicks(Constants.ARM_HIGH_LIMIT));
-    m_rotator.configReverseSoftLimitEnable(true);
-    m_rotator.configReverseSoftLimitThreshold(convertArmDegreesToEncoderTicks(Constants.ARM_LOW_LIMIT));
+    return angle;
   }
 
   public void calibrateArm() {
@@ -188,6 +198,7 @@ public class Arm extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    zeroArmIfOff();
     SmartDashboard.putNumber("Arm Position", convertEncoderTicksToArmDegrees(m_rotator.getSelectedSensorPosition()));
     SmartDashboard.putNumber("Arm Velocity", convertEncoderVelocityToArmVelocity(m_rotator.getSelectedSensorVelocity()));
     SmartDashboard.putNumber("Expected Arm Position", convertEncoderTicksToArmDegrees(m_rotator.getActiveTrajectoryPosition()));
