@@ -49,19 +49,22 @@ public class RotateColorWheel extends CommandBase {
     
     switch(state) {
       case 0: //wait to be engaged
+        System.out.println("CPM RotateColorWheel State: "+ state);
         if(cpm.isEngaged()) {
           //controller.startLightRumble();
           state = 1;
         }
         break;
       case 1: //freezes drive, move to case 2 when stopped
+        System.out.println("\nCPM RotateColorWheel State: "+ state);
         //controller.stopRumble();
         // TODO: take control from the driver
-        cpm.setWheelPosition(0);
+        cpm.setSensorPosition(0);
         cpm.getColor();
         state = 2;
         break;
       case 2: //start spinning motor, spins motor extra distance to target color if already received
+        System.out.println("\nCPM RotateColorWheel State: "+ state);
         targetColor = cpm.getFMSColorTarget();
         finalRotationDistance = Constants.CPM_PHASE_2_WHEEL_ROTATIONS;
         if(targetColor.length() == 1) { //correction distance
@@ -71,15 +74,19 @@ public class RotateColorWheel extends CommandBase {
             finalRotationDistance =  cpm.calcPositionControlTargetPosition() + Constants.CPM_PHASE_2_WHEEL_ROTATIONS;
           }
         }
+        System.out.println("\nCPM target distance: "+ finalRotationDistance);
+        System.out.println("\nCPM current wheel position: "+ cpm.getWheelPosition());
         cpm.moveWheelToPosition(finalRotationDistance);
         state = 3;
         break;
       case 3: //give control back to the driver + rumble 
+        System.out.println("\nCPM RotateColorWheel State: "+ state);
         //controller.startHeavyRumble();
         // TODO: give back control to driver
         state = 4;
         break;
       case 4: //stop heavy rumble after driver gets control back
+        System.out.println("\nCPM RotateColorWheel State: "+ state);
         //controller.stopRumble();
         break;
     }
