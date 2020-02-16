@@ -67,19 +67,19 @@ public class Arm extends SubsystemBase {
 
     //Motion magic **woosh**
 
-    MAXIMUM_ARM_VELOCITY = new DoublePreferenceConstant("Arm velocity", 60);
+    MAXIMUM_ARM_VELOCITY = new DoublePreferenceConstant("Arm velocity", 180);
     MAXIMUM_ARM_VELOCITY.addChangeHandler(
       (Double velocity) -> m_rotator.configMotionCruiseVelocity(convertArmVelocityToEncoderVelocity(velocity)));
-    MAXIMUM_ARM_ACCELERATION = new DoublePreferenceConstant("Arm Acceleration", 120);
+    MAXIMUM_ARM_ACCELERATION = new DoublePreferenceConstant("Arm Acceleration", 220);
     MAXIMUM_ARM_ACCELERATION.addChangeHandler(
       (Double acceleration) -> m_rotator.configMotionAcceleration(convertArmVelocityToEncoderVelocity(acceleration)));
-    rotator_kP = new DoublePreferenceConstant("Arm rotator kP", 0);
+    rotator_kP = new DoublePreferenceConstant("Arm rotator kP", 1);
     rotator_kP.addChangeHandler((Double kP) -> m_rotator.config_kP(0, kP));
-    rotator_kI = new DoublePreferenceConstant("Arm rotator kI", 0);
+    rotator_kI = new DoublePreferenceConstant("Arm rotator kI", 0.0003);
     rotator_kI.addChangeHandler((Double kI) -> m_rotator.config_kI(0, kI));
-    rotator_kD = new DoublePreferenceConstant("Arm rotator kD", 0);
+    rotator_kD = new DoublePreferenceConstant("Arm rotator kD", 0.1);
     rotator_kD.addChangeHandler((Double kD) -> m_rotator.config_kD(0, kD));
-    rotator_kF = new DoublePreferenceConstant("Arm rotator kF", 0);
+    rotator_kF = new DoublePreferenceConstant("Arm rotator kF", 2.2);
     rotator_kF.addChangeHandler((Double kF) -> m_rotator.config_kF(0, kF));
 
     m_rotator.configMotionCruiseVelocity(convertArmVelocityToEncoderVelocity(MAXIMUM_ARM_VELOCITY.getValue()));
