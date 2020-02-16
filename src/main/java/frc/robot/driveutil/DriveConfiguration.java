@@ -37,17 +37,17 @@ public class DriveConfiguration {
         // /* Followers */
         _followerConfiguration = new TalonFXConfiguration();
 
-        _followerConfiguration.neutralDeadband = 0.01;
+        _followerConfiguration.neutralDeadband = 0.00;
 
         left.followerConfiguration = _followerConfiguration;
         right.followerConfiguration = _followerConfiguration;
 
         // /* General Settings */
         left.neutralMode = NeutralMode.Brake;
-        left.invertMotor = false;
+        left.invertMotor = true;
         left.enableVoltageCompensation = false;
         right.neutralMode = NeutralMode.Brake;
-        right.invertMotor = true;
+        right.invertMotor = false;
         right.enableVoltageCompensation = false;
     }
 }

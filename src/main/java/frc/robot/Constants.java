@@ -36,8 +36,8 @@ public final class Constants {
 	public static final int CPM_NUM_SLICES = 8;
 
 	// Shooter constants
-	public static final int SHOOTER_MOTOR = 07;
-	public static final int SHOOTER_MOTOR_2 = 8;
+	public static final int SHOOTER_MOTOR = 12;
+	public static final int SHOOTER_MOTOR_2 = 3;
 	public static final int SHOOTER_ANGLE_ENCODER_CHANNEL_1A = 9;
 	public static final int SHOOTER_ANGLE_ENCODER_CHANNEL_1B = 10;
 	public static final int SHOOTER_FEEDER_MOTOR = 0;
@@ -59,18 +59,18 @@ public final class Constants {
 	*/
 	
 	// Drive CAN IDs
-	public static final int LEFT_MASTER_DRIVE_ID = 2;
-	public static final int LEFT_FOLLOWER_DRIVE_ID = 3;
-	public static final int RIGHT_MASTER_DRIVE_ID = 13;
-	public static final int RIGHT_FOLLOWER_DRIVE_ID = 12;
-	public static final int LEFT_DRIVE_ENCODER_ID = 32;
-	public static final int RIGHT_DRIVE_ENCODER_ID = 43;
-	public static final int SHIFTER_LEFT_PCM = 21;
-	public static final int SHIFTER_LEFT_OUT = 4;
+	public static final int LEFT_MASTER_DRIVE_ID = 15;
+	public static final int LEFT_FOLLOWER_DRIVE_ID = 14;
+	public static final int RIGHT_MASTER_DRIVE_ID = 0;
+	public static final int RIGHT_FOLLOWER_DRIVE_ID = 1;
+	public static final int LEFT_DRIVE_ENCODER_ID = 15;
+	public static final int RIGHT_DRIVE_ENCODER_ID = 0;
+	public static final int SHIFTER_LEFT_PCM = 0;
+	public static final int SHIFTER_LEFT_OUT = 2;
 	public static final int SHIFTER_LEFT_IN = 5;
-	public static final int SHIFTER_RIGHT_PCM = 21;
-	public static final int SHIFTER_RIGHT_OUT = 6;
-	public static final int SHIFTER_RIGHT_IN = 7;
+	public static final int SHIFTER_RIGHT_PCM = 0;
+	public static final int SHIFTER_RIGHT_OUT = 1;
+	public static final int SHIFTER_RIGHT_IN = 6;
 
 	// Drive Configuration
 	public static final int NUM_DRIVE_MOTORS_PER_SIDE = 2;
@@ -85,9 +85,10 @@ public final class Constants {
 	public static final double DRIVE_RIGHT_HIGH_EFFICIENCY = 1.02;
 	public static final double MAX_SPEED_LOW = 8.8;
 	public static final double MAX_SPEED_HIGH = 18;
+	public static final double WHEEL_BASE_WIDTH = (25. + 5./16.) / 12.; // feet
 	public static final double DRIVE_CURRENT_LIMIT = 250;
-	public static final int DRIVE_SPEED_EXP = 3;
-	public static final int DRIVE_TURN_EXP = 3;
+	public static final int DRIVE_SPEED_EXP = 2;
+	public static final int DRIVE_TURN_EXP = 2;
 	public static final double DRIVE_JOYSTICK_DEADBAND = 0.12;
 	public static final double CHEESY_DRIVE_MIN_TURN = 0.4;
 	public static final double CHEESY_DRIVE_MAX_TURN = 0.6;
