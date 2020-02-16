@@ -9,6 +9,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXPIDSetConfiguration;
 import com.kauailabs.navx.frc.AHRS;
@@ -26,6 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.util.CPMConfig;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 
 
@@ -38,11 +40,12 @@ public class ControlPanelManipulator extends SubsystemBase {
   private final Color kGreenTarget = ColorMatch.makeColor(0.17, 0.55, 0.26);
   private final Color kRedTarget = ColorMatch.makeColor(0.54, 0.33, 0.12);
   private final Color kYellowTarget = ColorMatch.makeColor(0.31, 0.56, 0.12);
+
+  // set constants for how the motor motion relates to movement of the color wheel
   private final double motorRotationsPerWheelRotation = (100. / (2. * Math.PI));
   private final int ticksPerMotorRotation = 2048;
 
   private final ColorMatch m_colorMatcher = new ColorMatch();
-
   private TalonFX m_spinner = new TalonFX(Constants.CPM_MOTOR);
   private final I2C.Port m_i2cPort = I2C.Port.kOnboard;
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(m_i2cPort);
@@ -51,16 +54,38 @@ public class ControlPanelManipulator extends SubsystemBase {
   private AHRS m_navX = new AHRS(SPI.Port.kMXP); 
   private DigitalInput m_contactSensor = new DigitalInput(Constants.CPM_DIGITAL_INPUT_CHANNEL);
 
-  private double MAXIMUM_WHEEL_VELOCITY = (59. / 60.);
+  // because we can't move the color wheel more than 1 rotation per second 
+  private double MAXIMUM_WHEEL_VELOCITY = (59. / 60.); // degrees/second  - just under 1 rotation per second
+  private double TIME_TO_REACH_MAX_VELOCITY = .5; // get to max speed in 1/2 a second
+  private double INIT_MAX_WHEEL_ACCELERATION = MAXIMUM_WHEEL_VELOCITY/ TIME_TO_REACH_MAX_VELOCITY; // =~ 2
   private DoublePreferenceConstant MAXIMUM_WHEEL_ACCELERATION;
   private DoublePreferenceConstant spinner_kP;
   private DoublePreferenceConstant spinner_kI;
   private DoublePreferenceConstant spinner_kD;
   private DoublePreferenceConstant spinner_kF;
-  
+  private CPMConfig cpmConfig;
 
+  
   public ControlPanelManipulator() {
-    MAXIMUM_WHEEL_ACCELERATION = new DoublePreferenceConstant("CPM Acceleration", 2);
+    m_wristEncoder.reset();
+
+    m_colorMatcher.addColorMatch(kBlueTarget);
+    m_colorMatcher.addColorMatch(kGreenTarget);
+    m_colorMatcher.addColorMatch(kRedTarget);
+    m_colorMatcher.addColorMatch(kYellowTarget);
+
+    m_spinner.configFactoryDefault();
+    m_spinner.configAllSettings(cpmConfig.cpmConfiguration);
+    m_spinner.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+    //m_spinner.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+    m_spinner.enableVoltageCompensation(true);
+    m_spinner.setSensorPhase(false);
+    m_spinner.setInverted(false);
+    m_spinner.setNeutralMode(NeutralMode.Brake);
+
+    /* Motion Magic */
+    m_spinner.selectProfileSlot(0, 0);
+    MAXIMUM_WHEEL_ACCELERATION = new DoublePreferenceConstant("CPM Acceleration", INIT_MAX_WHEEL_ACCELERATION);
     MAXIMUM_WHEEL_ACCELERATION.addChangeHandler(
       (Double acceleration) -> m_spinner.configMotionAcceleration(convertWheelVelocityToMotorVelocity(acceleration)));
     spinner_kP = new DoublePreferenceConstant("CPM Spinner kP", 0);
@@ -72,16 +97,9 @@ public class ControlPanelManipulator extends SubsystemBase {
     spinner_kF = new DoublePreferenceConstant("CPM Spinner kF", 0);
     spinner_kF.addChangeHandler((Double kF) -> m_spinner.config_kF(0, kF));
 
-    m_wristEncoder.reset();
-    m_colorMatcher.addColorMatch(kBlueTarget);
-    m_colorMatcher.addColorMatch(kGreenTarget);
-    m_colorMatcher.addColorMatch(kRedTarget);
-    m_colorMatcher.addColorMatch(kYellowTarget);
-    m_spinner.configFactoryDefault();
-    m_spinner.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
     m_spinner.configMotionCruiseVelocity(convertWheelVelocityToMotorVelocity(MAXIMUM_WHEEL_VELOCITY));
     m_spinner.configMotionAcceleration(convertWheelVelocityToMotorVelocity(MAXIMUM_WHEEL_ACCELERATION.getValue()));
-    m_spinner.selectProfileSlot(0, 0);
+  
     SmartDashboard.putBoolean("Zero CPM", false);
   }
 
@@ -206,8 +224,8 @@ public class ControlPanelManipulator extends SubsystemBase {
 
   public void moveWheelToPosition(double wheelPosition) {
     m_spinner.set(ControlMode.MotionMagic, convertWheelPositionToMotorPosition(wheelPosition));
-    System.out.println("CPM: convert while postion to motor postion"+convertWheelPositionToMotorPosition(wheelPosition));
-    System.out.println("CPM: "+ m_spinner.getControlMode());
+    System.out.println("CPM: convert wheel postion to motor postion"+convertWheelPositionToMotorPosition(wheelPosition));
+    System.out.println("CPM: Control Mode"+ m_spinner.getControlMode());
     SmartDashboard.putNumber("CPM W2M Conversion",convertWheelPositionToMotorPosition(wheelPosition));
   }
 
