@@ -21,13 +21,14 @@ public class CPMConfig {
         cpmConfiguration = new TalonFXConfiguration();
 
         // cpm - TalonFX
-        cpmConfiguration.primaryPID.selectedFeedbackSensor = FeedbackDevice.RemoteSensor0;
+        cpmConfiguration.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
         // cpmConfiguration.primaryPID.selectedFeedbackCoefficient = 0.328293;
         cpmConfiguration.peakOutputForward = 1.0;
         cpmConfiguration.peakOutputReverse = -1.0;
         cpmConfiguration.nominalOutputForward = 1.0;
         cpmConfiguration.nominalOutputReverse = -1.0;
         cpmConfiguration.neutralDeadband = 0.001;
+
         // cpmConfiguration.slot0.kP = 0.00000;
         // cpmConfiguration.slot0.kI = 0.00000;
         // cpmConfiguration.slot0.kD = 0.00000;

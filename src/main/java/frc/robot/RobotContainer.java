@@ -52,31 +52,15 @@ public class RobotContainer {
 
   // Subsystems
   private final ControlPanelManipulator m_cpm = new ControlPanelManipulator();
-  // private final Intake m_intake = new Intake();
-  private final Drive m_drive = new Drive(m_sensors);
+
 
   // Commands
   private final Command m_autoCommand = new WaitCommand(1);
-
-  // private final DeployIntake m_deployIntake = new DeployIntake(m_intake);
-  // private final RetractIntake m_retractIntake = new RetractIntake(m_intake);
-  // private final StopIntake m_stopIntake = new StopIntake(m_intake);
-  // private final RunIntake m_runIntake = new RunIntake(m_intake, 1);
-  // private final RunIntake m_ejectIntake = new RunIntake(m_intake, -1);
-
   private final ReportColor m_reportColor = new ReportColor(m_cpm);
-
-  private final ArcadeDrive m_arcadeDrive;
-  private final TankDrive m_tankDrive;
-  private final TestDriveStaticFriction m_testDriveStaticFriction;
-  private final CalculateDriveEfficiency m_calculateDriveEfficiency;
-  private final ArcadeDrive m_testArcadeDrive;
 
   // private final MoveColorWheelToTargetColor m_moveColorWheelToTargetColor = new MoveColorWheelToTargetColor(m_cpm);
   // private final RotateColorWheel m_rotateColorWheel = new RotateColorWheel(m_cpm);
 
-  private final SetToFrontCamera m_setToFrontCamera = new SetToFrontCamera(m_sensors);
-  private final SetToRearCamera m_setToRearCamera = new SetToRearCamera(m_sensors);
     
   // CPM Commands
   private final SetColorWheelPosition m_setColorWheelPosition = new SetColorWheelPosition(m_cpm, m_operatorController);
@@ -88,31 +72,9 @@ public class RobotContainer {
    */
   public RobotContainer() {
 
-    // Initialize everything
-    DoubleSupplier arcadeDriveSpeedSupplier = DriveUtils.deadbandExponential(
-        m_driverController::getLeftStickY, Constants.DRIVE_SPEED_EXP, Constants.DRIVE_JOYSTICK_DEADBAND);
-    DoubleSupplier arcadeDriveTurnSupplier = DriveUtils.cheesyTurn(arcadeDriveSpeedSupplier, 
-        DriveUtils.deadbandExponential(m_driverController::getRightStickX, Constants.DRIVE_SPEED_EXP, Constants.DRIVE_JOYSTICK_DEADBAND),
-        Constants.CHEESY_DRIVE_MIN_TURN, Constants.CHEESY_DRIVE_MAX_TURN);
-    BooleanSupplier arcadeDriveShiftSupplier = () -> m_drive.autoshift(arcadeDriveSpeedSupplier.getAsDouble());
-    m_arcadeDrive = new ArcadeDrive(m_drive, arcadeDriveSpeedSupplier, arcadeDriveTurnSupplier, arcadeDriveShiftSupplier);
-
-    DoubleSupplier tankDriveLeftSupplier = m_driverController::getLeftStickY;
-    DoubleSupplier tankDriveRightSupplier = m_driverController::getRightStickY;
-    m_tankDrive = new TankDrive(m_drive, tankDriveLeftSupplier, tankDriveRightSupplier);
-
-    m_testDriveStaticFriction = new TestDriveStaticFriction(m_drive);
-    m_calculateDriveEfficiency = new CalculateDriveEfficiency(m_drive);
-
-    BooleanSupplier testArcadeDriveShiftSupplier = () -> SmartDashboard.getBoolean("SetTestShiftHigh", false);
-    DoubleSupplier testArcadeDriveSpeedSupplier = () -> SmartDashboard.getNumber("SetTestDriveSpeed", 0) / Constants.MAX_SPEED_HIGH;
-    DoubleSupplier testArcadeDriveTurnSupplier = () -> SmartDashboard.getNumber("SetTestDriveTurn", 0) * (Constants.WHEEL_BASE_WIDTH * Math.PI) / Constants.MAX_SPEED_HIGH / 360;
-    m_testArcadeDrive = new ArcadeDrive(m_drive, testArcadeDriveSpeedSupplier, testArcadeDriveTurnSupplier, testArcadeDriveShiftSupplier);
-
     // Configure the button bindings
     configureButtonBindings();
-    // m_intake.setDefaultCommand(m_stopIntake);
-    m_drive.setDefaultCommand(m_arcadeDrive);
+
   }
 
   /**
@@ -131,19 +93,6 @@ public class RobotContainer {
     m_operatorController.buttonB.whenPressed(m_rotateColorWheel);
     m_operatorController.buttonY.whenPressed(m_moveColorWheelToTargetColor);
 
-    m_driverController.buttonRightBumper.whenPressed(m_setToFrontCamera);
-    m_driverController.buttonRightBumper.whenReleased(m_setToRearCamera);
-
-    SmartDashboard.putData("TestDriveStaticFriction", m_testDriveStaticFriction);
-    SmartDashboard.putData("CalculateDriveEfficiency", m_calculateDriveEfficiency);
-
-    SmartDashboard.putNumber("SetTestDriveSpeed", 0); 
-    SmartDashboard.putNumber("SetTestDriveTurn", 0);
-    SmartDashboard.putBoolean("SetTestShiftHigh", false);
-    SmartDashboard.putData("TestArcadeDrive", m_testArcadeDrive);
-
-    SmartDashboard.putNumber("SetTestHeading", 0);
-    SmartDashboard.putData("TestTurnToHeading", new InstantCommand(() -> (new TurnToHeading(m_drive, m_sensors, SmartDashboard.getNumber("SetTestHeading", 0))).schedule()));
   }
 
   /**

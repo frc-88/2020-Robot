@@ -59,10 +59,12 @@ public class ControlPanelManipulator extends SubsystemBase {
   private double TIME_TO_REACH_MAX_VELOCITY = .5; // get to max speed in 1/2 a second
   private double INIT_MAX_WHEEL_ACCELERATION = MAXIMUM_WHEEL_VELOCITY/ TIME_TO_REACH_MAX_VELOCITY; // =~ 2
   private DoublePreferenceConstant MAXIMUM_WHEEL_ACCELERATION;
+  
   private DoublePreferenceConstant spinner_kP;
   private DoublePreferenceConstant spinner_kI;
   private DoublePreferenceConstant spinner_kD;
   private DoublePreferenceConstant spinner_kF;
+  
   private CPMConfig cpmConfig;
 
   
@@ -75,9 +77,7 @@ public class ControlPanelManipulator extends SubsystemBase {
     m_colorMatcher.addColorMatch(kYellowTarget);
 
     m_spinner.configFactoryDefault();
-    m_spinner.configAllSettings(cpmConfig.cpmConfiguration);
-    m_spinner.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-    //m_spinner.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+    //m_spinner.configAllSettings(cpmConfig.cpmConfiguration);
     m_spinner.enableVoltageCompensation(true);
     m_spinner.setSensorPhase(false);
     m_spinner.setInverted(false);

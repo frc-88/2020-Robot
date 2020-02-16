@@ -10,6 +10,7 @@
 */
 package frc.robot.commands.cpm;
 
+import edu.wpi.first.wpilibj.trajectory.Trajectory.State;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ControlPanelManipulator;
 import frc.robot.util.TJController;
@@ -39,38 +40,42 @@ public class MoveColorWheelToTargetColor extends CommandBase {
   public void execute() {
     // If we are in phase 3 and we are in contact with the color wheel 
     // then rotate color wheel to the color that we are given by the FMS
-    
+    System.out.println("CPM: Executing the move color wheel to target command " + Integer.toString(this.state));
+    System.out.println("CPM: Is CPM Switch Engaged: " + cpm.isEngaged());
+    System.out.println("CPM: FRC Target color is: " + cpm.getFMSColorTarget());
     switch(state) {
       case 0: // wait to be engaged and have a color from the FMS
+        System.out.println("\nCPM: In state "+ state);
         if((cpm.isEngaged())&&(cpm.getFMSColorTarget().length()>0)) {
-          controller.startLightRumble();
+          //controller.startLightRumble();
           state = 1;
-          System.out.println("CPM: MoveColorWheelToTargetColor "+ Integer.toString(state));
+          System.out.println("\nCPM: Is Engaged and Has FRC Color - New State" + state);
         }
-        System.out.println("CPM: MoveColorWheelToTargetColor "+Integer.toString(state));
         break;
       case 1: // freezes drive, move to case 2 when stopped
-        controller.stopRumble();
+        //controller.stopRumble();
         // TODO: take control from the driver
+        System.out.println("\nCPM: In state "+ state);
         cpm.setWheelPosition(0);
         cpm.getColor();
-        System.out.println("CPM: MoveColorWheelToTargetColor "+Integer.toString(state));
         state = 2;
         break;
       case 2: // start spinning motor, spins motor extra distance to target color if already received
+        System.out.println("\nCPM: In state "+ state);
+        System.out.println("\nCPM: Target position: "+ cpm.calcPositionControlTargetPosition());
         cpm.moveWheelToPosition(cpm.calcPositionControlTargetPosition());
-        System.out.println("CPM: MoveColorWheelToTargetColor "+Integer.toString(state));
+        System.out.println("\nCPM: MoveColorWheelToTargetColor "+ state);
         state = 3;
         break;
       case 3: // give control back to the driver + rumble 
-        controller.startHeavyRumble();
-        System.out.println("CPM: MoveColorWheelToTargetColor "+Integer.toString(state));
+        //controller.startHeavyRumble();
+        System.out.println("\nCPM: MoveColorWheelToTargetColor in state: "+ state);
         // TODO: give back control to driver
         state = 4;
         break;
       case 4: // stop heavy rumble after driver gets control back
-        controller.stopRumble();
-        System.out.println("CPM: MoveColorWheelToTargetColor in state: "+Integer.toString(state));
+        //controller.stopRumble();
+        System.out.println("\nCPM: MoveColorWheelToTargetColor in state: "+ state);
         break;
     }
   }

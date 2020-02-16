@@ -44,17 +44,18 @@ public class RotateColorWheel extends CommandBase {
     // If we are in phase 2 and we are in contact with the color wheel 
     // then rotate color wheel 4 times and rumble the controller when done
     // If not phase 2 then just exit and rumble the controller
+    System.out.println("CPM: Executing the Rotate Color Wheel command");
     
     
     switch(state) {
       case 0: //wait to be engaged
         if(cpm.isEngaged()) {
-          controller.startLightRumble();
+          //controller.startLightRumble();
           state = 1;
         }
         break;
       case 1: //freezes drive, move to case 2 when stopped
-        controller.stopRumble();
+        //controller.stopRumble();
         // TODO: take control from the driver
         cpm.setWheelPosition(0);
         cpm.getColor();
@@ -74,12 +75,12 @@ public class RotateColorWheel extends CommandBase {
         state = 3;
         break;
       case 3: //give control back to the driver + rumble 
-        controller.startHeavyRumble();
+        //controller.startHeavyRumble();
         // TODO: give back control to driver
         state = 4;
         break;
       case 4: //stop heavy rumble after driver gets control back
-        controller.stopRumble();
+        //controller.stopRumble();
         break;
     }
     
