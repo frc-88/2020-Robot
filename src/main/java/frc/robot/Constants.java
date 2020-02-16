@@ -37,6 +37,7 @@ public final class Constants {
 	public static final int CLIMBER_PNEUMATICS_REVERSE = 01;
 	public static final int CLIMBER_MIN_POSITION = 0;
 	public static final int CLIMBER_MAX_POSITION = 10000;
+	public static final int CLIMBER_EXPONENTIAL = 2;
 	public static final double CLIMBER_CONTROLLER_DEADZONE = 0.1;
 	
 	// Shooter constants

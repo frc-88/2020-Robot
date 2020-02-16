@@ -17,6 +17,17 @@ import frc.robot.commands.arm.*;
 import frc.robot.commands.climber.DisengageRatchets;
 import frc.robot.commands.climber.EngageRatchets;
 import frc.robot.commands.climber.RunClimber;
+import frc.robot.commands.climber.DisengageRatchets;
+import frc.robot.commands.climber.EngageRatchets;
+import frc.robot.commands.climber.RunClimber;
+import frc.robot.commands.MoveColorWheelToTargetColor;
+import frc.robot.commands.ReportColor;
+import frc.robot.commands.RotateColorWheel;
+import frc.robot.subsystems.Climber;
+import frc.robot.commands.vision.SetToFrontCamera;
+import frc.robot.commands.vision.SetToRearCamera;
+import frc.robot.commands.hopper.*;
+import frc.robot.commands.arm.*;
 import frc.robot.commands.shooter.*;
 import frc.robot.commands.Intake.DeployIntake;
 import frc.robot.commands.Intake.RetractIntake;
@@ -115,9 +126,10 @@ public class RobotContainer {
   public RobotContainer() {
 
     // Initialize everything
-
-    DoubleSupplier climbSpeedXSupplier = m_buttonBox::getClimberTiltAxis;
-    DoubleSupplier climbSpeedYSupplier = m_buttonBox::getClimberSpeedAxis;    
+    // DoubleSupplier climbSpeedXSupplier = m_buttonBox::getClimberTiltAxis;
+    // DoubleSupplier climbSpeedYSupplier = m_buttonBox::getClimberSpeedAxis;  
+    DoubleSupplier climbSpeedXSupplier = DriveUtils.deadbandExponential(m_testController::getLeftStickX, Constants.CLIMBER_EXPONENTIAL, Constants.CLIMBER_CONTROLLER_DEADZONE);
+    DoubleSupplier climbSpeedYSupplier = DriveUtils.deadbandExponential(m_testController::getLeftStickY, Constants.CLIMBER_EXPONENTIAL, Constants.CLIMBER_CONTROLLER_DEADZONE);
 
     m_runClimber = new RunClimber(m_climber, climbSpeedXSupplier, climbSpeedYSupplier);
 
@@ -163,6 +175,7 @@ public class RobotContainer {
     m_climber.setDefaultCommand(m_runClimber);
     // m_intake.setDefaultCommand(m_stopIntake);
     m_drive.setDefaultCommand(m_arcadeDrive);
+    
     configureSmartDashboardButtons();
     configureDefaultCommands();
   }
@@ -172,7 +185,8 @@ public class RobotContainer {
     m_buttonBox.button4.whenPressed(new SequentialCommandGroup(new DeployIntake(m_intake), new RunIntake(m_intake, 1.)));
     m_buttonBox.button4.whenReleased(new SequentialCommandGroup(new RetractIntake(m_intake), new StopIntake(m_intake)));
 
-    m_driverController.buttonStart.whenHeld(m_testBrakeMode);
+    m_testController.buttonRightBumper.whenPressed(m_engageRatchets);
+    m_testController.buttonRightBumper.whenReleased(m_disengageRatchets);
 
     // m_driverController.buttonB.whileHeld(m_reportColor);
     // m_driverController.buttonA.whenPressed(m_moveColorWheelToTargetColor);
@@ -228,10 +242,10 @@ public class RobotContainer {
   }
 
   private void configureDefaultCommands() {
-    // m_intake.setDefaultCommand(m_stopIntake);
     m_drive.setDefaultCommand(m_arcadeDrive);
     // m_arm.setDefaultCommand(m_armHoldCurrentPosition);
     m_intake.setDefaultCommand(m_stopIntake);
+    m_climber.setDefaultCommand(m_runClimber);
   }
 
   /**

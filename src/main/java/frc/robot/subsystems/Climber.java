@@ -14,6 +14,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -81,6 +82,10 @@ public class Climber extends SubsystemBase{
     public void runClimberOnVoltage(double current) {
         m_climber_motor_left.set(ControlMode.Current, current);
         m_climber_motor_right.set(ControlMode.Current, current);
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Left Motor Position", m_climber_motor_left.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Right Motor Position", m_climber_motor_right.getSelectedSensorPosition());
 
     }
 }

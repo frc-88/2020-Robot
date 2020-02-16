@@ -41,18 +41,10 @@ public class RunClimber extends CommandBase {
     double speed;
 
     //Sets speed value
-    if(Math.abs(ySpeed.getAsDouble()) >= Constants.CLIMBER_CONTROLLER_DEADZONE) {
-      speed = ySpeed.getAsDouble();
-    } else {
-      speed = 0;
-    }
+    speed = ySpeed.getAsDouble();
 
     //Sets tilt value
-    if(Math.abs(xSpeed.getAsDouble()) >= Constants.CLIMBER_CONTROLLER_DEADZONE) {
-      tilt = xSpeed.getAsDouble();
-    } else {
-      tilt = 0;
-    }
+    tilt = xSpeed.getAsDouble();
 
     climber.setRightMotor(speed + tilt);
     climber.setLeftMotor(speed - tilt);
