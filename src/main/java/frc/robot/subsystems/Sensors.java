@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.util.NavX;
+import frc.robot.Constants;
 import frc.robot.util.Limelight;
 
 /**
@@ -54,6 +55,17 @@ public class Sensors extends SubsystemBase {
     server.setSource(rearCamera);
   }
 
+  public double getDistanceToTarget() {
+    double distance = 0;
+
+    if (limelight.isConnected() && limelight.hasTarget()) {
+      distance = (Constants.FIELD_PORT_TARGET_HEIGHT - Constants.LIMELIGHT_HEIGHT) / 
+        Math.tan(Math.toRadians(Constants.LIMELIGHT_ANGLE) + Math.toRadians(limelight.getTargetVerticalOffsetAngle()));
+    }
+
+    return distance;
+  }
+
 
   @Override
   public void periodic() {
@@ -68,5 +80,6 @@ public class Sensors extends SubsystemBase {
     // Limelight data
     SmartDashboard.putBoolean("Limelight connected?", limelight.isConnected());
     SmartDashboard.putBoolean("Limelight has target?", limelight.hasTarget());
+    SmartDashboard.putNumber("Distance to target", getDistanceToTarget());
   }
 }

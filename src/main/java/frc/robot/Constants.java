@@ -68,6 +68,12 @@ public final class Constants {
 	public static final double HOPPER_SHOOT_PERCENT_OUTPUT = 1;
 	public static final double HOPPER_INTAKE_PERCENT_OUTPUT = 0.2;
 
+	// Sensor constants
+	public static final double LIMELIGHT_HEIGHT = 21.0;
+	public static final double LIMELIGHT_ANGLE = 5.0; // TODO
+
+	// Field constants
+	public static final double FIELD_PORT_TARGET_HEIGHT = 90.75;
 
 	/********************************************************************
     * 
