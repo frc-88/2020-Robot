@@ -46,7 +46,6 @@ public class RotateColorWheel extends CommandBase {
     // If not phase 2 then just exit and rumble the controller
     System.out.println("CPM: Executing the Rotate Color Wheel command");
     
-    
     switch(state) {
       case 0: //wait to be engaged
         System.out.println("CPM RotateColorWheel State: "+ state);
@@ -59,7 +58,9 @@ public class RotateColorWheel extends CommandBase {
         System.out.println("\nCPM RotateColorWheel State: "+ state);
         //controller.stopRumble();
         // TODO: take control from the driver
-        cpm.setSensorPosition(0);
+        while(cpm.getMotorSensorPosition() !=0){
+          cpm.setMotorSensorPosition(0);
+        }
         cpm.getColor();
         state = 2;
         break;

@@ -170,6 +170,7 @@ public class ControlPanelManipulator extends SubsystemBase {
     return detectedColor;
   }
 
+
   /**
    * Converts motor position to wheel position
    * 
@@ -179,6 +180,15 @@ public class ControlPanelManipulator extends SubsystemBase {
   private double convertMotorPositionToWheelPosition(int motorPosition) {
     return (motorPosition * (1. / ticksPerMotorRotation) * (1. / motorRotationsPerWheelRotation));
   }
+
+  /**
+   * 
+   * @return The motor position from the integrated sensor in ticks
+   */
+  public double getMotorSensorPosition(){
+    return m_spinner.getSelectedSensorPosition();
+  }
+
 
   /**
    * Converts wheel position to motor position
@@ -222,7 +232,7 @@ public class ControlPanelManipulator extends SubsystemBase {
     m_spinner.setSelectedSensorPosition(convertWheelPositionToMotorPosition(position));
   }
 
-  public void setSensorPosition(int sensorPosition){
+  public void setMotorSensorPosition(int sensorPosition){
     m_spinner.setSelectedSensorPosition(sensorPosition);
   }
 
@@ -249,7 +259,7 @@ public class ControlPanelManipulator extends SubsystemBase {
     SmartDashboard.putBoolean("CPM isEngaged", isEngaged());
 
     if(SmartDashboard.getBoolean("Zero CPM", false)) {
-      setSensorPosition(0);
+      setMotorSensorPosition(0);
       System.out.println("CPM: Setting wheel postion to 0");
     }
 

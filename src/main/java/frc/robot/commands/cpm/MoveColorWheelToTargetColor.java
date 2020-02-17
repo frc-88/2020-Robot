@@ -56,7 +56,10 @@ public class MoveColorWheelToTargetColor extends CommandBase {
         //controller.stopRumble();
         // TODO: take control from the driver
         System.out.println("\nCPM: In state "+ state);
-        cpm.setWheelPosition(0);
+        // Make sure that the sensor postion returns 0 before moving on
+        while(cpm.getMotorSensorPosition() !=0){
+          cpm.setMotorSensorPosition(0);
+        }
         cpm.getColor();
         state = 2;
         break;

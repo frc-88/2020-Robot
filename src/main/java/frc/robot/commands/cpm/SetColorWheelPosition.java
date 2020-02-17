@@ -44,7 +44,9 @@ public class SetColorWheelPosition extends CommandBase {
       case 1: //freezes drive, move to case 2 when stopped
         //controller.stopRumble();
         // TODO: take control from the driver
-        cpm.setSensorPosition(0);
+        while(cpm.getMotorSensorPosition() !=0){
+          cpm.setMotorSensorPosition(0);
+        }
         state = 2;
         break;
       case 2: //start spinning motor, spins motor extra distance to target color if already received
