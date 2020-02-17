@@ -22,13 +22,9 @@ public class ShooterConfig {
         // flywheelConfiguration.primaryPID.selectedFeedbackCoefficient = 0.328293;
         flywheelConfiguration.peakOutputForward = 1.0;
         flywheelConfiguration.peakOutputReverse = -1.0;
-        flywheelConfiguration.nominalOutputForward = 1.0;
-        flywheelConfiguration.nominalOutputReverse = -1.0;
+        flywheelConfiguration.nominalOutputForward = 0;
+        flywheelConfiguration.nominalOutputReverse = 0;
         flywheelConfiguration.neutralDeadband = 0.001;
-        flywheelConfiguration.slot0.kP = 0.00000;
-        flywheelConfiguration.slot0.kI = 0.00000;
-        flywheelConfiguration.slot0.kD = 0.00000;
-        flywheelConfiguration.slot0.kF = 1.00000;
         // flywheelConfiguration.slot0.integralZone = 900;
         // flywheelConfiguration.slot0.allowableClosedloopError = 217;
         // flywheelConfiguration.slot0.maxIntegralAccumulator = 254.000000;

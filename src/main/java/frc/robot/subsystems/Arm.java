@@ -17,7 +17,6 @@ import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
-import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -82,12 +81,16 @@ public class Arm extends SubsystemBase {
       (Double acceleration) -> m_rotator.configMotionAcceleration(convertArmVelocityToEncoderVelocity(acceleration)));
     rotator_kP = new DoublePreferenceConstant("Arm rotator kP", 1);
     rotator_kP.addChangeHandler((Double kP) -> m_rotator.config_kP(0, kP));
+    m_rotator.config_kP(0, rotator_kP.getValue());
     rotator_kI = new DoublePreferenceConstant("Arm rotator kI", 0.0003);
     rotator_kI.addChangeHandler((Double kI) -> m_rotator.config_kI(0, kI));
+    m_rotator.config_kP(0, rotator_kI.getValue());
     rotator_kD = new DoublePreferenceConstant("Arm rotator kD", 0.1);
     rotator_kD.addChangeHandler((Double kD) -> m_rotator.config_kD(0, kD));
+    m_rotator.config_kP(0, rotator_kD.getValue());
     rotator_kF = new DoublePreferenceConstant("Arm rotator kF", 2.2);
     rotator_kF.addChangeHandler((Double kF) -> m_rotator.config_kF(0, kF));
+    m_rotator.config_kP(0, rotator_kF.getValue());
 
     m_rotator.configMotionCruiseVelocity(convertArmVelocityToEncoderVelocity(MAXIMUM_ARM_VELOCITY.getValue()));
     m_rotator.configMotionAcceleration(convertArmVelocityToEncoderVelocity(MAXIMUM_ARM_ACCELERATION.getValue()));
@@ -106,7 +109,7 @@ public class Arm extends SubsystemBase {
   }
   
   public void zeroArm() {
-    armOffsetTicks = convertArmDegreesToEncoderTicks(getAngleFromAbsolute()) - m_rotator.getSelectedSensorPosition();
+    armOffsetTicks = convertArmDegreesToEncoderTicks(getAngleFromAbsolute()) + armOffsetTicks - m_rotator.getSelectedSensorPosition();
     m_rotator.configForwardSoftLimitEnable(true);
     m_rotator.configForwardSoftLimitThreshold(convertArmDegreesToEncoderTicks(Constants.ARM_HIGH_LIMIT));
     m_rotator.configReverseSoftLimitEnable(true);
@@ -144,6 +147,10 @@ public class Arm extends SubsystemBase {
 
   public double getCurrentArmPosition() {
     return convertEncoderTicksToArmDegrees(m_rotator.getSelectedSensorPosition());
+  }
+
+  public boolean isOnTarget() {
+    return Math.abs(convertEncoderTicksToArmDegrees(m_rotator.getClosedLoopError())) < Constants.ARM_TOLERANCE;
   }
 
   /**

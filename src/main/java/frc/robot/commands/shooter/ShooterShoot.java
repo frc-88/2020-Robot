@@ -7,11 +7,9 @@
 
 package frc.robot.commands.shooter;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Shooter;
 
 public class ShooterShoot extends ShooterFlywheelRun {
-  private Shooter m_shooter;
   private double m_feederPercentOutput;
   
   /**

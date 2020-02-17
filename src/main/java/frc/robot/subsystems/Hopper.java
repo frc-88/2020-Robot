@@ -9,6 +9,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 
@@ -29,13 +30,15 @@ public class Hopper extends SubsystemBase {
     m_config = new TalonSRXConfiguration();
     m_config.primaryPID.selectedFeedbackSensor = FeedbackDevice.CTRE_MagEncoder_Relative;
  
-    m_feederLeft = new TalonSRX(Constants.HOPPER_FEEDER_1);
+    m_feederLeft = new TalonSRX(Constants.LEFT_HOPPER);
     m_feederLeft.configFactoryDefault();
     m_feederLeft.configAllSettings(m_config);
+    m_feederLeft.setInverted(InvertType.None);
 
-    m_feederRight = new TalonSRX(Constants.HOPPER_FEEDER_2);
+    m_feederRight = new TalonSRX(Constants.RIGHT_HOPPER);
     m_feederRight.configFactoryDefault();
     m_feederRight.configAllSettings(m_config);
+    m_feederRight.setInverted(InvertType.InvertMotorOutput);
   }
 
   public void setFeeders(double leftPercentOutput, double rightPercentOutput) {

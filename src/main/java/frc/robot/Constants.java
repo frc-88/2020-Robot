@@ -31,9 +31,9 @@ public final class Constants {
 	public static final float CPM_PHASE_2_WHEEL_ROTATIONS = 4;
 
 	// Shooter constants
-	public static final int SHOOTER_FLYWHEEL_MASTER = 7;
-	public static final int SHOOTER_FLYWHEEL_FOLLOWER = 8;
-	public static final int SHOOTER_FEEDER_MOTOR = 0;
+	public static final int SHOOTER_FLYWHEEL_MASTER = 12;
+	public static final int SHOOTER_FLYWHEEL_FOLLOWER = 3;
+	public static final int SHOOTER_FEEDER_MOTOR = 8;
 	public static final double SHOOTER_FLYWHEEL_MAX_SPEED = 1;
 	public static final double SHOOTER_FLYWHEEL_TOLERANCE = 25;
 	public static final int SHOOTER_FLYWHEEL_SPEED_EXP = 1;
@@ -55,6 +55,7 @@ public final class Constants {
 	public static final double ARM_HIGH_LIMIT = 90;
 	public static final double ARM_ENCODER_SHIFT = 15;
 	public static final int ARM_SPEED_EXP = 2;
+	public static final double ARM_TOLERANCE = 0.5;
 
 	// Intake constants
 	public static final int ROLLER_ID = 11;
@@ -62,10 +63,10 @@ public final class Constants {
 	public static final int INTAKE_RETRACT_PISTON = 7;
 
 	// Hopper constants
-	public static final int HOPPER_FEEDER_1 = 9;
-	public static final int HOPPER_FEEDER_2 = 10;
-	public static final double HOPPER_SHOOT_PERCENT_OUTPUT = 0.5;
-	public static final double HOPPER_INTAKE_PERCENT_OUTPUT = 0.1;
+	public static final int LEFT_HOPPER = 9;
+	public static final int RIGHT_HOPPER = 10;
+	public static final double HOPPER_SHOOT_PERCENT_OUTPUT = 1;
+	public static final double HOPPER_INTAKE_PERCENT_OUTPUT = 0.2;
 
 
 	/********************************************************************

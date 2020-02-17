@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.hopper.*;
 import frc.robot.commands.arm.*;
 import frc.robot.commands.shooter.*;
+import frc.robot.commands.WaitForShooterReady;
 import frc.robot.commands.Intake.DeployIntake;
 import frc.robot.commands.Intake.RetractIntake;
 import frc.robot.commands.Intake.RunIntake;
@@ -35,7 +36,10 @@ import frc.robot.util.TJController;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
@@ -89,6 +93,8 @@ public class RobotContainer {
 
   private final DoublePreferenceConstant m_armStowAngle = new DoublePreferenceConstant("Arm Stow Angle", 0);
   private final DoublePreferenceConstant m_armLayupAngle = new DoublePreferenceConstant("Arm Layup Angle", 45);
+
+  private final DoublePreferenceConstant m_shooterLayupSpeed = new DoublePreferenceConstant("Shooter Layup Speed", 2500);
 
   private TestBrakeMode m_testBrakeMode = new TestBrakeMode(m_arm);
 
@@ -145,7 +151,63 @@ public class RobotContainer {
     m_buttonBox.button4.whenPressed(new SequentialCommandGroup(new DeployIntake(m_intake), new RunIntake(m_intake, 1.)));
     m_buttonBox.button4.whenReleased(new SequentialCommandGroup(new RetractIntake(m_intake), new StopIntake(m_intake)));
 
-    m_driverController.buttonStart.whenHeld(m_testBrakeMode);
+    m_buttonBox.button2.whenPressed(new ConditionalCommand( 
+        new ParallelCommandGroup(
+            new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()), 
+            new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue())
+        ),
+        new ParallelCommandGroup(
+            new ArmMotionMagic(m_arm, 90),
+            new ShooterFlywheelRun(m_shooter, 6000)
+        ),
+        m_buttonBox.button7::get)
+    );
+
+    m_buttonBox.button3.whenPressed(new ParallelCommandGroup(
+      new ArmMotionMagic(m_arm, m_armStowAngle.getValue()),
+      new ShooterStop(m_shooter)
+    ));
+
+    m_buttonBox.button1.whileHeld(new ConditionalCommand(
+        new SequentialCommandGroup(
+            new ParallelRaceGroup(
+              new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()), 
+              new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()),
+              new WaitForShooterReady(m_arm, m_shooter)
+            ),
+            new ParallelCommandGroup(
+              new HopperIntakeMode(m_hopper),
+              new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()), 
+              new ShooterShoot(m_shooter, m_shooterLayupSpeed.getValue(), 1)
+            )
+        ),
+        new SequentialCommandGroup(
+            new ParallelRaceGroup(
+                new ArmMotionMagic(m_arm, 90),
+                new ShooterFlywheelRun(m_shooter, 6000),
+                new WaitForShooterReady(m_arm, m_shooter)
+            ),
+            new ParallelCommandGroup(
+              new HopperIntakeMode(m_hopper),
+              new ArmMotionMagic(m_arm, 90), 
+              new ShooterShoot(m_shooter, 6000, 1)
+            )
+        ),
+        m_buttonBox.button7::get));
+
+    m_buttonBox.button1.whenReleased(new ConditionalCommand( 
+        new ParallelCommandGroup(
+            new HopperStop(m_hopper),
+            new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()), 
+            new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue())
+        ),
+        new ParallelCommandGroup(
+          new HopperStop(m_hopper),
+            new ArmMotionMagic(m_arm, 90),
+            new ShooterFlywheelRun(m_shooter, 5000)
+        ),
+        m_buttonBox.button7::get)
+    );
 
     // m_driverController.buttonB.whileHeld(m_reportColor);
     // m_driverController.buttonA.whenPressed(m_moveColorWheelToTargetColor);
@@ -199,6 +261,7 @@ public class RobotContainer {
     m_drive.setDefaultCommand(m_arcadeDrive);
     // m_arm.setDefaultCommand(m_armHoldCurrentPosition);
     m_intake.setDefaultCommand(m_stopIntake);
+    m_hopper.setDefaultCommand(new HopperStop(m_hopper));
   }
 
   /**
