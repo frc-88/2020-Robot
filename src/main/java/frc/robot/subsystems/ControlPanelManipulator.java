@@ -237,8 +237,8 @@ public class ControlPanelManipulator extends SubsystemBase {
   }
 
   public void moveWheelToPosition(double wheelPosition) {
-    System.out.println("CPM: convert wheel postion to motor postion"+convertWheelPositionToMotorPosition(wheelPosition));
-    SmartDashboard.putNumber("CPM W2M Conversion",convertWheelPositionToMotorPosition(wheelPosition));
+    //System.out.println("CPM: convert wheel postion to motor postion"+convertWheelPositionToMotorPosition(wheelPosition));
+    //SmartDashboard.putNumber("CPM W2M Conversion",convertWheelPositionToMotorPosition(wheelPosition));
     //m_spinner.set(ControlMode.Position, convertWheelPositionToMotorPosition(wheelPosition));
     m_spinner.set(ControlMode.MotionMagic, convertWheelPositionToMotorPosition(wheelPosition));
   }
@@ -246,8 +246,11 @@ public class ControlPanelManipulator extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("CPM Velocity", getWheelVelocity());
-    SmartDashboard.putNumber("CPM Position", getWheelPosition());
+    SmartDashboard.putNumber("CPM Wheel Velocity", getWheelVelocity());
+    SmartDashboard.putNumber("CPM Wheel Position", getWheelPosition());
+    SmartDashboard.putNumber("CPM Motor Position", getMotorSensorPosition());
+    SmartDashboard.putNumber("CPM Motor Velocity", m_spinner.getActiveTrajectoryVelocity());
+
     SmartDashboard.putNumber("CPM Target Position", convertMotorPositionToWheelPosition(m_spinner.getActiveTrajectoryPosition()));
     SmartDashboard.putNumber("CPM Target Velocity", convertMotorVelocityToWheelVelocity(m_spinner.getActiveTrajectoryVelocity()));
 
@@ -258,9 +261,9 @@ public class ControlPanelManipulator extends SubsystemBase {
 
     SmartDashboard.putBoolean("CPM isEngaged", isEngaged());
 
-    if(SmartDashboard.getBoolean("Zero CPM", false)) {
+    if(SmartDashboard.getBoolean("Zero CPM Sensor", false)) {
       setMotorSensorPosition(0);
-      System.out.println("CPM: Setting wheel postion to 0");
+      System.out.println("CPM: Setting wheel sensor postion to 0");
     }
 
     m_spinner.config_kP(0, spinner_kP.getValue());
