@@ -71,6 +71,7 @@ public final class Constants {
 	// Sensor constants
 	public static final double LIMELIGHT_HEIGHT = 21.0;
 	public static final double LIMELIGHT_ANGLE = 5.0; // TODO
+	public static final double LIMELIGHT_CENTER_OFFSET = 8.0;
 
 	// Field constants
 	public static final double FIELD_PORT_TARGET_HEIGHT = 90.75;
