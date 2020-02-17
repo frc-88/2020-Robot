@@ -41,7 +41,7 @@ public class HopperIntakeMode extends CommandBase {
     // if (m_hopper.isPowerCellReady()) {
     //   m_hopper.setFeeders(0, 0);
     // } else {
-      m_hopper.setFeeders(m_percentOutput, -m_percentOutput);
+      m_hopper.setFeeders(-m_percentOutput, m_percentOutput);
     // }
   }
 

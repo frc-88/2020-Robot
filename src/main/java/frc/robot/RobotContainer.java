@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import java.util.concurrent.DelayQueue;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -39,6 +40,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -148,8 +150,21 @@ public class RobotContainer {
 
   private void configureButtonBindings() {
 
-    m_buttonBox.button4.whenPressed(new SequentialCommandGroup(new DeployIntake(m_intake), new RunIntake(m_intake, 1.)));
-    m_buttonBox.button4.whenReleased(new SequentialCommandGroup(new RetractIntake(m_intake), new StopIntake(m_intake)));
+    m_buttonBox.button4.whenPressed(new SequentialCommandGroup(
+      new DeployIntake(m_intake), 
+      new ParallelCommandGroup(
+        new RunIntake(m_intake, 1.),
+        new HopperIntakeMode(m_hopper)))
+      );
+    m_buttonBox.button4.whenReleased(new SequentialCommandGroup(
+      new ParallelDeadlineGroup(
+        new WaitCommand(0.75), 
+        new HopperShootMode(m_hopper, Constants.HOPPER_INTAKE_PERCENT_OUTPUT),
+        new RetractIntake(m_intake)),
+      new ParallelCommandGroup(
+        new StopIntake(m_intake),
+        new HopperStop(m_hopper)))
+      );
 
     m_buttonBox.button2.whenPressed(new ConditionalCommand( 
         new ParallelCommandGroup(
@@ -170,13 +185,13 @@ public class RobotContainer {
 
     m_buttonBox.button1.whileHeld(new ConditionalCommand(
         new SequentialCommandGroup(
-            new ParallelRaceGroup(
+            new ParallelCommandGroup(
               new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()), 
               new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()),
               new WaitForShooterReady(m_arm, m_shooter)
             ),
             new ParallelCommandGroup(
-              new HopperIntakeMode(m_hopper),
+              new HopperShootMode(m_hopper),
               new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()), 
               new ShooterShoot(m_shooter, m_shooterLayupSpeed.getValue(), 1)
             )

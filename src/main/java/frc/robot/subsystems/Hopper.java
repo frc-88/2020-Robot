@@ -51,9 +51,13 @@ public class Hopper extends SubsystemBase {
     // left motor data
     SmartDashboard.putNumber("Hopper left position", m_feederLeft.getSelectedSensorPosition());
     SmartDashboard.putNumber("Hopper left velocity", m_feederLeft.getSelectedSensorVelocity());
+    SmartDashboard.putNumber("Hopper left stator current", m_feederLeft.getStatorCurrent());
+    SmartDashboard.putNumber("Hopper left supply current", m_feederLeft.getSupplyCurrent());
 
     // right motor data
     SmartDashboard.putNumber("Hopper right position", m_feederRight.getSelectedSensorPosition());
     SmartDashboard.putNumber("Hopper right velocity", m_feederRight.getSelectedSensorVelocity());
+    SmartDashboard.putNumber("Hopper right stator current", m_feederRight.getStatorCurrent());
+    SmartDashboard.putNumber("Hopper right supply current", m_feederRight.getSupplyCurrent());
   }
 }
