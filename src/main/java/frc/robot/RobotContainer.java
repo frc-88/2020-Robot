@@ -72,6 +72,13 @@ public class RobotContainer {
   private final RunIntake m_runIntake = new RunIntake(m_intake, 1);
   private final RunIntake m_ejectIntake = new RunIntake(m_intake, -1);
 
+  private final CommandBase m_regurgitate = new SequentialCommandGroup(new DeployIntake(m_intake),
+      new ParallelCommandGroup(new RunIntake(m_intake, -1.), new HopperShootMode(m_hopper, -1.)));
+
+  private final CommandBase m_regurgitatStop = new SequentialCommandGroup(
+      new ParallelDeadlineGroup(new WaitCommand(0.75), new HopperStop(m_hopper), new RetractIntake(m_intake)),
+      new StopIntake(m_intake));
+
   // private final ReportColor m_reportColor = new ReportColor(m_cpm);
 
   private final ArcadeDrive m_arcadeDrive;
@@ -151,83 +158,83 @@ public class RobotContainer {
 
   private void configureButtonBindings() {
       //BUTTON 4 - RUNS INTAKE
-    m_buttonBox.button4.whenPressed(new SequentialCommandGroup(
-      new DeployIntake(m_intake), 
-      new ParallelCommandGroup(
-        new RunIntake(m_intake, 1.),
-        new HopperIntakeMode(m_hopper)))
-      );
-      //BUTTON 4 - STOPS INTAKE
-    m_buttonBox.button4.whenReleased(new SequentialCommandGroup(
-      new ParallelDeadlineGroup(
-        new WaitCommand(0.75), 
-        new HopperShootMode(m_hopper, Constants.HOPPER_INTAKE_PERCENT_OUTPUT),
-        new RetractIntake(m_intake)),
-      new ParallelCommandGroup(
-        new StopIntake(m_intake),
-        new HopperStop(m_hopper)))
-      );
-      //BUTTON 2 - PREPS SHOOTER
-    m_buttonBox.button2.whenPressed(new ConditionalCommand( 
+      m_buttonBox.button4.whenPressed(new SequentialCommandGroup(
+        new DeployIntake(m_intake), 
         new ParallelCommandGroup(
-            new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()), 
-            new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()),
-            new LimelightToggle(m_sensors, true)),
+          new RunIntake(m_intake, 1.),
+          new HopperIntakeMode(m_hopper)))
+        );
+        //BUTTON 4 - STOPS INTAKE
+      m_buttonBox.button4.whenReleased(new SequentialCommandGroup(
+        new ParallelDeadlineGroup(
+          new WaitCommand(0.75), 
+          new HopperShootMode(m_hopper, Constants.HOPPER_INTAKE_PERCENT_OUTPUT),
+          new RetractIntake(m_intake)),
         new ParallelCommandGroup(
-            new ArmMotionMagic(m_arm, 90),
-            new ShooterFlywheelRun(m_shooter, 6000),
-            new LimelightToggle(m_sensors, true)),
-        m_buttonBox.button7::get)
-    );
-      //BUTTON 3 - STOWS ARM, STOPS SHOOTER, TOGGLES LIMELIGHT
-    m_buttonBox.button3.whenPressed(new ParallelCommandGroup(
-      new LimelightToggle(m_sensors, false),
-      new ArmMotionMagic(m_arm, m_armStowAngle.getValue()),
-      new ShooterStop(m_shooter)
-    ));
-      //BUTTON 1 - RUNS SHOOTER, RUNS HOPPER, GOES TO LAYUP ANGLE, GOES TO SHOOTING ANGLE,
-      //FEEDS POWER CELLS, SHOOTS
-    m_buttonBox.button1.whileHeld(new ConditionalCommand(
-        new SequentialCommandGroup(
-            new ParallelCommandGroup(
+          new StopIntake(m_intake),
+          new HopperStop(m_hopper)))
+        );
+        //BUTTON 2 - PREPS SHOOTER
+      m_buttonBox.button2.whenPressed(new ConditionalCommand( 
+          new ParallelCommandGroup(
               new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()), 
               new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()),
-              new WaitForShooterReady(m_arm, m_shooter)
-            ),
-            new ParallelCommandGroup(
-              new HopperShootMode(m_hopper),
-              new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()), 
-              new ShooterShoot(m_shooter, m_shooterLayupSpeed.getValue(), 1)
-            )
-        ),
-        new SequentialCommandGroup(
-            new ParallelRaceGroup(
-                new ArmMotionMagic(m_arm, 90),
-                new ShooterFlywheelRun(m_shooter, 6000),
+              new LimelightToggle(m_sensors, true)),
+          new ParallelCommandGroup(
+              new ArmMotionMagic(m_arm, 90),
+              new ShooterFlywheelRun(m_shooter, 6000),
+              new LimelightToggle(m_sensors, true)),
+          m_buttonBox.button7::get)
+      );
+        //BUTTON 3 - STOWS ARM, STOPS SHOOTER, TOGGLES LIMELIGHT
+      m_buttonBox.button3.whenPressed(new ParallelCommandGroup(
+        new LimelightToggle(m_sensors, false),
+        new ArmMotionMagic(m_arm, m_armStowAngle.getValue()),
+        new ShooterStop(m_shooter)
+      ));
+        //BUTTON 1 - RUNS SHOOTER, RUNS HOPPER, GOES TO LAYUP ANGLE, GOES TO SHOOTING ANGLE,
+        //FEEDS POWER CELLS, SHOOTS
+      m_buttonBox.button1.whileHeld(new ConditionalCommand(
+          new SequentialCommandGroup(
+              new ParallelCommandGroup(
+                new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()), 
+                new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()),
                 new WaitForShooterReady(m_arm, m_shooter)
-            ),
-            new ParallelCommandGroup(
-              new HopperShootMode(m_hopper),
-              new ArmMotionMagic(m_arm, 90), 
-              new ShooterShoot(m_shooter, 6000, 1)
-            )
-        ),
-        m_buttonBox.button7::get));
-      //BUTTON 1 - STOPS HOPPER AND FEEDER, GOES TO 45 OR STAYS STILL 
-    m_buttonBox.button1.whenReleased(new ConditionalCommand( 
-        new ParallelCommandGroup(
+              ),
+              new ParallelCommandGroup(
+                new HopperShootMode(m_hopper),
+                new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()), 
+                new ShooterShoot(m_shooter, m_shooterLayupSpeed.getValue(), 1)
+              )
+          ),
+          new SequentialCommandGroup(
+              new ParallelRaceGroup(
+                  new ArmMotionMagic(m_arm, 90),
+                  new ShooterFlywheelRun(m_shooter, 6000),
+                  new WaitForShooterReady(m_arm, m_shooter)
+              ),
+              new ParallelCommandGroup(
+                new HopperShootMode(m_hopper),
+                new ArmMotionMagic(m_arm, 90), 
+                new ShooterShoot(m_shooter, 6000, 1)
+              )
+          ),
+          m_buttonBox.button7::get));
+        //BUTTON 1 - STOPS HOPPER AND FEEDER, GOES TO 45 OR STAYS STILL 
+      m_buttonBox.button1.whenReleased(new ConditionalCommand( 
+          new ParallelCommandGroup(
+              new HopperStop(m_hopper),
+              new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()), 
+              new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue())
+          ),
+          new ParallelCommandGroup(
             new HopperStop(m_hopper),
-            new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()), 
-            new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue())
-        ),
-        new ParallelCommandGroup(
-          new HopperStop(m_hopper),
-            new ArmMotionMagic(m_arm, 90),
-            new ShooterFlywheelRun(m_shooter, 5000)
-        ),
-        m_buttonBox.button7::get)
-    );
-
+              new ArmMotionMagic(m_arm, 90),
+              new ShooterFlywheelRun(m_shooter, 5000)
+          ),
+          m_buttonBox.button7::get)
+      );
+  
     // m_driverController.buttonB.whileHeld(m_reportColor);
     // m_driverController.buttonA.whenPressed(m_moveColorWheelToTargetColor);
     // m_driverController.buttonY.whenPressed(m_rotateColorWheel);
@@ -257,6 +264,9 @@ public class RobotContainer {
     SmartDashboard.putData("Hopper Intake", new HopperIntakeMode(m_hopper));
     SmartDashboard.putData("Hopper Shoot", new HopperShootMode(m_hopper));
     SmartDashboard.putData("Hopper Stop", new HopperStop(m_hopper));
+
+    SmartDashboard.putData("Regurgitate", m_regurgitate);
+    SmartDashboard.putData("Stop Regurgitate", m_regurgitatStop);
 
     SmartDashboard.putData("Arm Manual", m_rotateArm);
 
