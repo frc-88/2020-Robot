@@ -124,7 +124,7 @@ public class TJDriveModule extends TalonFX {
         this.set(ControlMode.PercentOutput, 
                 m_transmission.getCurrentLimitedVoltage(
                         targetVelocity, this.getSelectedSensorVelocity(), currentLimit)
-                    / 12);
+                    / 12.);
     }
 
     /**

@@ -17,9 +17,10 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.driveutil.DriveConfiguration;
-import frc.robot.driveutil.DriveUtils;
 import frc.robot.driveutil.TJDriveModule;
+import frc.robot.subsystems.Sensors;
 import frc.robot.util.SyncPIDController;
+import frc.robot.util.WrappingPIDController;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import frc.robot.util.preferenceconstants.PIDPreferenceConstants;
 import frc.robot.util.transmission.CTREMagEncoder;
@@ -27,13 +28,14 @@ import frc.robot.util.transmission.Falcon500;
 import frc.robot.util.transmission.ShiftingTransmission;
 
 public class Drive extends SubsystemBase {
-  /**
-   * Creates a new Drive.
-   */
+
+  private final Sensors m_sensors;
+
   private final TJDriveModule m_leftDrive, m_rightDrive;
   private final CANCoder m_leftEncoder, m_rightEncoder;
   private ShiftingTransmission m_leftTransmission, m_rightTransmission;
   private SyncPIDController m_leftVelPID, m_rightVelPID;
+  private WrappingPIDController m_headingPID;
   private DriveConfiguration m_driveConfiguration;
   private DoubleSolenoid m_leftShifter, m_rightShifter;
 
@@ -42,18 +44,30 @@ public class Drive extends SubsystemBase {
   private double m_rightCommandedSpeed = 0;
   
   private PIDPreferenceConstants velPIDConstants;
+  private PIDPreferenceConstants headingPIDConstants;
   private DoublePreferenceConstant downshiftSpeed;
   private DoublePreferenceConstant upshiftSpeed;
   private DoublePreferenceConstant commandDownshiftSpeed;
   private DoublePreferenceConstant commandDownshiftCommandValue;
 
-  public Drive() {
+  // Constants for negative inertia
+  private static final double LARGE_TURN_RATE_THRESHOLD = 0.65;
+  private static final double INCREASE_TURN_SCALAR = 2;
+  private static final double SMALL_DECREASE_TURN_SCALAR = 2.0;
+  private static final double LARGE_DECREASE_TURN_SCALAR = 2.5;
+  private double m_prevTurn = 0; // The last turn value
+  private double m_negInertialAccumulator = 0; // Accumulates our current inertia value
+
+  public Drive(Sensors sensors) {
+    m_sensors = sensors;
+
     m_driveConfiguration = new DriveConfiguration();
 
-    velPIDConstants = new PIDPreferenceConstants("Drive Vel", 0, 0.015, 0, 0, 2, 2, 0);
-    downshiftSpeed = new DoublePreferenceConstant("Downshift Speed", 4);
+    velPIDConstants = new PIDPreferenceConstants("Drive Vel", 0, 0.02, 0, 0, 2, 2, 0);
+    headingPIDConstants = new PIDPreferenceConstants("Heading", .01, .0005, 0, 0, 3, 1, 0.25);
+    downshiftSpeed = new DoublePreferenceConstant("Downshift Speed", 4.5);
     upshiftSpeed = new DoublePreferenceConstant("UpshiftSpeed", 6);
-    commandDownshiftSpeed = new DoublePreferenceConstant("Command Downshift Speed", 6);
+    commandDownshiftSpeed = new DoublePreferenceConstant("Command Downshift Speed", 5);
     commandDownshiftCommandValue = new DoublePreferenceConstant("Command Downshift Command Value", 0.1);
 
     m_leftTransmission = new ShiftingTransmission(new Falcon500(), Constants.NUM_DRIVE_MOTORS_PER_SIDE,
@@ -87,6 +101,8 @@ public class Drive extends SubsystemBase {
     m_rightShifter = new DoubleSolenoid(Constants.SHIFTER_RIGHT_PCM, Constants.SHIFTER_RIGHT_OUT,
         Constants.SHIFTER_RIGHT_IN);
 
+    m_headingPID = new WrappingPIDController(180, -180, headingPIDConstants);
+
     shiftToLow();
 
     SmartDashboard.putBoolean("Zero Drive", false);
@@ -105,8 +121,15 @@ public class Drive extends SubsystemBase {
     double leftExpectedCurrent = m_leftDrive.getExpectedCurrentDraw(leftVelocity);
     double rightExpectedCurrent = m_rightDrive.getExpectedCurrentDraw(rightVelocity);
     double totalExpectedCurrent = leftExpectedCurrent + rightExpectedCurrent;
-    double leftCurrentLimit = m_currentLimit * leftExpectedCurrent / totalExpectedCurrent;
-    double rightCurrentLimit = m_currentLimit * rightExpectedCurrent / totalExpectedCurrent;
+    double leftCurrentLimit;
+    double rightCurrentLimit;
+    if (totalExpectedCurrent == 0) {
+      leftCurrentLimit =  m_currentLimit / 2.;
+      rightCurrentLimit = m_currentLimit / 2.;
+    } else {
+      leftCurrentLimit = m_currentLimit * leftExpectedCurrent / totalExpectedCurrent;
+      rightCurrentLimit = m_currentLimit * rightExpectedCurrent / totalExpectedCurrent;
+    }
 
     m_leftDrive.setVelocityCurrentLimited(leftVelocity, leftCurrentLimit);
     m_rightDrive.setVelocityCurrentLimited(rightVelocity, rightCurrentLimit);
@@ -126,15 +149,28 @@ public class Drive extends SubsystemBase {
    */
   public void arcadeDrive(double speed, double turn) {
 
-    turn *= -1;
+    // Apply negative intertia
+    turn = negativeInertia(speed, turn);
 
+    // Convert to feet per second
     speed *= Constants.MAX_SPEED_HIGH;
     turn *= Constants.MAX_SPEED_HIGH;
 
+    // Calculate left and right speed
     double leftSpeed = (speed + turn);
     double rightSpeed = (speed - turn);
 
+    // Apply values
     basicDriveLimited(leftSpeed, rightSpeed);
+  }
+
+  public void turnToHeading(double heading) {
+    double turnRate = m_headingPID.calculateOutput(m_sensors.m_navx.getYaw(), heading);
+    basicDrive(turnRate, -turnRate);
+  }
+
+  public void resetHeadingPID() {
+    m_headingPID.reset();
   }
 
   public boolean autoshift(double commandedValue) {
@@ -202,6 +238,51 @@ public class Drive extends SubsystemBase {
     m_rightDrive.coastAll();
   }
 
+  // Negative inertia! The idea is that the robot has some inertia
+  // which theoretically is based on previously commanded values. Returns an
+  // updated turn value
+  private double negativeInertia(double throttle, double turn) {
+
+      // How much we are currently trying to change the turn value
+      double turnDiff = turn - m_prevTurn;
+      m_prevTurn = turn;
+
+      // Determine which scaling constant to use based on how we are moving
+      double negInertiaScalar;
+      if (turn * turnDiff > 0) {
+          // We are trying to increase our turning rate
+          negInertiaScalar = INCREASE_TURN_SCALAR;
+      } else {
+          if (Math.abs(turn) < LARGE_TURN_RATE_THRESHOLD) {
+              // We are trying to reduce our turning rate to something
+              // relatively close to 0
+              negInertiaScalar = SMALL_DECREASE_TURN_SCALAR;
+          } else {
+              // We are trying to reduce our turning rate, but still want to
+              // be turning fairly fast
+              negInertiaScalar = LARGE_DECREASE_TURN_SCALAR;
+          }
+      }
+
+      // Apply the scalar, and add it to the accumulator
+      double negInertiaPower = turnDiff * negInertiaScalar;
+      m_negInertialAccumulator += negInertiaPower;
+
+      // Add the current negative inertia value to the turn
+      double updatedTurn = turn + m_negInertialAccumulator;
+
+      // Reduce our current inertia
+      if (m_negInertialAccumulator > 1) {
+          m_negInertialAccumulator -= 1;
+      } else if (m_negInertialAccumulator < -1) {
+          m_negInertialAccumulator += 1;
+      } else {
+          m_negInertialAccumulator = 0;
+      }
+
+      return updatedTurn;
+  }
+
   @Override
   public void periodic() {
     if (SmartDashboard.getBoolean("Zero Drive", false)) {
@@ -218,6 +299,9 @@ public class Drive extends SubsystemBase {
     SmartDashboard.putNumber("R Drive Position", m_rightDrive.getScaledSensorPosition());
     SmartDashboard.putNumber("L Drive Command Speed", m_leftCommandedSpeed);
     SmartDashboard.putNumber("R Drive Command Speed", m_rightCommandedSpeed);
+    SmartDashboard.putNumber("L Drive Voltage", m_leftDrive.getMotorOutputVoltage());
+    SmartDashboard.putNumber("R Drive Voltage", m_rightDrive.getMotorOutputVoltage());
+    SmartDashboard.putBoolean("In High Gear?", isInHighGear());
 
     if (DriverStation.getInstance().isEnabled()) {
       this.setBrakeMode();
