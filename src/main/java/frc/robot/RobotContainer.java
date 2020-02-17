@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.hopper.*;
 import frc.robot.commands.arm.*;
 import frc.robot.commands.shooter.*;
+import frc.robot.commands.vision.LimelightToggle;
 import frc.robot.commands.WaitForShooterReady;
 import frc.robot.commands.Intake.DeployIntake;
 import frc.robot.commands.Intake.RetractIntake;
@@ -48,7 +49,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
-  private final Sensors m_sensors = new Sensors();
+  public final Sensors m_sensors = new Sensors();
 
   private final TJController m_driverController = new TJController(0);
   private final ButtonBox m_buttonBox = new ButtonBox(1);
@@ -149,13 +150,14 @@ public class RobotContainer {
   }
 
   private void configureButtonBindings() {
-
+      //BUTTON 4 - RUNS INTAKE
     m_buttonBox.button4.whenPressed(new SequentialCommandGroup(
       new DeployIntake(m_intake), 
       new ParallelCommandGroup(
         new RunIntake(m_intake, 1.),
         new HopperIntakeMode(m_hopper)))
       );
+      //BUTTON 4 - STOPS INTAKE
     m_buttonBox.button4.whenReleased(new SequentialCommandGroup(
       new ParallelDeadlineGroup(
         new WaitCommand(0.75), 
@@ -165,24 +167,26 @@ public class RobotContainer {
         new StopIntake(m_intake),
         new HopperStop(m_hopper)))
       );
-
+      //BUTTON 2 - PREPS SHOOTER
     m_buttonBox.button2.whenPressed(new ConditionalCommand( 
         new ParallelCommandGroup(
             new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()), 
-            new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue())
-        ),
+            new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()),
+            new LimelightToggle(m_sensors, true)),
         new ParallelCommandGroup(
             new ArmMotionMagic(m_arm, 90),
-            new ShooterFlywheelRun(m_shooter, 6000)
-        ),
+            new ShooterFlywheelRun(m_shooter, 6000),
+            new LimelightToggle(m_sensors, true)),
         m_buttonBox.button7::get)
     );
-
+      //BUTTON 3 - STOWS ARM, STOPS SHOOTER, TOGGLES LIMELIGHT
     m_buttonBox.button3.whenPressed(new ParallelCommandGroup(
+      new LimelightToggle(m_sensors, false),
       new ArmMotionMagic(m_arm, m_armStowAngle.getValue()),
       new ShooterStop(m_shooter)
     ));
-
+      //BUTTON 1 - RUNS SHOOTER, RUNS HOPPER, GOES TO LAYUP ANGLE, GOES TO SHOOTING ANGLE,
+      //FEEDS POWER CELLS, SHOOTS
     m_buttonBox.button1.whileHeld(new ConditionalCommand(
         new SequentialCommandGroup(
             new ParallelCommandGroup(
@@ -203,13 +207,13 @@ public class RobotContainer {
                 new WaitForShooterReady(m_arm, m_shooter)
             ),
             new ParallelCommandGroup(
-              new HopperIntakeMode(m_hopper),
+              new HopperShootMode(m_hopper),
               new ArmMotionMagic(m_arm, 90), 
               new ShooterShoot(m_shooter, 6000, 1)
             )
         ),
         m_buttonBox.button7::get));
-
+      //BUTTON 1 - STOPS HOPPER AND FEEDER, GOES TO 45 OR STAYS STILL 
     m_buttonBox.button1.whenReleased(new ConditionalCommand( 
         new ParallelCommandGroup(
             new HopperStop(m_hopper),

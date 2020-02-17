@@ -165,7 +165,7 @@ public class Drive extends SubsystemBase {
   }
 
   public void turnToHeading(double heading) {
-    double turnRate = m_headingPID.calculateOutput(m_sensors.m_navx.getYaw(), heading);
+    double turnRate = m_headingPID.calculateOutput(m_sensors.navx.getYaw(), heading);
     basicDrive(turnRate, -turnRate);
   }
 

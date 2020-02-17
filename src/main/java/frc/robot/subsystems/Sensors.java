@@ -23,8 +23,8 @@ import frc.robot.util.Limelight;
  */
 
 public class Sensors extends SubsystemBase {
-  public final NavX m_navx;
-  public final Limelight m_limelight;
+  public final NavX navx;
+  public final Limelight limelight;
 
   UsbCamera frontCamera = CameraServer.getInstance().startAutomaticCapture(0);
   UsbCamera rearCamera = CameraServer.getInstance().startAutomaticCapture(1);
@@ -34,12 +34,12 @@ public class Sensors extends SubsystemBase {
    * Creates a new Sensors subsystem
    */
   public Sensors() {
-    m_navx = new NavX();
-    m_navx.zeroYaw();
+    navx = new NavX();
+    navx.zeroYaw();
 
-    m_limelight = new Limelight();
-    m_limelight.camVision();
-    m_limelight.ledOn();
+    limelight = new Limelight();
+    limelight.camVision();
+    limelight.ledOff();
 
     setToFrontCamera();
     // frontCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
@@ -60,13 +60,13 @@ public class Sensors extends SubsystemBase {
     // This method will be called once per scheduler run
 
     // NavX data
-    SmartDashboard.putNumber("NavX Yaw", m_navx.getYaw());
-    SmartDashboard.putNumber("NavX Yaw Rate", m_navx.getYawRate());
-    SmartDashboard.putNumber("NavX Pitch", m_navx.getPitch());
-    SmartDashboard.putNumber("NavX Roll", m_navx.getRoll());
+    SmartDashboard.putNumber("NavX Yaw", navx.getYaw());
+    SmartDashboard.putNumber("NavX Yaw Rate", navx.getYawRate());
+    SmartDashboard.putNumber("NavX Pitch", navx.getPitch());
+    SmartDashboard.putNumber("NavX Roll", navx.getRoll());
 
     // Limelight data
-    SmartDashboard.putBoolean("Limelight connected?", m_limelight.isConnected());
-    SmartDashboard.putBoolean("Limelight has target?", m_limelight.hasTarget());
+    SmartDashboard.putBoolean("Limelight connected?", limelight.isConnected());
+    SmartDashboard.putBoolean("Limelight has target?", limelight.hasTarget());
   }
 }
