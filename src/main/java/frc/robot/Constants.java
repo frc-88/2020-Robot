@@ -7,17 +7,6 @@
 
 package frc.robot;
 
-
-/**
- * The Constants class provides a convenient place for teams to hold robot-wide
- * numerical or boolean constants. This class should not be used for any other
- * purpose. All constants should be declared globally (i.e. public static). Do
- * not put anything functional in this class.
- *
- * <p>
- * It is advised to statically import this class (or one of its inner classes)
- * wherever the constants are needed, to reduce verbosity.
- */
 public final class Constants {
 
 	// CPM constants
@@ -69,7 +58,7 @@ public final class Constants {
 	public static final int PCC_IMAGE_HEIGHT = 480;
 	public static final int PCC_HUE_LO = 10;
 	public static final int PCC_HUE_HI = 60;
-	public static final int PCC_SAT_LO = 0; 
+	public static final int PCC_SAT_LO = 0;
 	public static final int PCC_SAT_HI = 255;
 	public static final int PCC_VAL_LO = 0;
 	public static final int PCC_VAL_HI = 255;
@@ -80,12 +69,11 @@ public final class Constants {
 	public static final int PCC_CHAMBER_HEIGHT = 185;
 	public static final double PCC_CHAMBER_THRESHOLD = 30000;
 
-  // Hopper constants
+	// Hopper constants
 	public static final int HOPPER_FEEDER_1 = 9;
 	public static final int HOPPER_FEEDER_2 = 10;
 	public static final double HOPPER_SHOOT_PERCENT_OUTPUT = 0.5;
 	public static final double HOPPER_INTAKE_PERCENT_OUTPUT = 0.1;
-
 
 	/********************************************************************
     * 
@@ -113,9 +101,9 @@ public final class Constants {
 
 	// Drive Configuration
 	public static final int NUM_DRIVE_MOTORS_PER_SIDE = 2;
-	public static final double LOW_DRIVE_RATIO = (1. / 18.38) * (5.99/12.) * Math.PI;
-	public static final double HIGH_DRIVE_RATIO = (1. / 8.50) * (5.99/12.) * Math.PI;;
-	public static final double DRIVE_SENSOR_RATIO = (1. / ((5.99/12.) * 3.14159)) * 7.5;
+	public static final double LOW_DRIVE_RATIO = (1. / 18.38) * (5.99 / 12.) * Math.PI;
+	public static final double HIGH_DRIVE_RATIO = (1. / 8.50) * (5.99 / 12.) * Math.PI;;
+	public static final double DRIVE_SENSOR_RATIO = (1. / ((5.99 / 12.) * 3.14159)) * 7.5;
 	public static final double DRIVE_LOW_STATIC_FRICTION_VOLTAGE = 0.2;
 	public static final double DRIVE_HIGH_STATIC_FRICTION_VOLTAGE = 0.24;
 	public static final double DRIVE_LEFT_LOW_EFFICIENCY = 1.025;
@@ -124,7 +112,7 @@ public final class Constants {
 	public static final double DRIVE_RIGHT_HIGH_EFFICIENCY = 1.02;
 	public static final double MAX_SPEED_LOW = 8.8;
 	public static final double MAX_SPEED_HIGH = 18;
-	public static final double WHEEL_BASE_WIDTH = (25. + 5./16.) / 12.; // feet
+	public static final double WHEEL_BASE_WIDTH = (25. + 5. / 16.) / 12.; // feet
 	public static final double DRIVE_CURRENT_LIMIT = 250;
 	public static final int DRIVE_SPEED_EXP = 2;
 	public static final int DRIVE_TURN_EXP = 2;
@@ -132,7 +120,7 @@ public final class Constants {
 	public static final double CHEESY_DRIVE_MIN_TURN = 0.4;
 	public static final double CHEESY_DRIVE_MAX_TURN = 0.6;
 
-	//Test
+	// Test
 	public static final double TEST_JOYSTICK_DEADBAND = 0.12;
 
 	/*******************************************************************/
