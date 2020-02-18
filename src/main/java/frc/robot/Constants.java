@@ -65,8 +65,8 @@ public final class Constants {
 	// Hopper constants
 	public static final int LEFT_HOPPER = 9;
 	public static final int RIGHT_HOPPER = 10;
-	public static final double HOPPER_SHOOT_PERCENT_OUTPUT = 1;
-	public static final double HOPPER_INTAKE_PERCENT_OUTPUT = 0.2;
+	public static final double HOPPER_SHOOT_PERCENT_OUTPUT = .5;
+	public static final double HOPPER_INTAKE_PERCENT_OUTPUT = 0.5;
 
 	// Sensor constants
 	public static final double LIMELIGHT_HEIGHT = 21.0;

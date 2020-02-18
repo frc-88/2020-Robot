@@ -30,5 +30,6 @@ public class ShooterConfig {
         // flywheelConfiguration.slot0.maxIntegralAccumulator = 254.000000;
         // flywheelConfiguration.slot0.closedLoopPeakOutput = 0.869990;
         // flywheelConfiguration.slot0.closedLoopPeriod = 33;
+        flywheelConfiguration.voltageCompSaturation = 12;
     }
 }

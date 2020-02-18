@@ -38,7 +38,7 @@ public class Hopper extends SubsystemBase {
     m_feederRight = new TalonSRX(Constants.RIGHT_HOPPER);
     m_feederRight.configFactoryDefault();
     m_feederRight.configAllSettings(m_config);
-    m_feederRight.setInverted(InvertType.InvertMotorOutput);
+    m_feederRight.setInverted(InvertType.None);
   }
 
   public void setFeeders(double leftPercentOutput, double rightPercentOutput) {

@@ -10,6 +10,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
@@ -36,6 +37,7 @@ public class Shooter extends SubsystemBase {
    * Creates a new Shooter.
    */
   public Shooter() {
+
     m_flywheelMaster.configFactoryDefault();
     m_flywheelMaster.configAllSettings(m_shooterConfig.flywheelConfiguration);
     m_flywheelMaster.enableVoltageCompensation(true);
@@ -43,8 +45,14 @@ public class Shooter extends SubsystemBase {
     m_flywheelMaster.setSensorPhase(false);
     m_flywheelMaster.setNeutralMode(NeutralMode.Coast);
 
+    StatorCurrentLimitConfiguration currentLimit = new StatorCurrentLimitConfiguration();
+    currentLimit.enable = true;
+    currentLimit.triggerThresholdTime = 0.001;
+    currentLimit.triggerThresholdCurrent = 80;
+    currentLimit.currentLimit = 80;
+    m_flywheelMaster.configStatorCurrentLimit(currentLimit);
+
     m_flywheelFollower.configFactoryDefault();
-    m_flywheelFollower.enableVoltageCompensation(true);
     m_flywheelFollower.setInverted(InvertType.OpposeMaster);
     m_flywheelFollower.setSensorPhase(false);
     m_flywheelFollower.setNeutralMode(NeutralMode.Coast);

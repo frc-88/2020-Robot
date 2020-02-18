@@ -14,6 +14,7 @@ import com.ctre.phoenix.VelocityPeriod;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
@@ -68,6 +69,12 @@ public class Arm extends SubsystemBase {
     m_rotator.setInverted(false);
     m_rotator.setSensorPhase(false);
     m_rotator.setNeutralMode(NeutralMode.Brake);
+
+    StatorCurrentLimitConfiguration currentLimit = new StatorCurrentLimitConfiguration();
+    currentLimit.enable = true;
+    currentLimit.triggerThresholdCurrent = 80;
+    currentLimit.triggerThresholdTime = 0.01;
+    currentLimit.currentLimit = 25;
 
     ARM_OFFSET = new DoublePreferenceConstant("Arm Offset", 0);
 
@@ -207,6 +214,8 @@ public class Arm extends SubsystemBase {
     // This method will be called once per scheduler run
     zeroArmIfOff();
     SmartDashboard.putNumber("Arm Position", convertEncoderTicksToArmDegrees(m_rotator.getSelectedSensorPosition()));
+    SmartDashboard.putNumber("Arm Abs Position", getAngleFromAbsolute());
+    SmartDashboard.putNumber("Arm current offset", armOffsetTicks);
     SmartDashboard.putNumber("Arm Velocity", convertEncoderVelocityToArmVelocity(m_rotator.getSelectedSensorVelocity()));
     SmartDashboard.putNumber("Expected Arm Position", convertEncoderTicksToArmDegrees(m_rotator.getActiveTrajectoryPosition()));
     SmartDashboard.putNumber("Expected Arm Velocity", convertEncoderVelocityToArmVelocity(m_rotator.getActiveTrajectoryVelocity()));

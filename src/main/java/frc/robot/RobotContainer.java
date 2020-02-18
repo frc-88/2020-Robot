@@ -182,7 +182,7 @@ public class RobotContainer {
               new LimelightToggle(m_sensors, true)),
           new ParallelCommandGroup(
               new ArmMotionMagic(m_arm, 90),
-              new ShooterFlywheelRun(m_shooter, 6000),
+              new ShooterFlywheelRun(m_shooter, 5000),
               new LimelightToggle(m_sensors, true)),
           m_buttonBox.button7::get)
       );
@@ -196,7 +196,7 @@ public class RobotContainer {
         //FEEDS POWER CELLS, SHOOTS
       m_buttonBox.button1.whileHeld(new ConditionalCommand(
           new SequentialCommandGroup(
-              new ParallelCommandGroup(
+              new ParallelRaceGroup(
                 new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()), 
                 new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()),
                 new WaitForShooterReady(m_arm, m_shooter)
@@ -210,13 +210,13 @@ public class RobotContainer {
           new SequentialCommandGroup(
               new ParallelRaceGroup(
                   new ArmMotionMagic(m_arm, 90),
-                  new ShooterFlywheelRun(m_shooter, 6000),
+                  new ShooterFlywheelRun(m_shooter, 5000),
                   new WaitForShooterReady(m_arm, m_shooter)
               ),
               new ParallelCommandGroup(
                 new HopperShootMode(m_hopper),
                 new ArmMotionMagic(m_arm, 90), 
-                new ShooterShoot(m_shooter, 6000, 1)
+                new ShooterShoot(m_shooter, 5000, 1)
               )
           ),
           m_buttonBox.button7::get));
@@ -291,6 +291,7 @@ public class RobotContainer {
     // m_arm.setDefaultCommand(m_armHoldCurrentPosition);
     m_intake.setDefaultCommand(m_stopIntake);
     m_hopper.setDefaultCommand(new HopperStop(m_hopper));
+    m_shooter.setDefaultCommand(new ShooterStop(m_shooter));
   }
 
   /**
