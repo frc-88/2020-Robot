@@ -81,5 +81,6 @@ public class Sensors extends SubsystemBase {
     SmartDashboard.putBoolean("Limelight connected?", limelight.isConnected());
     SmartDashboard.putBoolean("Limelight has target?", limelight.hasTarget());
     SmartDashboard.putNumber("Distance to target", getDistanceToTarget());
+    SmartDashboard.putNumber("Angle to target", limelight.getTargetHorizontalOffsetAngle());
   }
 }
