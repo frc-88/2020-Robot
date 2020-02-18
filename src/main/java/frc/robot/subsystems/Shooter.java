@@ -23,7 +23,6 @@ import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 public class Shooter extends SubsystemBase {
   private TalonFX m_flywheelMaster = new TalonFX(Constants.SHOOTER_FLYWHEEL_MASTER);
   private TalonFX m_flywheelFollower = new TalonFX(Constants.SHOOTER_FLYWHEEL_FOLLOWER);
-  private TalonSRX m_feeder = new TalonSRX(Constants.SHOOTER_FEEDER_MOTOR);
   private ShooterConfig m_shooterConfig = new ShooterConfig();
 
   private DoublePreferenceConstant flywheel_kP;
@@ -58,12 +57,6 @@ public class Shooter extends SubsystemBase {
     m_flywheelFollower.setNeutralMode(NeutralMode.Coast);
     m_flywheelFollower.follow(m_flywheelMaster);
 
-    m_feeder.configFactoryDefault();
-    m_feeder.enableVoltageCompensation(true);
-    m_feeder.setInverted(false);
-    m_feeder.setSensorPhase(false);
-    m_feeder.setNeutralMode(NeutralMode.Brake);
-
     flywheel_kP = new DoublePreferenceConstant("Shooter flywheel kP", 0);
     flywheel_kP.addChangeHandler((Double kP) -> m_flywheelMaster.config_kP(0, kP));
     m_flywheelMaster.config_kP(0, flywheel_kP.getValue());
@@ -96,10 +89,6 @@ public class Shooter extends SubsystemBase {
 
   public void setFlywheelBasic(double percentOutput) {
     m_flywheelMaster.set(ControlMode.PercentOutput, percentOutput);
-  }
-
-  public void setFeeder(double percentOutput) {
-    m_feeder.set(ControlMode.PercentOutput, percentOutput);
   }
 
   public double convertEncoderVelocityToFlywheelVelocity(int ticks) {

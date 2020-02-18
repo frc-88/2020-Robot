@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.hopper.*;
 import frc.robot.commands.arm.*;
 import frc.robot.commands.shooter.*;
+import frc.robot.commands.feeder.*;
 import frc.robot.commands.vision.LimelightToggle;
 import frc.robot.commands.WaitForShooterReady;
 import frc.robot.commands.Intake.DeployIntake;
@@ -33,6 +34,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Sensors;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Feeder;
 import frc.robot.util.ButtonBox;
 import frc.robot.util.TJController;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
@@ -60,6 +62,7 @@ public class RobotContainer {
   private final Hopper m_hopper = new Hopper();
   private final Arm m_arm = new Arm(m_driverController::isButtonStartPressed);
   private final Shooter m_shooter = new Shooter();
+  private final Feeder m_feeder = new Feeder();
   // private final ControlPanelManipulator m_cpm = new ControlPanelManipulator();
   private final Intake m_intake = new Intake();
 
@@ -178,19 +181,19 @@ public class RobotContainer {
       m_buttonBox.button2.whenPressed(new ConditionalCommand( 
           new ParallelCommandGroup(
               new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()), 
-              new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()),
-              new LimelightToggle(m_sensors, true)),
+              new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue())),
           new ParallelCommandGroup(
               new ArmMotionMagic(m_arm, 90),
               new ShooterFlywheelRun(m_shooter, 5000),
               new LimelightToggle(m_sensors, true)),
           m_buttonBox.button7::get)
       );
-        //BUTTON 3 - STOWS ARM, STOPS SHOOTER, TOGGLES LIMELIGHT
+        //BUTTON 3 - STOWS ARM, STOPS SHOOTER, STOPS FEEDER, TURNS LIMELIGHT OFF
       m_buttonBox.button3.whenPressed(new ParallelCommandGroup(
         new LimelightToggle(m_sensors, false),
         new ArmMotionMagic(m_arm, m_armStowAngle.getValue()),
-        new ShooterStop(m_shooter)
+        new ShooterStop(m_shooter),
+        new FeederStop(m_feeder)
       ));
         //BUTTON 1 - RUNS SHOOTER, RUNS HOPPER, GOES TO LAYUP ANGLE, GOES TO SHOOTING ANGLE,
         //FEEDS POWER CELLS, SHOOTS
@@ -204,7 +207,8 @@ public class RobotContainer {
               new ParallelCommandGroup(
                 new HopperShootMode(m_hopper),
                 new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()), 
-                new ShooterShoot(m_shooter, m_shooterLayupSpeed.getValue(), 1)
+                new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()),
+                new FeederRun(m_feeder, 1.0)
               )
           ),
           new SequentialCommandGroup(
@@ -216,7 +220,8 @@ public class RobotContainer {
               new ParallelCommandGroup(
                 new HopperShootMode(m_hopper),
                 new ArmMotionMagic(m_arm, 90), 
-                new ShooterShoot(m_shooter, 5000, 1)
+                new ShooterFlywheelRun(m_shooter, 5000),
+                new FeederRun(m_feeder, 1.0)
               )
           ),
           m_buttonBox.button7::get));
@@ -224,13 +229,15 @@ public class RobotContainer {
       m_buttonBox.button1.whenReleased(new ConditionalCommand( 
           new ParallelCommandGroup(
               new HopperStop(m_hopper),
+              new FeederStop(m_feeder),
               new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()), 
               new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue())
           ),
           new ParallelCommandGroup(
             new HopperStop(m_hopper),
-              new ArmMotionMagic(m_arm, 90),
-              new ShooterFlywheelRun(m_shooter, 5000)
+            new FeederStop(m_feeder),
+            new ArmMotionMagic(m_arm, 90),
+            new ShooterFlywheelRun(m_shooter, 5000)
           ),
           m_buttonBox.button7::get)
       );
@@ -275,13 +282,13 @@ public class RobotContainer {
 
     SmartDashboard.putData("Calibrate Arm", m_calibrateArm);
 
-    SmartDashboard.putNumber("ShooterTestFeederSpeed", 0);
+    SmartDashboard.putNumber("FeederTestSpeed", 0);
+    SmartDashboard.putData("FeederTest", new InstantCommand(() -> (new FeederRun(m_feeder, SmartDashboard.getNumber("FeederTestSpeed", 0))).schedule()));
+    SmartDashboard.putData("FeederStop", new FeederStop(m_feeder));
+        
     SmartDashboard.putNumber("ShooterTestFlywheelSpeed", 0);
-    SmartDashboard.putData("ShooterTestFeeder", new InstantCommand(() -> (new ShooterFeederRun(m_shooter, SmartDashboard.getNumber("ShooterTestFeederSpeed", 0))).schedule()));
     SmartDashboard.putData("ShooterTestFlywheel", new InstantCommand(() -> (new ShooterFlywheelRun(m_shooter, SmartDashboard.getNumber("ShooterTestFlywheelSpeed", 0))).schedule()));
-    SmartDashboard.putData("ShooterStopFeeder", new ShooterFeederRun(m_shooter, 0));
     SmartDashboard.putData("ShooterStopFlywheel", new ShooterFlywheelRun(m_shooter, 0));
-    SmartDashboard.putData("ShooterStopAll", new ShooterStop(m_shooter));
     SmartDashboard.putData("ShooterFlywheelBasic", new ShooterFlywheelRunBasic(m_shooter, DriveUtils.deadbandExponential(m_testController::getLeftStickY, Constants.SHOOTER_FLYWHEEL_SPEED_EXP, Constants.TEST_JOYSTICK_DEADBAND)));
   }
 
