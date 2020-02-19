@@ -12,7 +12,6 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -76,7 +75,6 @@ public class Shooter extends SubsystemBase {
     flywheel_iMax.addChangeHandler((Double iMax) -> m_flywheelMaster.configMaxIntegralAccumulator(0, iMax));
     m_flywheelMaster.configMaxIntegralAccumulator(0, convertFlywheelVelocityToEncoderVelocity(flywheel_iMax.getValue()));
 
-
   }
 
   public void setFlywheel(double velocity) {
@@ -96,12 +94,11 @@ public class Shooter extends SubsystemBase {
   }
 
   public int convertFlywheelVelocityToEncoderVelocity(double rpm) {
-    return (int)(rpm * (1. / 10.) * (1. / 60.) * Constants.SHOOTER_MOTOR_TICKS_PER_ROTATION * (1. / Constants.SHOOTER_MOTOR_TO_FLYWHEEL_RATIO));
+    return (int) (rpm * (1. / 10.) * (1. / 60.) * Constants.SHOOTER_MOTOR_TICKS_PER_ROTATION * (1. / Constants.SHOOTER_MOTOR_TO_FLYWHEEL_RATIO));
   }
 
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Flywheel velocity", convertEncoderVelocityToFlywheelVelocity(m_flywheelMaster.getSelectedSensorVelocity()));
-    // This method will be called once per scheduler run
   }
 }
