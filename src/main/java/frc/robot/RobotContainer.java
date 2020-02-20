@@ -120,9 +120,10 @@ public class RobotContainer {
         arcadeDriveSpeedSupplier, DriveUtils.deadbandExponential(m_driverController::getRightStickX,
             Constants.DRIVE_SPEED_EXP, Constants.DRIVE_JOYSTICK_DEADBAND),
         Constants.CHEESY_DRIVE_MIN_TURN, Constants.CHEESY_DRIVE_MAX_TURN);
-    BooleanSupplier arcadeDriveShiftSupplier = () -> m_drive.autoshift(arcadeDriveSpeedSupplier.getAsDouble());
+    BooleanSupplier arcadeDriveShiftSupplier = () -> !(m_driverController.getRightTrigger() > 0.5) || m_drive.autoshift(arcadeDriveSpeedSupplier.getAsDouble());
+    DoubleSupplier arcadeDriveMaxSpeedSupplier = () -> (m_driverController.getRightTrigger() > 0.5) ? Constants.MAX_SPEED_LOW : Constants.MAX_SPEED_HIGH;
     m_arcadeDrive = new ArcadeDrive(m_drive, arcadeDriveSpeedSupplier, arcadeDriveTurnSupplier,
-        arcadeDriveShiftSupplier);
+        arcadeDriveShiftSupplier, arcadeDriveMaxSpeedSupplier);
 
     DoubleSupplier tankDriveLeftSupplier = m_driverController::getLeftStickY;
     DoubleSupplier tankDriveRightSupplier = m_driverController::getRightStickY;
@@ -136,8 +137,9 @@ public class RobotContainer {
         / Constants.MAX_SPEED_HIGH;
     DoubleSupplier testArcadeDriveTurnSupplier = () -> SmartDashboard.getNumber("SetTestDriveTurn", 0)
         * (Constants.WHEEL_BASE_WIDTH * Math.PI) / Constants.MAX_SPEED_HIGH / 360;
+    DoubleSupplier testArcadeDriveMaxSpeedSupplier = () -> Constants.MAX_SPEED_HIGH;
     m_testArcadeDrive = new ArcadeDrive(m_drive, testArcadeDriveSpeedSupplier, testArcadeDriveTurnSupplier,
-        testArcadeDriveShiftSupplier);
+        testArcadeDriveShiftSupplier, testArcadeDriveMaxSpeedSupplier);
 
     m_stowArm = new ArmMotionMagic(m_arm, m_armStowAngle.getValue());
     m_armToLayup = new ArmMotionMagic(m_arm, m_armLayupAngle.getValue());
