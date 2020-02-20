@@ -42,6 +42,7 @@ public class Drive extends SubsystemBase {
   private double m_currentLimit = Constants.DRIVE_CURRENT_LIMIT;
   private double m_leftCommandedSpeed = 0;
   private double m_rightCommandedSpeed = 0;
+  private double m_maxSpeed = Constants.MAX_SPEED_HIGH;
   
   private PIDPreferenceConstants velPIDConstants;
   private PIDPreferenceConstants headingPIDConstants;
@@ -238,6 +239,10 @@ public class Drive extends SubsystemBase {
     m_rightDrive.coastAll();
   }
 
+  public void setMaxSpeed(double maxSpeed) {
+    m_maxSpeed = maxSpeed;
+  }
+
   // Negative inertia! The idea is that the robot has some inertia
   // which theoretically is based on previously commanded values. Returns an
   // updated turn value
@@ -302,6 +307,7 @@ public class Drive extends SubsystemBase {
     SmartDashboard.putNumber("L Drive Voltage", m_leftDrive.getMotorOutputVoltage());
     SmartDashboard.putNumber("R Drive Voltage", m_rightDrive.getMotorOutputVoltage());
     SmartDashboard.putBoolean("In High Gear?", isInHighGear());
+    SmartDashboard.putNumber("Max Drive Speed", m_maxSpeed);
 
     if (DriverStation.getInstance().isEnabled()) {
       this.setBrakeMode();
