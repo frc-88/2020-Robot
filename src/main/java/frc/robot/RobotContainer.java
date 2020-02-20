@@ -56,6 +56,7 @@ import frc.robot.util.TJController;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 
 public class RobotContainer {
+
   /***
   *    .______   .______       _______  _______  _______ .______       _______ .__   __.   ______  _______     _______.
   *    |   _  \  |   _  \     |   ____||   ____||   ____||   _  \     |   ____||  \ |  |  /      ||   ____|   /       |
@@ -65,9 +66,11 @@ public class RobotContainer {
   *    | _|      | _| `._____||_______||__|     |_______|| _| `._____||_______||__| \__|  \______||_______|_______/    
   *                                                                                                                    
   */
+
   private final DoublePreferenceConstant m_armStowAngle = new DoublePreferenceConstant("Arm Stow Angle", 0);
   private final DoublePreferenceConstant m_armLayupAngle = new DoublePreferenceConstant("Arm Layup Angle", 45);
   private final DoublePreferenceConstant m_shooterLayupSpeed = new DoublePreferenceConstant("Shooter Layup Speed", 2500);
+
 
   /***
   *      ______   ______   .__   __. .___________..______        ______    __       __       _______ .______          _______.
@@ -78,19 +81,22 @@ public class RobotContainer {
   *     \______| \______/  |__| \__|     |__|     | _| `._____| \______/  |_______||_______||_______|| _| `._____|_______/    
   *                                                                                                                           
   */
+
   private final TJController m_driverController = new TJController(0);
   private final ButtonBox m_buttonBox = new ButtonBox(1);
   private final TJController m_testController = new TJController(2);
 
+
   /***
-   *         _______. __    __  .______        _______.____    ____  _______.___________. _______ .___  ___.      _______.
-   *        /       ||  |  |  | |   _  \      /       |\   \  /   / /       |           ||   ____||   \/   |     /       |
-   *       |   (----`|  |  |  | |  |_)  |    |   (----` \   \/   / |   (----`---|  |----`|  |__   |  \  /  |    |   (----`
-   *        \   \    |  |  |  | |   _  <      \   \      \_    _/   \   \       |  |     |   __|  |  |\/|  |     \   \    
-   *    .----)   |   |  `--'  | |  |_)  | .----)   |       |  | .----)   |      |  |     |  |____ |  |  |  | .----)   |   
-   *    |_______/     \______/  |______/  |_______/        |__| |_______/       |__|     |_______||__|  |__| |_______/    
-   *                                                                                                                      
-   */
+  *         _______. __    __  .______        _______.____    ____  _______.___________. _______ .___  ___.      _______.
+  *        /       ||  |  |  | |   _  \      /       |\   \  /   / /       |           ||   ____||   \/   |     /       |
+  *       |   (----`|  |  |  | |  |_)  |    |   (----` \   \/   / |   (----`---|  |----`|  |__   |  \  /  |    |   (----`
+  *        \   \    |  |  |  | |   _  <      \   \      \_    _/   \   \       |  |     |   __|  |  |\/|  |     \   \    
+  *    .----)   |   |  `--'  | |  |_)  | .----)   |       |  | .----)   |      |  |     |  |____ |  |  |  | .----)   |   
+  *    |_______/     \______/  |______/  |_______/        |__| |_______/       |__|     |_______||__|  |__| |_______/    
+  *                                                                                                                      
+  */
+
   public final Sensors m_sensors = new Sensors();
   private final Drive m_drive = new Drive(m_sensors);
   private final Arm m_arm = new Arm(m_driverController::isButtonStartPressed);
@@ -100,15 +106,17 @@ public class RobotContainer {
   private final Intake m_intake = new Intake();
   // private final ControlPanelManipulator m_cpm = new ControlPanelManipulator();
 
+
   /***
-   *      ______   ______   .___  ___. .___  ___.      ___      .__   __.  _______       _______.
-   *     /      | /  __  \  |   \/   | |   \/   |     /   \     |  \ |  | |       \     /       |
-   *    |  ,----'|  |  |  | |  \  /  | |  \  /  |    /  ^  \    |   \|  | |  .--.  |   |   (----`
-   *    |  |     |  |  |  | |  |\/|  | |  |\/|  |   /  /_\  \   |  . `  | |  |  |  |    \   \    
-   *    |  `----.|  `--'  | |  |  |  | |  |  |  |  /  _____  \  |  |\   | |  '--'  |.----)   |   
-   *     \______| \______/  |__|  |__| |__|  |__| /__/     \__\ |__| \__| |_______/ |_______/    
-   *                                                                                             
-   */
+  *      ______   ______   .___  ___. .___  ___.      ___      .__   __.  _______       _______.
+  *     /      | /  __  \  |   \/   | |   \/   |     /   \     |  \ |  | |       \     /       |
+  *    |  ,----'|  |  |  | |  \  /  | |  \  /  |    /  ^  \    |   \|  | |  .--.  |   |   (----`
+  *    |  |     |  |  |  | |  |\/|  | |  |\/|  |   /  /_\  \   |  . `  | |  |  |  |    \   \    
+  *    |  `----.|  `--'  | |  |  |  | |  |  |  |  /  _____  \  |  |\   | |  '--'  |.----)   |   
+  *     \______| \______/  |__|  |__| |__|  |__| /__/     \__\ |__| \__| |_______/ |_______/    
+  *                                                                                             
+  */
+  
   private final CommandBase m_autoCommand = new WaitCommand(1);
   private CommandBase m_arcadeDrive;
 
@@ -230,9 +238,16 @@ public class RobotContainer {
       new StopIntake(m_intake)
     );
 
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
+  /***
+  *      ______   ______   .__   __.      _______.___________..______       __    __    ______ .___________.  ______   .______      
+  *     /      | /  __  \  |  \ |  |     /       |           ||   _  \     |  |  |  |  /      ||           | /  __  \  |   _  \     
+  *    |  ,----'|  |  |  | |   \|  |    |   (----`---|  |----`|  |_)  |    |  |  |  | |  ,----'`---|  |----`|  |  |  | |  |_)  |    
+  *    |  |     |  |  |  | |  . `  |     \   \       |  |     |      /     |  |  |  | |  |         |  |     |  |  |  | |      /     
+  *    |  `----.|  `--'  | |  |\   | .----)   |      |  |     |  |\  \----.|  `--'  | |  `----.    |  |     |  `--'  | |  |\  \----.
+  *     \______| \______/  |__| \__| |_______/       |__|     | _| `._____| \______/   \______|    |__|      \______/  | _| `._____|
+  *                                                                                                                                 
+  */    
+
   public RobotContainer() {
     configureDriverController();
     configureButtonBox();
@@ -241,6 +256,7 @@ public class RobotContainer {
     configureSmartDashboardButtons();
     configureDefaultCommands();
   }
+
 
   private void configureDriverController() {
     DoubleSupplier arcadeDriveSpeedSupplier = DriveUtils.deadbandExponential(m_driverController::getLeftStickY,
@@ -267,6 +283,7 @@ public class RobotContainer {
     // m_driverController.buttonRightBumper.whenReleased(m_setToRearCamera);
   }
 
+
   private void configureButtonBox() {
     m_buttonBox.button1.whileHeld(m_shoot);
     m_buttonBox.button1.whenReleased(m_pauseShoot);
@@ -275,6 +292,7 @@ public class RobotContainer {
     m_buttonBox.button4.whenPressed(m_activateIntake);
     m_buttonBox.button4.whenReleased(m_deactivateIntake);
   }
+
 
   private void configureTestController() {
     SmartDashboard.putNumber("SetTestDriveSpeed", 0);
@@ -298,6 +316,7 @@ public class RobotContainer {
     SmartDashboard.putData("Arm Manual", new RotateArm(m_arm, armSpeedSupplier));
 
   }
+
 
   private void configureSmartDashboardButtons() {
     // Drive testing
@@ -337,6 +356,7 @@ public class RobotContainer {
     SmartDashboard.putData("Regurgitate Stop", m_regurgitateStop);
   }
 
+
   private void configureDefaultCommands() {
     m_drive.setDefaultCommand(m_arcadeDrive);
     // m_arm.setDefaultCommand(m_armHoldCurrentPosition);
@@ -346,6 +366,7 @@ public class RobotContainer {
     m_shooter.setDefaultCommand(new ShooterStop(m_shooter));
   }
 
+  
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
