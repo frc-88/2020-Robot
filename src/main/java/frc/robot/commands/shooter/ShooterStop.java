@@ -28,7 +28,6 @@ public class ShooterStop extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_shooter.setFeeder(0);
     m_shooter.setFlywheel(0);
   }
 

@@ -33,12 +33,14 @@ public final class Constants {
 	// Shooter constants
 	public static final int SHOOTER_FLYWHEEL_MASTER = 12;
 	public static final int SHOOTER_FLYWHEEL_FOLLOWER = 3;
-	public static final int SHOOTER_FEEDER_MOTOR = 8;
 	public static final double SHOOTER_FLYWHEEL_MAX_SPEED = 1;
 	public static final double SHOOTER_FLYWHEEL_TOLERANCE = 25;
 	public static final int SHOOTER_FLYWHEEL_SPEED_EXP = 1;
 	public static final double SHOOTER_MOTOR_TO_FLYWHEEL_RATIO = 1.5;
 	public static final int SHOOTER_MOTOR_TICKS_PER_ROTATION = 2048;
+
+	// Feeder constants
+	public static final int FEEDER_MOTOR = 8;
 
 	// Arm constants
 	public static final int ARM_MOTOR = 4;

@@ -12,7 +12,6 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -23,7 +22,6 @@ import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 public class Shooter extends SubsystemBase {
   private TalonFX m_flywheelMaster = new TalonFX(Constants.SHOOTER_FLYWHEEL_MASTER);
   private TalonFX m_flywheelFollower = new TalonFX(Constants.SHOOTER_FLYWHEEL_FOLLOWER);
-  private TalonSRX m_feeder = new TalonSRX(Constants.SHOOTER_FEEDER_MOTOR);
   private ShooterConfig m_shooterConfig = new ShooterConfig();
 
   private DoublePreferenceConstant flywheel_kP;
@@ -58,12 +56,6 @@ public class Shooter extends SubsystemBase {
     m_flywheelFollower.setNeutralMode(NeutralMode.Coast);
     m_flywheelFollower.follow(m_flywheelMaster);
 
-    m_feeder.configFactoryDefault();
-    m_feeder.enableVoltageCompensation(true);
-    m_feeder.setInverted(false);
-    m_feeder.setSensorPhase(false);
-    m_feeder.setNeutralMode(NeutralMode.Brake);
-
     flywheel_kP = new DoublePreferenceConstant("Shooter flywheel kP", 0);
     flywheel_kP.addChangeHandler((Double kP) -> m_flywheelMaster.config_kP(0, kP));
     m_flywheelMaster.config_kP(0, flywheel_kP.getValue());
@@ -83,7 +75,6 @@ public class Shooter extends SubsystemBase {
     flywheel_iMax.addChangeHandler((Double iMax) -> m_flywheelMaster.configMaxIntegralAccumulator(0, iMax));
     m_flywheelMaster.configMaxIntegralAccumulator(0, convertFlywheelVelocityToEncoderVelocity(flywheel_iMax.getValue()));
 
-
   }
 
   public void setFlywheel(double velocity) {
@@ -98,21 +89,16 @@ public class Shooter extends SubsystemBase {
     m_flywheelMaster.set(ControlMode.PercentOutput, percentOutput);
   }
 
-  public void setFeeder(double percentOutput) {
-    m_feeder.set(ControlMode.PercentOutput, percentOutput);
-  }
-
   public double convertEncoderVelocityToFlywheelVelocity(int ticks) {
     return (ticks * 10. * 60. * (1. / Constants.SHOOTER_MOTOR_TICKS_PER_ROTATION) * Constants.SHOOTER_MOTOR_TO_FLYWHEEL_RATIO);
   }
 
   public int convertFlywheelVelocityToEncoderVelocity(double rpm) {
-    return (int)(rpm * (1. / 10.) * (1. / 60.) * Constants.SHOOTER_MOTOR_TICKS_PER_ROTATION * (1. / Constants.SHOOTER_MOTOR_TO_FLYWHEEL_RATIO));
+    return (int) (rpm * (1. / 10.) * (1. / 60.) * Constants.SHOOTER_MOTOR_TICKS_PER_ROTATION * (1. / Constants.SHOOTER_MOTOR_TO_FLYWHEEL_RATIO));
   }
 
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Flywheel velocity", convertEncoderVelocityToFlywheelVelocity(m_flywheelMaster.getSelectedSensorVelocity()));
-    // This method will be called once per scheduler run
   }
 }
