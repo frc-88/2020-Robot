@@ -154,8 +154,8 @@ public class Drive extends SubsystemBase {
     turn = negativeInertia(speed, turn);
 
     // Convert to feet per second
-    speed *= Constants.MAX_SPEED_HIGH;
-    turn *= Constants.MAX_SPEED_HIGH;
+    speed *= m_maxSpeed;
+    turn *= m_maxSpeed;
 
     // Calculate left and right speed
     double leftSpeed = (speed + turn);

@@ -56,8 +56,8 @@ public final class Constants {
 	public static final int ENCODER_TO_ARM_RATIO = 3;
 	public static final int FALCON_TO_ARM_RATIO = 6;
 	public static final double ARM_MAXIMUM_VELOCITY = 60;
-	public static final double ARM_LOW_LIMIT = 0;
-	public static final double ARM_HIGH_LIMIT = 90;
+	public static final double ARM_LOW_LIMIT = -5;
+	public static final double ARM_HIGH_LIMIT = 93;
 	public static final double ARM_ENCODER_SHIFT = 15;
 	public static final int ARM_SPEED_EXP = 2;
 	public static final double ARM_TOLERANCE = 0.5;

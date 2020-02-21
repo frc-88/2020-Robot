@@ -72,7 +72,7 @@ public class Arm extends SubsystemBase {
 
     StatorCurrentLimitConfiguration currentLimit = new StatorCurrentLimitConfiguration();
     currentLimit.enable = true;
-    currentLimit.triggerThresholdCurrent = 80;
+    currentLimit.triggerThresholdCurrent = 60;
     currentLimit.triggerThresholdTime = 0.01;
     currentLimit.currentLimit = 25;
 
@@ -116,7 +116,8 @@ public class Arm extends SubsystemBase {
   }
   
   public void zeroArm() {
-    armOffsetTicks = convertArmDegreesToEncoderTicks(getAngleFromAbsolute()) + armOffsetTicks - m_rotator.getSelectedSensorPosition();
+    armOffsetTicks = 0;
+    armOffsetTicks = convertArmDegreesToEncoderTicks(getAngleFromAbsolute()) - m_rotator.getSelectedSensorPosition();
     m_rotator.configForwardSoftLimitEnable(true);
     m_rotator.configForwardSoftLimitThreshold(convertArmDegreesToEncoderTicks(Constants.ARM_HIGH_LIMIT));
     m_rotator.configReverseSoftLimitEnable(true);
@@ -124,7 +125,7 @@ public class Arm extends SubsystemBase {
   }
 
   public void zeroArmIfOff() {
-    if(Math.abs(getAngleFromAbsolute() - getCurrentArmPosition()) <= 5) {
+    if(Math.abs(getAngleFromAbsolute() - getCurrentArmPosition()) >= 5) {
       zeroArm();
     }
   }
