@@ -36,6 +36,7 @@ import frc.robot.commands.drive.TestDriveStaticFriction;
 import frc.robot.commands.drive.TurnToHeading;
 import frc.robot.commands.feeder.FeederRun;
 import frc.robot.commands.feeder.FeederStop;
+import frc.robot.commands.hopper.HopperEject;
 import frc.robot.commands.hopper.HopperIntakeMode;
 import frc.robot.commands.hopper.HopperShootMode;
 import frc.robot.commands.hopper.HopperStop;
@@ -119,6 +120,7 @@ public class RobotContainer {
   
   private final CommandBase m_autoCommand = new WaitCommand(1);
   private CommandBase m_arcadeDrive;
+  private CommandBase m_testArcadeDrive;
 
   // prepShoot - move the arm into shooting position and get the flywheel going
   //    turn on the limelight unless for layup
@@ -168,18 +170,30 @@ public class RobotContainer {
   // pauseShoot - stop the hopper and the feeder maintain arm and flywheel for shooting
   private final CommandBase m_pauseShoot = 
     new ConditionalCommand(
-      new ParallelCommandGroup(
-        new HopperStop(m_hopper), 
-        new FeederStop(m_feeder),
-        new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
-        new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue())
-      ),
-      new ParallelCommandGroup(
-        new HopperStop(m_hopper), 
-        new FeederStop(m_feeder), 
-        new ArmMotionMagic(m_arm, 90),
-        new ShooterFlywheelRun(m_shooter, 5000)
-      ),
+        new SequentialCommandGroup(
+          new ParallelRaceGroup(
+            new HopperEject(m_hopper, -1.),
+            new WaitCommand(1),
+            new FeederStop(m_feeder),
+            new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
+            new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue())),
+          new ParallelCommandGroup(
+            new HopperStop(m_hopper),
+            new FeederStop(m_feeder),
+            new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
+            new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()))),
+        new SequentialCommandGroup(
+          new ParallelRaceGroup(
+            new HopperEject(m_hopper, -1.),
+            new WaitCommand(1),
+            new FeederStop(m_feeder), 
+            new ArmMotionMagic(m_arm, 90),
+            new ShooterFlywheelRun(m_shooter, 5000)),
+        new ParallelCommandGroup(
+          new HopperStop(m_hopper),
+          new FeederStop(m_feeder), 
+          new ArmMotionMagic(m_arm, 90),
+          new ShooterFlywheelRun(m_shooter, 5000))),
       m_buttonBox.button7::get);
 
   // stopShoot - stows arm, stops shooter, stops feeder, turns limelight off
@@ -238,6 +252,8 @@ public class RobotContainer {
       new StopIntake(m_intake)
     );
 
+  
+
   /***
   *      ______   ______   .__   __.      _______.___________..______       __    __    ______ .___________.  ______   .______      
   *     /      | /  __  \  |  \ |  |     /       |           ||   _  \     |  |  |  |  /      ||           | /  __  \  |   _  \     
@@ -292,6 +308,8 @@ public class RobotContainer {
     m_buttonBox.button3.whenPressed(m_stopShoot);
     m_buttonBox.button4.whenPressed(m_activateIntake);
     m_buttonBox.button4.whenReleased(m_deactivateIntake);
+    m_buttonBox.button6.whenPressed(m_regurgitate);
+    m_buttonBox.button6.whenReleased(m_regurgitateStop);
   }
 
 
