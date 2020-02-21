@@ -42,6 +42,7 @@ import frc.robot.commands.hopper.HopperEject;
 import frc.robot.commands.hopper.HopperIntakeMode;
 import frc.robot.commands.hopper.HopperShootMode;
 import frc.robot.commands.hopper.HopperStop;
+import frc.robot.commands.hopper.HopperTest;
 import frc.robot.commands.shooter.ShooterFlywheelRun;
 import frc.robot.commands.shooter.ShooterFlywheelRunBasic;
 import frc.robot.commands.shooter.ShooterStop;
@@ -353,9 +354,12 @@ public class RobotContainer {
     SmartDashboard.putData("Stop Intake", new StopIntake(m_intake));
     SmartDashboard.putData("Eject Intake", new RunIntake(m_intake, -1));
 
+    SmartDashboard.putNumber("Hopper Left Speed", 0);
+    SmartDashboard.putNumber("Hopper Right Speed", 0);
     SmartDashboard.putData("Hopper Intake Mode", new HopperIntakeMode(m_hopper));
     SmartDashboard.putData("Hopper Shoot Mode", new HopperShootMode(m_hopper));
     SmartDashboard.putData("Hopper Stop", new HopperStop(m_hopper));
+    SmartDashboard.putData("Hopper Test", new InstantCommand(() -> (new HopperTest(m_hopper, SmartDashboard.getNumber("Hopper Left Speed", 0), SmartDashboard.getNumber("Hopper Right Speed", 0))).schedule()));
 
     SmartDashboard.putData("Arm Calibrate", new CalibrateArm(m_arm));
     SmartDashboard.putNumber("ArmTestPosition", 0);
