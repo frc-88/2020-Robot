@@ -129,6 +129,14 @@ public class Arm extends SubsystemBase {
     }
   }
 
+  public void handleForwardLimitSwitch() {
+    if (m_rotator.isFwdLimitSwitchClosed() == 1) {
+      m_rotator.configPeakOutputForward(0.1);
+    } else {
+      m_rotator.configPeakOutputForward(1);
+    }
+  }
+
   public double getAngleFromAbsolute() {
     double angle = (m_armEncoder.getAbsolutePosition() / Constants.ENCODER_TO_ARM_RATIO) + ARM_OFFSET.getValue();
     angle = (angle + Constants.ARM_ENCODER_SHIFT) % (360. / Constants.ENCODER_TO_ARM_RATIO);
@@ -211,8 +219,9 @@ public class Arm extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
     zeroArmIfOff();
+    handleForwardLimitSwitch();
+
     SmartDashboard.putNumber("Arm Position", convertEncoderTicksToArmDegrees(m_rotator.getSelectedSensorPosition()));
     SmartDashboard.putNumber("Arm Abs Position", getAngleFromAbsolute());
     SmartDashboard.putNumber("Arm current offset", armOffsetTicks);
