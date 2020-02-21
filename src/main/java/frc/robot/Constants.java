@@ -41,6 +41,9 @@ public final class Constants {
 
 	// Feeder constants
 	public static final int FEEDER_MOTOR = 8;
+	public static final int FEEDER_CPM_PCM = 1;
+	public static final int FEEDER_CPM_PISTON_FORWARD = 0;
+	public static final int FEEDER_CPM_PISTON_REVERSE = 7;
 
 	// Arm constants
 	public static final int ARM_MOTOR = 4;

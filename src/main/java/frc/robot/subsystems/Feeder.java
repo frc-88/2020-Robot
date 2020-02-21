@@ -11,11 +11,14 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Feeder extends SubsystemBase {
   private TalonSRX m_feeder = new TalonSRX(Constants.FEEDER_MOTOR);
+  private DoubleSolenoid m_deployer = new DoubleSolenoid(Constants.FEEDER_CPM_PCM, Constants.FEEDER_CPM_PISTON_FORWARD, Constants.FEEDER_CPM_PISTON_REVERSE);
 
   /**
    * Creates a new Feeder.
@@ -32,8 +35,17 @@ public class Feeder extends SubsystemBase {
     m_feeder.set(ControlMode.PercentOutput, percentOutput);
   }
 
+  public void retractCPM() {
+    m_deployer.set(Value.kReverse);
+  }
+
+  public void deployCPM() {
+    m_deployer.set(Value.kForward);
+  }
+
   @Override
   public void periodic() {
+    retractCPM();
     // This method will be called once per scheduler run
   }
 }
