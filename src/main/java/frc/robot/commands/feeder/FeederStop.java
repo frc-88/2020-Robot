@@ -5,32 +5,40 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.shooter;
+package frc.robot.commands.feeder;
 
-import frc.robot.subsystems.Shooter;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Feeder;
 
-public class ShooterShoot extends ShooterFlywheelRun {
-  private double m_feederPercentOutput;
-  
-  /**
-   * Sets feeder to desired percent output
+public class FeederStop extends CommandBase {
+  private Feeder m_feeder;
+ /**
+   * Creates a new FeederStop.
    */
-  public ShooterShoot(Shooter shooter, double shooterRPM, double feederPercentOutput) {
-    super(shooter, shooterRPM);
-    this.m_feederPercentOutput = feederPercentOutput;
+  public FeederStop(Feeder feeder) {
+    m_feeder = feeder;
+    addRequirements(m_feeder);
+  }
+
+  // Called when the command is initially scheduled.
+  @Override
+  public void initialize() {
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_shooter.setFeeder(m_feederPercentOutput);
-    super.execute();
+    m_feeder.setFeeder(0);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_shooter.setFeeder(0);
-    super.execute();
+  }
+
+  // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+    return false;
   }
 }
