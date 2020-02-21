@@ -25,7 +25,9 @@ import frc.robot.commands.Intake.DeployIntake;
 import frc.robot.commands.Intake.RetractIntake;
 import frc.robot.commands.Intake.RunIntake;
 import frc.robot.commands.Intake.StopIntake;
+import frc.robot.commands.arm.ArmFullUp;
 import frc.robot.commands.arm.ArmMotionMagic;
+import frc.robot.commands.arm.ArmStow;
 import frc.robot.commands.arm.CalibrateArm;
 import frc.robot.commands.arm.RotateArm;
 import frc.robot.commands.arm.TestBrakeMode;
@@ -67,7 +69,6 @@ public class RobotContainer {
   *                                                                                                                    
   */
 
-  private final DoublePreferenceConstant m_armStowAngle = new DoublePreferenceConstant("Arm Stow Angle", 0);
   private final DoublePreferenceConstant m_armLayupAngle = new DoublePreferenceConstant("Arm Layup Angle", 45);
   private final DoublePreferenceConstant m_shooterLayupSpeed = new DoublePreferenceConstant("Shooter Layup Speed", 2500);
 
@@ -128,7 +129,7 @@ public class RobotContainer {
       new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue())
     ),
     new ParallelCommandGroup(
-      new ArmMotionMagic(m_arm, 90), 
+      new ArmFullUp(m_arm),
       new ShooterFlywheelRun(m_shooter, 5000),
       new LimelightToggle(m_sensors, true)
     ),
@@ -153,12 +154,12 @@ public class RobotContainer {
       ),
       new SequentialCommandGroup(
         new ParallelRaceGroup(
-          new ArmMotionMagic(m_arm, 90), 
+          new ArmFullUp(m_arm), 
           new ShooterFlywheelRun(m_shooter, 5000),
           new WaitForShooterReady(m_arm, m_shooter)),
         new ParallelCommandGroup(
           new HopperShootMode(m_hopper), 
-          new ArmMotionMagic(m_arm, 90),
+          new ArmFullUp(m_arm),
           new ShooterFlywheelRun(m_shooter, 5000), 
           new FeederRun(m_feeder, 1.0)
         )
@@ -177,7 +178,7 @@ public class RobotContainer {
       new ParallelCommandGroup(
         new HopperStop(m_hopper), 
         new FeederStop(m_feeder), 
-        new ArmMotionMagic(m_arm, 90),
+        new ArmFullUp(m_arm),
         new ShooterFlywheelRun(m_shooter, 5000)
       ),
       m_buttonBox.button7::get);
@@ -186,7 +187,7 @@ public class RobotContainer {
   private final CommandBase m_stopShoot = 
     new ParallelCommandGroup(
       new LimelightToggle(m_sensors, false),
-      new ArmMotionMagic(m_arm, m_armStowAngle.getValue()), 
+      new ArmStow(m_arm), 
       new ShooterStop(m_shooter), 
       new FeederStop(m_feeder)
     );
