@@ -5,40 +5,28 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.shooter;
+package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Shooter;
 
-public class ShooterStop extends CommandBase {
-  private Shooter m_shooter;
+public class WaitForShooterReady extends CommandBase {
+
+  private final Arm arm;
+  private final Shooter shooter;
 
   /**
-   * Stops both flywheel and feeder
+   * Creates a new WaitForShooterReady.
    */
-  public ShooterStop(Shooter shooter) {
-    m_shooter = shooter;
-    addRequirements(m_shooter);  }
-
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-  }
-
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    m_shooter.setFlywheel(0);
-  }
-
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
+  public WaitForShooterReady(Arm arm, Shooter shooter) {
+    this.arm = arm;
+    this.shooter = shooter;
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true; //this.arm.isOnTarget() && this.shooter.flywheelOnTarget();
   }
 }

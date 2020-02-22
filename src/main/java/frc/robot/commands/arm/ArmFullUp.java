@@ -5,24 +5,19 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.shooter;
-
-import java.util.function.DoubleSupplier;
+package frc.robot.commands.arm;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Arm;
 
-public class ShooterFlywheelRunBasic extends CommandBase {
-  private Shooter m_shooter;
-  private DoubleSupplier m_percentOutput;
-
+public class ArmFullUp extends CommandBase {
+  private Arm arm;
   /**
-   * Sets flywheel to desired velocity
+   * Creates a new ArmFullUp.
    */
-  public ShooterFlywheelRunBasic(Shooter shooter, DoubleSupplier percentOutput) {
-    m_shooter = shooter;
-    m_percentOutput = percentOutput;
-    addRequirements(m_shooter);
+  public ArmFullUp(Arm arm) {
+    this.arm = arm;
+    addRequirements(arm);
   }
 
   // Called when the command is initially scheduled.
@@ -33,13 +28,16 @@ public class ShooterFlywheelRunBasic extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_shooter.setFlywheelBasic(m_percentOutput.getAsDouble());
+    if (arm.getCurrentArmPosition() > 85) {
+      arm.setPercentOutput(0.04);
+    } else {
+      arm.setArmPosition(90);
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_shooter.setFlywheelBasic(0);
   }
 
   // Returns true when the command should end.
