@@ -29,7 +29,7 @@ public class ArmStow extends CommandBase {
   @Override
   public void execute() {
     if (arm.getCurrentArmPosition() < 5) {
-      arm.setPercentOutput(-0.04);
+      arm.setPercentOutput(-0.02);
     } else {
       arm.setArmPosition(0);
     }

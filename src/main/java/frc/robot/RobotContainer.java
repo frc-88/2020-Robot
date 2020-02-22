@@ -277,14 +277,17 @@ public class RobotContainer {
 
 
   private void configureDriverController() {
+    BooleanSupplier arcadeDriveForceLowGear = () -> m_driverController.getRightTrigger() > 0.5;
     DoubleSupplier arcadeDriveSpeedSupplier = DriveUtils.deadbandExponential(m_driverController::getLeftStickY,
         Constants.DRIVE_SPEED_EXP, Constants.DRIVE_JOYSTICK_DEADBAND);
+    DoubleSupplier arcadeDriveCheesyDriveMinTurn = () -> arcadeDriveForceLowGear.getAsBoolean() ? Constants.CHEESY_DRIVE_FORCE_LOW_MIN_TURN : Constants.CHEESY_DRIVE_MIN_TURN;
+    DoubleSupplier arcadeDriveCheesyDriveMaxTurn = () -> arcadeDriveForceLowGear.getAsBoolean() ? Constants.CHEESY_DRIVE_FORCE_LOW_MAX_TURN : Constants.CHEESY_DRIVE_MAX_TURN;
     DoubleSupplier arcadeDriveTurnSupplier = DriveUtils.cheesyTurn(
         arcadeDriveSpeedSupplier, DriveUtils.deadbandExponential(m_driverController::getRightStickX,
             Constants.DRIVE_SPEED_EXP, Constants.DRIVE_JOYSTICK_DEADBAND),
-        Constants.CHEESY_DRIVE_MIN_TURN, Constants.CHEESY_DRIVE_MAX_TURN);
-    BooleanSupplier arcadeDriveShiftSupplier = () -> !(m_driverController.getRightTrigger() > 0.5) && m_drive.autoshift(arcadeDriveSpeedSupplier.getAsDouble());
-    DoubleSupplier arcadeDriveMaxSpeedSupplier = () -> (m_driverController.getRightTrigger() > 0.5) ? Constants.MAX_SPEED_LOW : Constants.MAX_SPEED_HIGH;
+        arcadeDriveCheesyDriveMinTurn.getAsDouble(), arcadeDriveCheesyDriveMaxTurn.getAsDouble());
+    BooleanSupplier arcadeDriveShiftSupplier = () -> !arcadeDriveForceLowGear.getAsBoolean() && m_drive.autoshift(arcadeDriveSpeedSupplier.getAsDouble());
+    DoubleSupplier arcadeDriveMaxSpeedSupplier = () -> arcadeDriveForceLowGear.getAsBoolean() ? Constants.MAX_SPEED_LOW : Constants.MAX_SPEED_HIGH;
     m_arcadeDrive = new ArcadeDrive(m_drive, arcadeDriveSpeedSupplier, arcadeDriveTurnSupplier,
         arcadeDriveShiftSupplier, arcadeDriveMaxSpeedSupplier);
     SmartDashboard.putData("Arcade Drive", m_arcadeDrive);
