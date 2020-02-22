@@ -69,14 +69,16 @@ public class RotateColorWheel extends CommandBase {
         targetColor = cpm.getFMSColorTarget();
         finalRotationDistance = Constants.CPM_PHASE_2_WHEEL_ROTATIONS;
         if(targetColor.length() == 1) { //correction distance
+          System.out.println("\nCPM: we got a game color");
           if(cpm.calcPositionControlTargetPosition() < 0) {
             finalRotationDistance =  directionCorrection + Constants.CPM_PHASE_2_WHEEL_ROTATIONS;
+            System.out.println("\nCPM: Adding direction correction" + finalRotationDistance);
           } else {
             finalRotationDistance =  cpm.calcPositionControlTargetPosition() + Constants.CPM_PHASE_2_WHEEL_ROTATIONS;
+            System.out.println("\nCPM: Distance to the next color" + cpm.calcPositionControlTargetPosition());
           }
         }
         System.out.println("\nCPM target distance: "+ finalRotationDistance);
-        System.out.println("\nCPM current wheel position: "+ cpm.getWheelPosition());
         cpm.moveWheelToPosition(finalRotationDistance);
         state = 3;
         break;

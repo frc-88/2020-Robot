@@ -59,6 +59,7 @@ public class ControlPanelManipulator extends SubsystemBase {
   private double TIME_TO_REACH_MAX_VELOCITY = .5; // get to max speed in 1/2 a second
   private double INIT_MAX_WHEEL_ACCELERATION = MAXIMUM_WHEEL_VELOCITY/ TIME_TO_REACH_MAX_VELOCITY; // =~ 2
   private DoublePreferenceConstant MAXIMUM_WHEEL_ACCELERATION;
+  private double COLOR_WHEEL_SENSOR_SLICE_OFFSET = 2.;
   
   private DoublePreferenceConstant spinner_kP;
   private DoublePreferenceConstant spinner_kI;
@@ -141,35 +142,68 @@ public class ControlPanelManipulator extends SubsystemBase {
   public double calcPositionControlTargetPosition() {
     //calculate in inches, motor can spin x inches
     double colorDistance = 0;
-    final int i = 1; //Start at index 1
-    final String currentDetectedColor = getColor();
+    final int i = 0; //Start at index 1
+    final String currentRobotDetectedColor = getColor();
     final String currentTargetColor = getFMSColorTarget();
-    final String[] colorList = { "r", "g", "b", "y", "r", "g"};
-    final int colorListLength = colorList.length;
-    while (i < colorListLength) {
-      if (colorList[i] == currentDetectedColor) {
+    final String colorListString = "yrgb"; //string for what half the wheel looks like
+    final int robotSensorColorPosition = colorListString.indexOf(getColor()); // find position in string
+    final int gameSensorColorPosition = colorListString.indexOf(getFMSColorTarget()); // find position in string
+
+    int positionDistance = robotSensorColorPosition - gameSensorColorPosition;
+    int slicesToMove = 0; // needs to account for the two slice offset between robot and game sensor
+    int movementDirection = 1;
+    
+    if (positionDistance<0){ // reduces the number of cases in the switch statement
+      movementDirection = -1;
+    } 
+    
+    switch(Math.abs(positionDistance)) {
+      // identify how many slices to move but also account for the 2 slice offset between sensors
+      case 0:
+        slicesToMove = 2; 
+        break;
+      case 1:
+        slicesToMove = 1 * movementDirection;
+        break;
+      case 2:
+        slicesToMove = 0;
+        break;
+      case 3:
+        slicesToMove = -1 * movementDirection;
+    }
+    /*
+    while (i < colorList.length) {
+      if (colorList[i] == currentRobotDetectedColor) {
         if (colorList[i-1] == currentTargetColor) {
           colorDistance = -1;
+          System.out.println("\nCPM: The color distance is equal to -1");
           break;
         }
         else if (colorList[i+1] == currentTargetColor) {
           colorDistance = 1;
+          System.out.println("\nCPM: The color distance is equal to 1");
+          break;
+        }
+        else if (colorList[i+2] == currentTargetColor) {
+          colorDistance = 2;
+          System.out.println("\nCPM: The color distance is equal to 2");
           break;
         }
         else {
-          colorDistance = 2;
+          colorDistance = 0;
+          System.out.println("\nCPM: The color distance is equal to 0");
           break;
         }
       }
-    }
-    return colorDistance/Constants.CPM_NUM_SLICES;
+    }*/
+
+    return this.convertWheelPositionToMotorPosition(slicesToMove/Constants.CPM_NUM_SLICES);
   }
 
   public Color getRawColor() {
     Color detectedColor = m_colorSensor.getColor();
     return detectedColor;
   }
-
 
   /**
    * Converts motor position to wheel position

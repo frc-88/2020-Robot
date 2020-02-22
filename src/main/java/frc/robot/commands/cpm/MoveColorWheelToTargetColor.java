@@ -46,10 +46,10 @@ public class MoveColorWheelToTargetColor extends CommandBase {
     switch(state) {
       case 0: // wait to be engaged and have a color from the FMS
         System.out.println("\nCPM: In state "+ state);
-        if((cpm.isEngaged())&&(cpm.getFMSColorTarget().length()>0)) {
+        if((cpm.getFMSColorTarget().length()>0)) {
           //controller.startLightRumble();
           state = 1;
-          System.out.println("\nCPM: Is Engaged and Has FRC Color - New State" + state);
+          System.out.println("\nCPM: Has FRC Color - New State" + state);
         }
         break;
       case 1: // freezes drive, move to case 2 when stopped
@@ -60,7 +60,6 @@ public class MoveColorWheelToTargetColor extends CommandBase {
         while(cpm.getMotorSensorPosition() !=0){
           cpm.setMotorSensorPosition(0);
         }
-        cpm.getColor();
         state = 2;
         break;
       case 2: // start spinning motor, spins motor extra distance to target color if already received
