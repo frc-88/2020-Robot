@@ -57,9 +57,9 @@ public class TurnToHeading extends CommandBase {
   }
 
   public boolean isOnTarget() {
-    if (Math.abs(sensors.m_navx.getYaw() - heading) <= TOLERANCE && sensors.m_navx.getYawRate() < TOLERANCE_SPEED) {
+    if (Math.abs(sensors.navx.getYaw() - heading) <= TOLERANCE && sensors.navx.getYawRate() < TOLERANCE_SPEED) {
       ticksOnTarget++;
-    } else if (Math.abs(sensors.m_navx.getYaw() - heading) > TOLERANCE) {
+    } else if (Math.abs(sensors.navx.getYaw() - heading) > TOLERANCE) {
       ticksOnTarget = 0;
     }
     return ticksOnTarget >= TOLERANCE_TICKS;
