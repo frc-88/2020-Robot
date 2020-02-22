@@ -7,6 +7,7 @@
 
 package frc.robot.commands.hopper;
 
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Hopper;
@@ -16,8 +17,14 @@ import frc.robot.subsystems.Hopper;
  * is found in the center (nearest shooter) position
  */
 public class HopperIntakeMode extends CommandBase {
+
+  private static final long TIME_BETWEEN_CHANGES = 1 * 1_000_000;
+
   private Hopper m_hopper;
   private double m_percentOutput;
+
+  private int currentDirection;
+  private long lastChangeTime;
 
   public HopperIntakeMode(Hopper hopper) {
     this(hopper, Constants.HOPPER_INTAKE_PERCENT_OUTPUT);
@@ -32,6 +39,8 @@ public class HopperIntakeMode extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    currentDirection = 1;
+    lastChangeTime = RobotController.getFPGATime();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -41,8 +50,15 @@ public class HopperIntakeMode extends CommandBase {
     // if (m_hopper.isPowerCellReady()) {
     //   m_hopper.setFeeders(0, 0);
     // } else {
-      m_hopper.setFeeders(m_percentOutput, -m_percentOutput);
+    // m_hopper.setFeeders(-m_percentOutput, m_percentOutput);
     // }
+
+    if (RobotController.getFPGATime() - lastChangeTime >= TIME_BETWEEN_CHANGES) {
+      currentDirection *= -1;
+      lastChangeTime = RobotController.getFPGATime();
+    }
+
+    m_hopper.setFeeders(currentDirection * m_percentOutput, -currentDirection * m_percentOutput);
   }
 
   // Called once the command ends or is interrupted.
