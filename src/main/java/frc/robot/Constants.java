@@ -29,7 +29,17 @@ public final class Constants {
 	public static final int CPM_DIGITAL_INPUT_CHANNEL = 00;
 	public static final int CPM_WRIST_ENCODER_COUNTS_PER_REV = 06;
 	public static final float CPM_PHASE_2_WHEEL_ROTATIONS = 4;
-
+    
+    //Climber constants
+    public static final int CLIMBER_MOTOR_LEFT = 13;
+	public static final int CLIMBER_MOTOR_RIGHT = 2;
+	public static final int CLIMBER_PNEUMATICS_FORWARD = 4;
+	public static final int CLIMBER_PNEUMATICS_REVERSE = 3;
+	public static final int CLIMBER_MIN_POSITION = 0;
+	public static final int CLIMBER_MAX_POSITION = (int) (30 * 8.33 * 2048);
+	public static final int CLIMBER_EXPONENTIAL = 2;
+	public static final double CLIMBER_CONTROLLER_DEADZONE = 0.12;
+	
 	// Shooter constants
 	public static final int SHOOTER_FLYWHEEL_MASTER = 12;
 	public static final int SHOOTER_FLYWHEEL_FOLLOWER = 3;

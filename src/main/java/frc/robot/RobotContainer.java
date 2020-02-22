@@ -8,6 +8,7 @@
 package frc.robot;
 
 import java.util.function.BooleanSupplier;
+
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -31,6 +32,10 @@ import frc.robot.commands.arm.ArmStow;
 import frc.robot.commands.arm.CalibrateArm;
 import frc.robot.commands.arm.RotateArm;
 import frc.robot.commands.arm.TestBrakeMode;
+import frc.robot.commands.climber.DisengageRatchets;
+import frc.robot.commands.climber.EngageRatchets;
+import frc.robot.commands.climber.RunClimber;
+import frc.robot.commands.climber.ZeroClimber;
 import frc.robot.commands.drive.ArcadeDrive;
 import frc.robot.commands.drive.CalculateDriveEfficiency;
 import frc.robot.commands.drive.TankDrive;
@@ -49,6 +54,7 @@ import frc.robot.commands.shooter.ShooterStop;
 import frc.robot.commands.vision.LimelightToggle;
 import frc.robot.driveutil.DriveUtils;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Hopper;
@@ -102,13 +108,13 @@ public class RobotContainer {
 
   public final Sensors m_sensors = new Sensors();
   private final Drive m_drive = new Drive(m_sensors);
+  private final Climber m_climber = new Climber();
   private final Arm m_arm = new Arm(m_driverController::isButtonStartPressed);
   private final Feeder m_feeder = new Feeder();
   private final Hopper m_hopper = new Hopper();
   private final Shooter m_shooter = new Shooter();
   private final Intake m_intake = new Intake();
   // private final ControlPanelManipulator m_cpm = new ControlPanelManipulator();
-
 
   /***
   *      ______   ______   .___  ___. .___  ___.      ___      .__   __.  _______       _______.
@@ -275,7 +281,6 @@ public class RobotContainer {
     configureDefaultCommands();
   }
 
-
   private void configureDriverController() {
     BooleanSupplier arcadeDriveForceLowGear = () -> m_driverController.getRightTrigger() > 0.5;
     DoubleSupplier arcadeDriveSpeedSupplier = DriveUtils.deadbandExponential(m_driverController::getLeftStickY,
@@ -315,6 +320,9 @@ public class RobotContainer {
     m_buttonBox.button4.whenReleased(m_deactivateIntake);
     m_buttonBox.button6.whenPressed(m_regurgitate);
     m_buttonBox.button6.whenReleased(m_regurgitateStop);
+
+    m_buttonBox.button8.whenPressed(new EngageRatchets(m_climber));
+    m_buttonBox.button8.whenReleased(new DisengageRatchets(m_climber));
   }
 
 
@@ -382,6 +390,10 @@ public class RobotContainer {
     
     SmartDashboard.putData("Regurgitate", m_regurgitate);
     SmartDashboard.putData("Regurgitate Stop", m_regurgitateStop);
+
+    SmartDashboard.putData("Zero Climber", new ZeroClimber(m_climber));
+
+
   }
 
 
@@ -392,6 +404,12 @@ public class RobotContainer {
     m_hopper.setDefaultCommand(new HopperStop(m_hopper));
     m_feeder.setDefaultCommand(new FeederStop(m_feeder));
     m_shooter.setDefaultCommand(new ShooterStop(m_shooter));
+
+    // DoubleSupplier climbSpeedXSupplier = m_buttonBox::getClimberTiltAxis;
+    // DoubleSupplier climbSpeedYSupplier = m_buttonBox::getClimberSpeedAxis;  
+    DoubleSupplier climbSpeedXSupplier = DriveUtils.deadbandExponential(m_testController::getLeftStickX, Constants.CLIMBER_EXPONENTIAL, Constants.CLIMBER_CONTROLLER_DEADZONE);
+    DoubleSupplier climbSpeedYSupplier = DriveUtils.deadbandExponential(m_testController::getLeftStickY, Constants.CLIMBER_EXPONENTIAL, Constants.CLIMBER_CONTROLLER_DEADZONE);
+    m_climber.setDefaultCommand(new RunClimber(m_climber, climbSpeedXSupplier, climbSpeedYSupplier));
   }
 
   
