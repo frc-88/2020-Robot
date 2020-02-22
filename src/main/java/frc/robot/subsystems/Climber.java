@@ -18,9 +18,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-//I wasn't able to get a lot of information on the climber, some of this information might not be correct
-//or might not reflect the abilities of the climber.
-
 public class Climber extends SubsystemBase{
     private TalonFX m_climber_motor_left = new TalonFX(Constants.CLIMBER_MOTOR_LEFT);
     private TalonFX m_climber_motor_right = new TalonFX(Constants.CLIMBER_MOTOR_RIGHT);
@@ -88,7 +85,6 @@ public class Climber extends SubsystemBase{
         m_climber_motor_right.configStatorCurrentLimit(currentLimit);  
         m_climber_motor_left.configReverseSoftLimitEnable(false);   
         m_climber_motor_right.configReverseSoftLimitEnable(false);   
-
     }
 
     public void exitZeroMode() {
@@ -101,6 +97,14 @@ public class Climber extends SubsystemBase{
         m_climber_motor_right.configStatorCurrentLimit(currentLimit);   
         m_climber_motor_left.configReverseSoftLimitEnable(true);   
         m_climber_motor_right.configReverseSoftLimitEnable(true); 
+    }
+
+    public double motorTicksToHeight(int ticks) {
+        return (ticks * (1. / 2048.) * (2. * Math.PI) * (1. / Constants.CLIMBER_GEAR_RATIO));
+    }
+
+    public int heightToMotorTicks(double height) {
+        return (int)(height * 2048. * (1. / (2. * Math.PI)) * Constants.CLIMBER_GEAR_RATIO);
     }
 
     @Override

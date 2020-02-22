@@ -39,6 +39,8 @@ public final class Constants {
 	public static final int CLIMBER_MAX_POSITION = (int) (30 * 8.33 * 2048);
 	public static final int CLIMBER_EXPONENTIAL = 2;
 	public static final double CLIMBER_CONTROLLER_DEADZONE = 0.12;
+	public static final int CLIMBER_GEAR_RATIO = 21;
+	public static final double CLIMBER_DRUM_DIAMETER = 0;
 	
 	// Shooter constants
 	public static final int SHOOTER_FLYWHEEL_MASTER = 7;
