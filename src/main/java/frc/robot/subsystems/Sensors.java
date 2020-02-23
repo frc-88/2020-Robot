@@ -25,9 +25,10 @@ import edu.wpi.cscore.VideoSink;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import frc.robot.util.NavX;
 import frc.robot.Constants;
 import frc.robot.util.Limelight;
-import frc.robot.util.NavX;
 
 /**
  * we gather data
@@ -36,8 +37,8 @@ import frc.robot.util.NavX;
  */
 
 public class Sensors extends SubsystemBase {
-  public final NavX m_navx;
-  public final Limelight m_limelight;
+  public final NavX navx;
+  public final Limelight limelight;
 
   private CameraServer cameraServer = CameraServer.getInstance();
   private UsbCamera frontCamera, rearCamera, hopperCamera;
@@ -50,12 +51,12 @@ public class Sensors extends SubsystemBase {
    * Creates a new Sensors subsystem
    */
   public Sensors() {
-    m_navx = new NavX();
-    m_navx.zeroYaw();
+    navx = new NavX();
+    navx.zeroYaw();
 
-    m_limelight = new Limelight();
-    m_limelight.camVision();
-    m_limelight.ledOn();
+    limelight = new Limelight();
+    limelight.camVision();
+    limelight.ledOff();
 
     frontCamera = cameraServer.startAutomaticCapture(0);
     rearCamera = cameraServer.startAutomaticCapture(1);
@@ -128,18 +129,32 @@ public class Sensors extends SubsystemBase {
   public boolean isCellInChamber() {
     return m_cellInChamber;
   }
+  
+  public double getDistanceToTarget() {
+    double distance = 0;
+
+    if (limelight.isConnected() && limelight.hasTarget()) {
+      distance = (Constants.FIELD_PORT_TARGET_HEIGHT - Constants.LIMELIGHT_HEIGHT) / 
+        Math.tan(Math.toRadians(Constants.LIMELIGHT_ANGLE) + Math.toRadians(limelight.getTargetVerticalOffsetAngle()));
+    }
+
+    return distance;
+  }
+
 
   @Override
   public void periodic() {
     // NavX data
-    SmartDashboard.putNumber("NavX Yaw", m_navx.getYaw());
-    SmartDashboard.putNumber("NavX Yaw Rate", m_navx.getYawRate());
-    SmartDashboard.putNumber("NavX Pitch", m_navx.getPitch());
-    SmartDashboard.putNumber("NavX Roll", m_navx.getRoll());
+    SmartDashboard.putNumber("NavX Yaw", navx.getYaw());
+    SmartDashboard.putNumber("NavX Yaw Rate", navx.getYawRate());
+    SmartDashboard.putNumber("NavX Pitch", navx.getPitch());
+    SmartDashboard.putNumber("NavX Roll", navx.getRoll());
 
     // Limelight data
-    SmartDashboard.putBoolean("Limelight connected?", m_limelight.isConnected());
-    SmartDashboard.putBoolean("Limelight has target?", m_limelight.hasTarget());
+    SmartDashboard.putBoolean("Limelight connected?", limelight.isConnected());
+    SmartDashboard.putBoolean("Limelight has target?", limelight.hasTarget());
+    SmartDashboard.putNumber("Distance to target", getDistanceToTarget());
+    SmartDashboard.putNumber("Angle to target", limelight.getTargetHorizontalOffsetAngle());
 
     // PCC data
     SmartDashboard.putNumber("PCC Total Yellow", m_totalYellow);
