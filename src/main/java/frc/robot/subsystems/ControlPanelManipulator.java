@@ -255,7 +255,8 @@ public class ControlPanelManipulator extends SubsystemBase {
 
   public void moveWheelToPosition(double wheelPosition) {
     //System.out.println("CPM: convert wheel postion to motor postion"+convertWheelPositionToMotorPosition(wheelPosition));
-    //SmartDashboard.putNumber("CPM W2M Conversion",convertWheelPositionToMotorPosition(wheelPosition));
+    SmartDashboard.putNumber("CPM Wheel Position",convertWheelPositionToMotorPosition(wheelPosition));
+    SmartDashboard.putNumber("CPM W2M Conversion",wheelPosition);
     //m_spinner.set(ControlMode.Position, convertWheelPositionToMotorPosition(wheelPosition));
     m_spinner.set(ControlMode.MotionMagic, convertWheelPositionToMotorPosition(wheelPosition));
   }
