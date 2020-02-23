@@ -141,15 +141,17 @@ public class ControlPanelManipulator extends SubsystemBase {
 
   public double calcPositionControlTargetPosition() {
     //calculate in inches, motor can spin x inches
-    double colorDistance = 0;
-    final int i = 0; //Start at index 1
     final String currentRobotDetectedColor = getColor();
     final String currentTargetColor = getFMSColorTarget();
     final String colorListString = "yrgb"; //string for what half the wheel looks like
-    final int robotSensorColorPosition = colorListString.indexOf(getColor()); // find position in string
-    final int gameSensorColorPosition = colorListString.indexOf(getFMSColorTarget()); // find position in string
+    int robotSensorColorPosition = colorListString.indexOf(getColor()); // find position in string
+    int gameSensorColorPosition = colorListString.indexOf(getFMSColorTarget()); // find position in string
+    
+    System.out.println("CPM: Robot Sensor Color Position: "+ robotSensorColorPosition);
+    System.out.println("CPM: Game Sensor Color Position: "+ gameSensorColorPosition);
 
     int positionDistance = robotSensorColorPosition - gameSensorColorPosition;
+    System.out.println("CPM: Distance in color array position"+positionDistance);
     int slicesToMove = 0; // needs to account for the two slice offset between robot and game sensor
     int movementDirection = 1;
     
@@ -171,33 +173,9 @@ public class ControlPanelManipulator extends SubsystemBase {
       case 3:
         slicesToMove = -1 * movementDirection;
     }
-    /*
-    while (i < colorList.length) {
-      if (colorList[i] == currentRobotDetectedColor) {
-        if (colorList[i-1] == currentTargetColor) {
-          colorDistance = -1;
-          System.out.println("\nCPM: The color distance is equal to -1");
-          break;
-        }
-        else if (colorList[i+1] == currentTargetColor) {
-          colorDistance = 1;
-          System.out.println("\nCPM: The color distance is equal to 1");
-          break;
-        }
-        else if (colorList[i+2] == currentTargetColor) {
-          colorDistance = 2;
-          System.out.println("\nCPM: The color distance is equal to 2");
-          break;
-        }
-        else {
-          colorDistance = 0;
-          System.out.println("\nCPM: The color distance is equal to 0");
-          break;
-        }
-      }
-    }*/
+    System.out.println("CPM: Slices to move: "+slicesToMove);
 
-    return this.convertWheelPositionToMotorPosition(slicesToMove/Constants.CPM_NUM_SLICES);
+    return slicesToMove/Constants.CPM_NUM_SLICES * positionDistance;
   }
 
   public Color getRawColor() {
