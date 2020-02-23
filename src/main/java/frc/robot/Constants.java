@@ -33,7 +33,7 @@ public final class Constants {
 	public static final int CPM_WRIST_ENCODER_COUNTS_PER_REV = 2048;
 	public static final double CPM_PHASE_2_WHEEL_ROTATIONS = 3.5;
 	public static final double CPM_INCHES_PER_SLICE = 12.5;
-	public static final int CPM_NUM_SLICES = 8;
+	public static final double CPM_NUM_SLICES = 8.;
 	public static final int CPM_NUM_MOTOR_TICKS_PER_WHEEL_ROTATION = 4096;
 
 	// Shooter constants
