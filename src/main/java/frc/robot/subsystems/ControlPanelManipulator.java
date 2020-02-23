@@ -150,32 +150,37 @@ public class ControlPanelManipulator extends SubsystemBase {
     System.out.println("CPM: Robot Sensor Color Position: "+ robotSensorColorPosition);
     System.out.println("CPM: Game Sensor Color Position: "+ gameSensorColorPosition);
 
-    int positionDistance = robotSensorColorPosition - gameSensorColorPosition;
-    System.out.println("CPM: Distance in color array position"+positionDistance);
-    int slicesToMove = 0; // needs to account for the two slice offset between robot and game sensor
-    int movementDirection = 1;
+    int positionDistance = (robotSensorColorPosition - gameSensorColorPosition) + 2;
+  
+    // int positionDistance = robotSensorColorPosition - gameSensorColorPosition;
+    // System.out.println("CPM: Distance in color array position"+positionDistance);
+    // int slicesToMove = 0; // needs to account for the two slice offset between robot and game sensor
+    // int movementDirection = 1;
     
-    if (positionDistance<0){ // reduces the number of cases in the switch statement
-      movementDirection = -1;
-    } 
+    // if (positionDistance<0){ // reduces the number of cases in the switch statement
+    //   movementDirection = -1;
+    // } 
     
-    switch(Math.abs(positionDistance)) {
-      // identify how many slices to move but also account for the 2 slice offset between sensors
-      case 0:
-        slicesToMove = 2; 
-        break;
-      case 1:
-        slicesToMove = 1 * movementDirection;
-        break;
-      case 2:
-        slicesToMove = 0;
-        break;
-      case 3:
-        slicesToMove = -1 * movementDirection;
-    }
-    System.out.println("CPM: Slices to move: "+slicesToMove);
+    // switch(Math.abs(positionDistance)) {
+    //   // identify how many slices to move but also account for the 2 slice offset between sensors
+    //   case 0:
+    //     slicesToMove = 2; 
+    //     break;
+    //   case 1:
+    //     slicesToMove = 1 * movementDirection;
+    //     break;
+    //   case 2:
+    //     slicesToMove = 0;
+    //     break;
+    //   case 3:
+    //     slicesToMove = -1 * movementDirection;
+    // }
+    // System.out.println("CPM: Slices to move: "+slicesToMove);
 
-    return slicesToMove/Constants.CPM_NUM_SLICES * positionDistance;
+   
+
+
+    return positionDistance/Constants.CPM_NUM_SLICES;
   }
 
   public Color getRawColor() {
