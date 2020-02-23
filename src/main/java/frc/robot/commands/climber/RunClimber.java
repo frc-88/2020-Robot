@@ -45,6 +45,24 @@ public class RunClimber extends CommandBase {
     //Sets tilt value
     tilt = xSpeed.getAsDouble();
 
+    //slows down when climber is near top + bottom limits
+    if(climber.getLeftPosition() >= (Constants.CLIMBER_MAX_POSITION - Constants.CLIMBER_SLOWDOWN_ZONE)) {
+      double topDistance = Constants.CLIMBER_MAX_POSITION - climber.getLeftPosition();
+      climber.setLeftPeakOutputForward(topDistance / Constants.CLIMBER_SLOWDOWN_ZONE);
+    }
+    if(climber.getLeftPosition() <= Constants.CLIMBER_SLOWDOWN_ZONE) {
+      double bottomDistance = climber.getLeftPosition() + Constants.CLIMBER_MIN_POSITION;
+      climber.setLeftPeakOutputReverse(bottomDistance / Constants.CLIMBER_SLOWDOWN_ZONE);
+    }
+    if(climber.getRightPosition() >= (Constants.CLIMBER_MAX_POSITION - Constants.CLIMBER_SLOWDOWN_ZONE)) {
+      double topDistance = Constants.CLIMBER_MAX_POSITION - climber.getRightPosition();
+      climber.setRightPeakOutputForward(topDistance / Constants.CLIMBER_SLOWDOWN_ZONE);
+    }
+    if(climber.getRightPosition() <= Constants.CLIMBER_SLOWDOWN_ZONE) {
+      double bottomDistance = climber.getRightPosition() + Constants.CLIMBER_MIN_POSITION;
+      climber.setLeftPeakOutputReverse(bottomDistance / Constants.CLIMBER_SLOWDOWN_ZONE);
+    }
+
     climber.setPositionChange(speed - tilt, speed + tilt);
   }
 

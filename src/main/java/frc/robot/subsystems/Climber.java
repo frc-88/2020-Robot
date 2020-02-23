@@ -33,6 +33,8 @@ public class Climber extends SubsystemBase{
     private DoublePreferenceConstant left_kD;
     private DoublePreferenceConstant left_kF;
 
+    private boolean m_engaged;
+
     public Climber() {
         m_climber_motor_left.configFactoryDefault();
         m_climber_motor_right.configFactoryDefault();
@@ -110,19 +112,48 @@ public class Climber extends SubsystemBase{
     }
 
     public void setPositionChange(final double leftSpeed, final double rightSpeed) {
-        setBothMotorHeights(getLeftPosition() + (leftSpeed * Constants.CLIMBER_MANUAL_CONTROL_SCALAR), getRightPosition() + (rightSpeed * Constants.CLIMBER_MANUAL_CONTROL_SCALAR));
+        double leftPosition = Math.max(Math.min(Constants.CLIMBER_MAX_POSITION, getLeftPosition() + (leftSpeed * Constants.CLIMBER_MANUAL_CONTROL_SCALAR)), Constants.CLIMBER_MIN_POSITION);
+        double rightPosition = Math.max(Math.min(Constants.CLIMBER_MAX_POSITION, getRightPosition() + (rightSpeed * Constants.CLIMBER_MANUAL_CONTROL_SCALAR)), Constants.CLIMBER_MIN_POSITION);
+        setBothMotorHeights(leftPosition, rightPosition);
+    }
+
+    public void setLeftPeakOutputForward(final double percentOutput) {
+        if(!m_engaged) {
+            m_climber_motor_left.configPeakOutputForward(percentOutput);
+        } 
+    }
+
+    public void setRightPeakOutputForward(final double percentOutput) {
+        if(!m_engaged) {
+            m_climber_motor_right.configPeakOutputForward(percentOutput);
+        }
+    }
+
+    public void setLeftPeakOutputReverse(final double percentOutput) {
+        if(m_engaged) {
+            m_climber_motor_left.configPeakOutputReverse(percentOutput);
+        }
+    }
+
+    public void setRightPeakOutputReverse(final double percentOutput) {
+        if(m_engaged) {
+            m_climber_motor_right.configPeakOutputReverse(percentOutput);
+        }
     }
 
     public void engageRatchets() {
+        m_engaged = true;
         m_climber_motor_left.configPeakOutputForward(0);
         m_climber_motor_right.configPeakOutputForward(0);
         m_climber_ratchet.set(Value.kReverse);
     }
 
     public void disengageRatchets() {
+        m_engaged = false;
         m_climber_motor_left.configPeakOutputForward(1);
         m_climber_motor_right.configPeakOutputForward(1);
         m_climber_ratchet.set(Value.kForward);
+        
     }
 
     public void zero() {
@@ -164,6 +195,7 @@ public class Climber extends SubsystemBase{
 
     @Override
     public void periodic() {
+        
         SmartDashboard.putNumber("Left Climber Position", m_climber_motor_left.getSelectedSensorPosition());
         SmartDashboard.putNumber("Right Climber Position", m_climber_motor_right.getSelectedSensorPosition());
         SmartDashboard.putNumber("Left Climber Velocity", m_climber_motor_left.getSelectedSensorVelocity() / 10);

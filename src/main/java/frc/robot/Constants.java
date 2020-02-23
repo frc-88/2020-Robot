@@ -42,6 +42,7 @@ public final class Constants {
 	public static final int CLIMBER_GEAR_RATIO = 21;
 	public static final double CLIMBER_DRUM_DIAMETER = 0;
 	public static final double CLIMBER_MANUAL_CONTROL_SCALAR = 18. / 50.;
+	public static final int CLIMBER_SLOWDOWN_ZONE = 20000;
 	
 	// Shooter constants
 	public static final int SHOOTER_FLYWHEEL_MASTER = 12;
