@@ -195,7 +195,7 @@ public class RobotContainer {
     new ConditionalCommand(
         new SequentialCommandGroup(
           new ParallelRaceGroup(
-            new HopperShootUnjamMode(m_hopper, -1.),
+            new HopperEject(m_hopper, -1.),
             new WaitCommand(1),
             new FeederStop(m_feeder),
             new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
@@ -207,7 +207,7 @@ public class RobotContainer {
             new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()))),
         new SequentialCommandGroup(
           new ParallelRaceGroup(
-            new HopperShootUnjamMode(m_hopper, -1.),
+            new HopperEject(m_hopper, -1.),
             new WaitCommand(1),
             new FeederStop(m_feeder), 
             new ArmFullUp(m_arm),
