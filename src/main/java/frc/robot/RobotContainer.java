@@ -437,6 +437,9 @@ public class RobotContainer {
     SmartDashboard.putData("Regurgitate", m_regurgitate);
     SmartDashboard.putData("Regurgitate Stop", m_regurgitateStop);
 
+    SmartDashboard.putData("Limelight On", new LimelightToggle(m_sensors, true));
+    SmartDashboard.putData("Limelight Off", new LimelightToggle(m_sensors, false));
+
     SmartDashboard.putData("Zero Climber", new ZeroClimber(m_climber));
 
     SmartDashboard.putData("Engage Ratchets", new EngageRatchets(m_climber));
