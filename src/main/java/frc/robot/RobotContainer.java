@@ -347,7 +347,6 @@ public class RobotContainer {
     DoubleSupplier armSpeedSupplier = DriveUtils.deadbandExponential(m_testController::getRightStickY,
         Constants.ARM_SPEED_EXP, Constants.TEST_JOYSTICK_DEADBAND);
     SmartDashboard.putData("Arm Manual", new RotateArm(m_arm, armSpeedSupplier));
-
   }
 
 
@@ -409,6 +408,7 @@ public class RobotContainer {
     // DoubleSupplier climbSpeedYSupplier = m_buttonBox::getClimberSpeedAxis;  
     DoubleSupplier climbSpeedXSupplier = DriveUtils.deadbandExponential(m_testController::getLeftStickX, Constants.CLIMBER_EXPONENTIAL, Constants.CLIMBER_CONTROLLER_DEADZONE);
     DoubleSupplier climbSpeedYSupplier = DriveUtils.deadbandExponential(m_testController::getLeftStickY, Constants.CLIMBER_EXPONENTIAL, Constants.CLIMBER_CONTROLLER_DEADZONE);
+
     m_climber.setDefaultCommand(new RunClimber(m_climber, climbSpeedXSupplier, climbSpeedYSupplier));
   }
 

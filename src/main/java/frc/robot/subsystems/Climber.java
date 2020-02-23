@@ -17,12 +17,21 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 
 public class Climber extends SubsystemBase{
     private TalonFX m_climber_motor_left = new TalonFX(Constants.CLIMBER_MOTOR_LEFT);
     private TalonFX m_climber_motor_right = new TalonFX(Constants.CLIMBER_MOTOR_RIGHT);
 
     private DoubleSolenoid m_climber_ratchet = new DoubleSolenoid(Constants.CLIMBER_PNEUMATICS_FORWARD, Constants.CLIMBER_PNEUMATICS_REVERSE);
+    private DoublePreferenceConstant right_kP;
+    private DoublePreferenceConstant right_kI;
+    private DoublePreferenceConstant right_kD;
+    private DoublePreferenceConstant right_kF;
+    private DoublePreferenceConstant left_kP;
+    private DoublePreferenceConstant left_kI;
+    private DoublePreferenceConstant left_kD;
+    private DoublePreferenceConstant left_kF;
 
     public Climber() {
         m_climber_motor_left.configFactoryDefault();
@@ -44,7 +53,28 @@ public class Climber extends SubsystemBase{
         m_climber_motor_right.configReverseSoftLimitEnable(true);
         m_climber_motor_right.configReverseSoftLimitThreshold(Constants.CLIMBER_MIN_POSITION);
 
+        //right pid
+        right_kP = new DoublePreferenceConstant("Climber Right kP", 0);
+        right_kP.addChangeHandler((Double kP) -> m_climber_motor_right.config_kP(0, kP));
+        right_kI = new DoublePreferenceConstant("Climber Right kI", 0);
+        right_kI.addChangeHandler((Double kI) -> m_climber_motor_right.config_kP(0, kI));
+        right_kD = new DoublePreferenceConstant("Climber Right kD", 0);
+        right_kD.addChangeHandler((Double kD) -> m_climber_motor_right.config_kP(0, kD));
+        right_kF = new DoublePreferenceConstant("Climber Right kF", 0);
+        right_kF.addChangeHandler((Double kF) -> m_climber_motor_right.config_kP(0, kF));
+
+        //left pid
+        left_kP = new DoublePreferenceConstant("Climber Left kP", 0);
+        left_kP.addChangeHandler((Double kP) -> m_climber_motor_left.config_kP(0, kP));
+        left_kI = new DoublePreferenceConstant("Climber Left kI", 0);
+        left_kI.addChangeHandler((Double kI) -> m_climber_motor_left.config_kP(0, kI));
+        left_kD = new DoublePreferenceConstant("Climber Left kD", 0);
+        left_kD.addChangeHandler((Double kD) -> m_climber_motor_left.config_kP(0, kD));
+        left_kF = new DoublePreferenceConstant("Climber Left kF", 0);
+        left_kF.addChangeHandler((Double kF) -> m_climber_motor_left.config_kP(0, kF));
+        
     }
+
     public void setMotors(final double speed) {
         m_climber_motor_left.set(ControlMode.PercentOutput, speed);
         m_climber_motor_right.set(ControlMode.PercentOutput, speed);
@@ -56,6 +86,31 @@ public class Climber extends SubsystemBase{
 
     public void setRightMotor(final double speed) {
         m_climber_motor_right.set(ControlMode.PercentOutput, speed);
+    }
+
+    public void setBothMotorHeights(final double leftHeight, final double rightHeight) {
+        m_climber_motor_left.set(ControlMode.Position, heightToMotorTicks(leftHeight));
+        m_climber_motor_right.set(ControlMode.Position, heightToMotorTicks(rightHeight));
+    }
+
+    public double getLeftPosition() {
+        return motorTicksToHeight(m_climber_motor_left.getSelectedSensorPosition());
+    }
+
+    public double getRightPosition() {
+        return motorTicksToHeight(m_climber_motor_right.getSelectedSensorPosition());
+    }
+
+    public void setLeftMotorHeight(final double leftHeight) {
+        m_climber_motor_left.set(ControlMode.Position, heightToMotorTicks(leftHeight));
+    }
+
+    public void setRightMotorHeight(final double rightHeight) {
+        m_climber_motor_right.set(ControlMode.Position, heightToMotorTicks(rightHeight));
+    }
+
+    public void setPositionChange(final double leftSpeed, final double rightSpeed) {
+        setBothMotorHeights(getLeftPosition() + (leftSpeed * Constants.CLIMBER_MANUAL_CONTROL_SCALAR), getRightPosition() + (rightSpeed * Constants.CLIMBER_MANUAL_CONTROL_SCALAR));
     }
 
     public void engageRatchets() {

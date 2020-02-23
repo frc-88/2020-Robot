@@ -10,21 +10,21 @@ package frc.robot.commands.climber;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
 import frc.robot.subsystems.Climber;
 
-public class RunClimber extends CommandBase {
+public class ClimberSetPosition extends CommandBase {
   private Climber climber;
-  private DoubleSupplier xSpeed;
-  private DoubleSupplier ySpeed;
+  private DoubleSupplier xPos;
+  private DoubleSupplier yPos;
   /**
-   * Creates a new RunClimber.
+   * Creates a new ClimberSetPosition.
    */
-  public RunClimber(Climber climber, DoubleSupplier xSpeed, DoubleSupplier ySpeed) {
+  public ClimberSetPosition(Climber climber, DoubleSupplier xPos, DoubleSupplier yPos) {
     this.climber=climber;
-    this.xSpeed=xSpeed;
-    this.ySpeed=ySpeed;
+    this.xPos=xPos;
+    this.yPos=yPos;
     addRequirements(climber);
+    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
@@ -35,23 +35,18 @@ public class RunClimber extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
     double tilt;
-    double speed;
+    double pos;
 
-    //Sets speed value
-    speed = ySpeed.getAsDouble();
+    tilt = xPos.getAsDouble();
+    pos = yPos.getAsDouble();
 
-    //Sets tilt value
-    tilt = xSpeed.getAsDouble();
-
-    climber.setPositionChange(speed - tilt, speed + tilt);
+    climber.setBothMotorHeights(pos - tilt, pos + tilt);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    climber.setMotors(0);
   }
 
   // Returns true when the command should end.
