@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -35,23 +36,27 @@ public class Intake extends SubsystemBase {
     deployPiston = new DoubleSolenoid(Constants.INTAKE_DEPLOY_PISTON, Constants.INTAKE_RETRACT_PISTON);
   }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
-
-
   public void setRoller(double speed) {
     rollerMotor.set(ControlMode.PercentOutput, speed);
-  }
+}
 
 
   public void deploy() {
     deployPiston.set(Value.kForward);
   }
 
-
   public void retract(){
     deployPiston.set(Value.kReverse);
+  }
+
+  public boolean isDeployed() {
+    return deployPiston.get() == Value.kForward;
+  }
+
+  @Override
+  public void periodic() {
+    SmartDashboard.putNumber("Intake stator current", rollerMotor.getStatorCurrent());
+    SmartDashboard.putNumber("Intake supply current", rollerMotor.getSupplyCurrent());
+    // This method will be called once per scheduler run
   }
 }

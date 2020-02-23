@@ -5,25 +5,31 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.vision;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Sensors;
 
-public class DeployIntake extends InstantCommand {
-  private Intake intake;
-  /**
-   * Creates a new DeployIntake.
-   */
-  public DeployIntake(Intake intake) {
-    this.intake=intake;
-    addRequirements(intake);
+// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
+// information, see:
+// https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
+public class LimelightToggle extends InstantCommand {
+  private Sensors sensors;
+  private boolean toggle;
+  public LimelightToggle(Sensors sensors, boolean toggle) {
+    this.sensors=sensors;
+    this.toggle=toggle;
+    addRequirements(sensors);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    intake.deploy();
+    if(toggle) {
+      sensors.limelight.ledOn();
+    } else {
+      sensors.limelight.ledOff();
+    }
   }
 }

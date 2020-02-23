@@ -5,21 +5,24 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.shooter;
+
+import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
 
-public class RunIntake extends CommandBase {
-  private Intake intake;
-  private double speed;
+public class ShooterFlywheelRunBasic extends CommandBase {
+  private Shooter m_shooter;
+  private DoubleSupplier m_percentOutput;
+
   /**
-   * Creates a new RunIntake.
+   * Sets flywheel to desired velocity
    */
-  public RunIntake(Intake intake, double speed) {
-    this.intake=intake;
-    this.speed=speed;
-    addRequirements(intake);
+  public ShooterFlywheelRunBasic(Shooter shooter, DoubleSupplier percentOutput) {
+    m_shooter = shooter;
+    m_percentOutput = percentOutput;
+    addRequirements(m_shooter);
   }
 
   // Called when the command is initially scheduled.
@@ -30,13 +33,13 @@ public class RunIntake extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intake.setRoller(speed);
+    m_shooter.setFlywheelBasic(m_percentOutput.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    intake.setRoller(0);
+    m_shooter.setFlywheelBasic(0);
   }
 
   // Returns true when the command should end.

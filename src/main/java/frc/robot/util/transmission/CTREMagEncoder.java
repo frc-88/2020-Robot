@@ -11,7 +11,7 @@ package frc.robot.util.transmission;
  * Add your docs here.
  */
 public class CTREMagEncoder implements TransmissionSensor{
-    // TODO: CONFIRM THIS
+    
     private static final int TICKS_PER_ROTATION = 4096;
     private static final double NATIVE_TIME_IN_SECONDS = 100. / 1000.; // 100ms
 

@@ -8,17 +8,16 @@
 package frc.robot.driveutil;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import frc.robot.util.transmission.Transmission;
 
 /**
  * Add your docs here.
  */
-public class TJDriveModule extends TalonSRX {
-    private TalonSRX talonFollowers[];
-    private VictorSPX victorFollowers[];
+public class TJDriveModule extends TalonFX {
+    private TalonFX followers[];
 
     private Transmission m_transmission;
 
@@ -26,58 +25,68 @@ public class TJDriveModule extends TalonSRX {
         super(config.master);
         this.configFactoryDefault();
         this.configAllSettings(config.masterConfiguration);
-        this.enableCurrentLimit(config.enableCurrentLimit);
+        //this.enableCurrentLimit(config.enableCurrentLimit);
+        // TODO replace with configSupplyCurrentLimit
         this.enableVoltageCompensation(config.enableVoltageCompensation);
         this.setInverted(config.invertMotor);
         this.setSensorPhase(config.invertSensor);
         this.setNeutralMode(config.neutralMode);
 
-        talonFollowers = new TalonSRX [config.talonFollowers.length];
-        for (int i = 0; i < config.talonFollowers.length; i++) {
-            talonFollowers[i] = new TalonSRX(config.talonFollowers[i]);
-            talonFollowers[i].configFactoryDefault();
-            talonFollowers[i].configAllSettings(config.talonFollowerConfiguration);
-            talonFollowers[i].follow(this);
-            talonFollowers[i].setInverted(config.invertMotor);
-            talonFollowers[i].setSensorPhase(config.invertSensor);
-            talonFollowers[i].setNeutralMode(config.neutralMode);
-        }
-
-        victorFollowers = new VictorSPX [config.victorFollowers.length];
-        for (int i = 0; i < config.victorFollowers.length; i++) {
-            victorFollowers[i] = new VictorSPX(config.victorFollowers[i]);
-            victorFollowers[i].configFactoryDefault();
-            victorFollowers[i].configAllSettings(config.victorFollowerConfiguration);
-            victorFollowers[i].follow(this);
-            victorFollowers[i].setInverted(config.invertMotor);
-            victorFollowers[i].setSensorPhase(config.invertSensor);
-            victorFollowers[i].setNeutralMode(config.neutralMode);
+        followers = new TalonFX [config.followers.length];
+        for (int i = 0; i < config.followers.length; i++) {
+            followers[i] = new TalonFX(config.followers[i]);
+            followers[i].configFactoryDefault();
+            followers[i].configAllSettings(config.followerConfiguration);
+            followers[i].follow(this);
+            followers[i].setInverted(config.invertMotor);
+            followers[i].setSensorPhase(config.invertSensor);
+            followers[i].setNeutralMode(config.neutralMode);
         }
 
         m_transmission = transmission;
     }
 
     /**
+     * Puts all talons in brake mode.
+     */
+    public void brakeAll() {
+        this.setNeutralMode(NeutralMode.Brake);
+        for (TalonFX follower : followers) {
+            follower.setNeutralMode(NeutralMode.Brake);
+        }
+    }
+
+    /**
+     * Puts all talons in coast mode.
+     */
+    public void coastAll() {
+        this.setNeutralMode(NeutralMode.Coast);
+        for (TalonFX follower : followers) {
+            follower.setNeutralMode(NeutralMode.Coast);
+        }
+    }
+
+    /**
      * Get the number of talon followers this drive module has.
      */
     public int getNumTalonFollowers() {
-        return talonFollowers.length;
+        return followers.length;
     }
 
     /**
      * Get the output current of the ith talon follower
      */
     public double getFollowerCurrent(int i) {
-        return talonFollowers[i].getOutputCurrent();
+        return followers[i].getSupplyCurrent();
     }
 
     /**
      * Get the total output current of the master and all talon followers
      */
     public double getTotalCurrent() {
-        double total = this.getOutputCurrent();
-        for (TalonSRX follower : talonFollowers) {
-            total += follower.getOutputCurrent();
+        double total = this.getSupplyCurrent();
+        for (TalonFX follower : followers) {
+            total += follower.getSupplyCurrent();
         }
         return total;
     }
@@ -115,7 +124,15 @@ public class TJDriveModule extends TalonSRX {
         this.set(ControlMode.PercentOutput, 
                 m_transmission.getCurrentLimitedVoltage(
                         targetVelocity, this.getSelectedSensorVelocity(), currentLimit)
-                    / 12);
+                    / 12.);
+    }
+
+    /**
+     * Gets the expected current draw in order to achieve the given velocity.
+     * @param targetVelocity The velocity to target
+     */
+    public double getExpectedCurrentDraw(double targetVelocity) {
+        return m_transmission.getExpectedCurrentDraw(targetVelocity, this.getSelectedSensorVelocity());
     }
 
 }
