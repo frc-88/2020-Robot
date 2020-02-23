@@ -150,7 +150,7 @@ public class ControlPanelManipulator extends SubsystemBase {
     System.out.println("CPM: Robot Sensor Color Position: "+ robotSensorColorPosition);
     System.out.println("CPM: Game Sensor Color Position: "+ gameSensorColorPosition);
 
-    int positionDistance = (robotSensorColorPosition - gameSensorColorPosition) + 2;
+    double positionDistance = (robotSensorColorPosition - gameSensorColorPosition) + 2;
   
     // int positionDistance = robotSensorColorPosition - gameSensorColorPosition;
     // System.out.println("CPM: Distance in color array position"+positionDistance);
@@ -255,8 +255,8 @@ public class ControlPanelManipulator extends SubsystemBase {
 
   public void moveWheelToPosition(double wheelPosition) {
     //System.out.println("CPM: convert wheel postion to motor postion"+convertWheelPositionToMotorPosition(wheelPosition));
-    SmartDashboard.putNumber("CPM Wheel Position",convertWheelPositionToMotorPosition(wheelPosition));
-    SmartDashboard.putNumber("CPM W2M Conversion",wheelPosition);
+    SmartDashboard.putNumber("CPM Convert Wheel pos To Motor pos",convertWheelPositionToMotorPosition(wheelPosition));
+    SmartDashboard.putNumber("CPM Wheel Position",wheelPosition);
     //m_spinner.set(ControlMode.Position, convertWheelPositionToMotorPosition(wheelPosition));
     m_spinner.set(ControlMode.MotionMagic, convertWheelPositionToMotorPosition(wheelPosition));
   }
