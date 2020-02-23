@@ -60,7 +60,7 @@ public class Sensors extends SubsystemBase {
 
     if (limelight.isConnected() && limelight.hasTarget()) {
       distance = (Constants.FIELD_PORT_TARGET_HEIGHT - Constants.LIMELIGHT_HEIGHT) / 
-        Math.tan(Math.toRadians(Constants.LIMELIGHT_ANGLE) + Math.toRadians(limelight.getTargetVerticalOffsetAngle()));
+        Math.tan(Math.toRadians(Constants.LIMELIGHT_ANGLE + limelight.getTargetVerticalOffsetAngle()));
     }
 
     return distance;
@@ -80,7 +80,8 @@ public class Sensors extends SubsystemBase {
     // Limelight data
     SmartDashboard.putBoolean("Limelight connected?", limelight.isConnected());
     SmartDashboard.putBoolean("Limelight has target?", limelight.hasTarget());
-    SmartDashboard.putNumber("Distance to target", getDistanceToTarget());
-    SmartDashboard.putNumber("Angle to target", limelight.getTargetHorizontalOffsetAngle());
+    SmartDashboard.putNumber("Limelight Distance", getDistanceToTarget());
+    SmartDashboard.putNumber("Limelight H-Angle", limelight.getTargetHorizontalOffsetAngle());
+    SmartDashboard.putNumber("Limelight V-Angle", limelight.getTargetVerticalOffsetAngle());
   }
 }
