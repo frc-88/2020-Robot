@@ -98,7 +98,6 @@ public class RobotContainer {
   private final TJController m_driverController = new TJController(0);
   private final ButtonBox m_buttonBox = new ButtonBox(1);
   private final TJController m_testController = new TJController(2);
-  private final TJController m_operatorController = new TJController(3);
 
 
   /***
@@ -282,7 +281,6 @@ public class RobotContainer {
     configureDriverController();
     configureButtonBox();
     configureTestController();
-    configureOperatorController();
 
     configureSmartDashboardButtons();
     configureDefaultCommands();
@@ -330,24 +328,6 @@ public class RobotContainer {
 
     m_buttonBox.button8.whenPressed(new EngageRatchets(m_climber));
     m_buttonBox.button8.whenReleased(new DisengageRatchets(m_climber));
-  }
-
-
-  private void configureOperatorController() {
-    
-  // CPM Commands
-  SetColorWheelPosition m_setColorWheelPosition = new SetColorWheelPosition(m_cpm, m_operatorController);
-  RotateColorWheel m_rotateColorWheel = new RotateColorWheel(m_cpm, m_operatorController);
-  MoveColorWheelToTargetColor m_moveColorWheelToTargetColor = new MoveColorWheelToTargetColor(m_cpm, m_operatorController);
-    
-  SmartDashboard.putData(m_setColorWheelPosition);
-  SmartDashboard.putData(m_rotateColorWheel);
-  SmartDashboard.putData(m_moveColorWheelToTargetColor);
-
-  m_operatorController.buttonA.whenPressed(m_setColorWheelPosition);
-  m_operatorController.buttonB.whenPressed(m_rotateColorWheel);
-  m_operatorController.buttonY.whenPressed(m_moveColorWheelToTargetColor);
-
   }
 
 
@@ -407,6 +387,10 @@ public class RobotContainer {
     SmartDashboard.putNumber("FeederTestSpeed", 0);
     SmartDashboard.putData("FeederTest",new InstantCommand(() -> (new FeederRun(m_feeder, SmartDashboard.getNumber("FeederTestSpeed", 0))).schedule()));
     SmartDashboard.putData("FeederStop", new FeederStop(m_feeder));
+
+    SmartDashboard.putData("CPM SetColorWheelPosition", new SetColorWheelPosition(m_cpm));
+    SmartDashboard.putData("CPM RotationControl", new RotateColorWheel(m_cpm));
+    SmartDashboard.putData("CPM PositionControl", new MoveColorWheelToTargetColor(m_cpm));
 
     SmartDashboard.putNumber("ShooterTestFlywheelSpeed", 0);
     SmartDashboard.putData("ShooterTestFlywheel", new InstantCommand(() -> (new ShooterFlywheelRun(m_shooter, SmartDashboard.getNumber("ShooterTestFlywheelSpeed", 0))).schedule()));

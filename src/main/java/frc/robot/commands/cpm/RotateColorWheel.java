@@ -10,11 +10,9 @@ package frc.robot.commands.cpm;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.ControlPanelManipulator;
-import frc.robot.util.TJController;
 
 public class RotateColorWheel extends CommandBase {
   private ControlPanelManipulator cpm;
-  private TJController controller;
   private int state;
   private String targetColor;
   private double finalRotationDistance;
@@ -24,10 +22,9 @@ public class RotateColorWheel extends CommandBase {
    * Creates a new ReportColor.
    */
 
-  public RotateColorWheel(ControlPanelManipulator cpm, TJController controller) {
+  public RotateColorWheel(ControlPanelManipulator cpm) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.cpm=cpm;
-    this.controller=controller;
     addRequirements(cpm);
   }
 

@@ -10,21 +10,17 @@
 */
 package frc.robot.commands.cpm;
 
-import edu.wpi.first.wpilibj.trajectory.Trajectory.State;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ControlPanelManipulator;
-import frc.robot.util.TJController;
 
 public class MoveColorWheelToTargetColor extends CommandBase {
   private ControlPanelManipulator cpm;
-  private TJController controller;
   private int state;
   
 
-  public MoveColorWheelToTargetColor(ControlPanelManipulator cpm, TJController controller) {
+  public MoveColorWheelToTargetColor(ControlPanelManipulator cpm) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.cpm=cpm;
-    this.controller=controller;
     addRequirements(cpm);
   }
 
