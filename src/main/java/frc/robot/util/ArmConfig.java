@@ -37,5 +37,6 @@ public class ArmConfig {
         // armConfiguration.slot0.maxIntegralAccumulator = 254.000000;
         // armConfiguration.slot0.closedLoopPeakOutput = 0.869990;
         // armConfiguration.slot0.closedLoopPeriod = 33;
+        armConfiguration.voltageCompSaturation = 12;
     }
 }

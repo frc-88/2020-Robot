@@ -145,12 +145,6 @@ public class Limelight {
         return m_getpipe.getDouble(0);
     }
 
-    public double getTargetDistance() {
-        // TODO
-
-        return 0.0;
-    }
-
     public void setPip() {
         m_stream.setNumber(2);
     }

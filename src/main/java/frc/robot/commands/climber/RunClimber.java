@@ -5,24 +5,26 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.shooter;
+package frc.robot.commands.climber;
 
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Shooter;
+import frc.robot.Constants;
+import frc.robot.subsystems.Climber;
 
-public class ShooterFlywheelRunBasic extends CommandBase {
-  private Shooter m_shooter;
-  private DoubleSupplier m_percentOutput;
-
+public class RunClimber extends CommandBase {
+  private Climber climber;
+  private DoubleSupplier xSpeed;
+  private DoubleSupplier ySpeed;
   /**
-   * Sets flywheel to desired velocity
+   * Creates a new RunClimber.
    */
-  public ShooterFlywheelRunBasic(Shooter shooter, DoubleSupplier percentOutput) {
-    m_shooter = shooter;
-    m_percentOutput = percentOutput;
-    addRequirements(m_shooter);
+  public RunClimber(Climber climber, DoubleSupplier xSpeed, DoubleSupplier ySpeed) {
+    this.climber=climber;
+    this.xSpeed=xSpeed;
+    this.ySpeed=ySpeed;
+    addRequirements(climber);
   }
 
   // Called when the command is initially scheduled.
@@ -33,13 +35,24 @@ public class ShooterFlywheelRunBasic extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_shooter.setFlywheelBasic(m_percentOutput.getAsDouble());
+
+    double tilt;
+    double speed;
+
+    //Sets speed value
+    speed = ySpeed.getAsDouble();
+
+    //Sets tilt value
+    tilt = xSpeed.getAsDouble();
+
+    climber.setRightMotor(speed + tilt);
+    climber.setLeftMotor(speed - tilt);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_shooter.setFlywheelBasic(0);
+    climber.setMotors(0);
   }
 
   // Returns true when the command should end.

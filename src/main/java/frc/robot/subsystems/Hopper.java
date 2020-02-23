@@ -9,6 +9,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 
@@ -29,13 +30,15 @@ public class Hopper extends SubsystemBase {
     m_config = new TalonSRXConfiguration();
     m_config.primaryPID.selectedFeedbackSensor = FeedbackDevice.CTRE_MagEncoder_Relative;
  
-    m_feederLeft = new TalonSRX(Constants.HOPPER_FEEDER_1);
+    m_feederLeft = new TalonSRX(Constants.LEFT_HOPPER);
     m_feederLeft.configFactoryDefault();
     m_feederLeft.configAllSettings(m_config);
+    m_feederLeft.setInverted(InvertType.None);
 
-    m_feederRight = new TalonSRX(Constants.HOPPER_FEEDER_2);
+    m_feederRight = new TalonSRX(Constants.RIGHT_HOPPER);
     m_feederRight.configFactoryDefault();
     m_feederRight.configAllSettings(m_config);
+    m_feederRight.setInverted(InvertType.None);
   }
 
   public void setFeeders(double leftPercentOutput, double rightPercentOutput) {
@@ -48,9 +51,13 @@ public class Hopper extends SubsystemBase {
     // left motor data
     SmartDashboard.putNumber("Hopper left position", m_feederLeft.getSelectedSensorPosition());
     SmartDashboard.putNumber("Hopper left velocity", m_feederLeft.getSelectedSensorVelocity());
+    SmartDashboard.putNumber("Hopper left stator current", m_feederLeft.getStatorCurrent());
+    SmartDashboard.putNumber("Hopper left supply current", m_feederLeft.getSupplyCurrent());
 
     // right motor data
     SmartDashboard.putNumber("Hopper right position", m_feederRight.getSelectedSensorPosition());
     SmartDashboard.putNumber("Hopper right velocity", m_feederRight.getSelectedSensorVelocity());
+    SmartDashboard.putNumber("Hopper right stator current", m_feederRight.getStatorCurrent());
+    SmartDashboard.putNumber("Hopper right supply current", m_feederRight.getSupplyCurrent());
   }
 }

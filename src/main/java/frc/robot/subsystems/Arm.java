@@ -14,10 +14,10 @@ import com.ctre.phoenix.VelocityPeriod;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
-import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -70,6 +70,12 @@ public class Arm extends SubsystemBase {
     m_rotator.setSensorPhase(false);
     m_rotator.setNeutralMode(NeutralMode.Brake);
 
+    StatorCurrentLimitConfiguration currentLimit = new StatorCurrentLimitConfiguration();
+    currentLimit.enable = true;
+    currentLimit.triggerThresholdCurrent = 60;
+    currentLimit.triggerThresholdTime = 0.01;
+    currentLimit.currentLimit = 25;
+
     ARM_OFFSET = new DoublePreferenceConstant("Arm Offset", 0);
 
     //Motion magic **woosh**
@@ -82,12 +88,16 @@ public class Arm extends SubsystemBase {
       (Double acceleration) -> m_rotator.configMotionAcceleration(convertArmVelocityToEncoderVelocity(acceleration)));
     rotator_kP = new DoublePreferenceConstant("Arm rotator kP", 1);
     rotator_kP.addChangeHandler((Double kP) -> m_rotator.config_kP(0, kP));
+    m_rotator.config_kP(0, rotator_kP.getValue());
     rotator_kI = new DoublePreferenceConstant("Arm rotator kI", 0.0003);
     rotator_kI.addChangeHandler((Double kI) -> m_rotator.config_kI(0, kI));
+    m_rotator.config_kP(0, rotator_kI.getValue());
     rotator_kD = new DoublePreferenceConstant("Arm rotator kD", 0.1);
     rotator_kD.addChangeHandler((Double kD) -> m_rotator.config_kD(0, kD));
+    m_rotator.config_kP(0, rotator_kD.getValue());
     rotator_kF = new DoublePreferenceConstant("Arm rotator kF", 2.2);
     rotator_kF.addChangeHandler((Double kF) -> m_rotator.config_kF(0, kF));
+    m_rotator.config_kP(0, rotator_kF.getValue());
 
     m_rotator.configMotionCruiseVelocity(convertArmVelocityToEncoderVelocity(MAXIMUM_ARM_VELOCITY.getValue()));
     m_rotator.configMotionAcceleration(convertArmVelocityToEncoderVelocity(MAXIMUM_ARM_ACCELERATION.getValue()));
@@ -106,17 +116,36 @@ public class Arm extends SubsystemBase {
   }
   
   public void zeroArm() {
+    armOffsetTicks = 0;
+    armOffsetTicks = convertArmDegreesToEncoderTicks(getAngleFromAbsolute()) - m_rotator.getSelectedSensorPosition();
+    m_rotator.configForwardSoftLimitEnable(true);
+    m_rotator.configForwardSoftLimitThreshold(convertArmDegreesToEncoderTicks(Constants.ARM_HIGH_LIMIT));
+    m_rotator.configReverseSoftLimitEnable(true);
+    m_rotator.configReverseSoftLimitThreshold(convertArmDegreesToEncoderTicks(Constants.ARM_LOW_LIMIT));
+  }
+
+  public void zeroArmIfOff() {
+    if(Math.abs(getAngleFromAbsolute() - getCurrentArmPosition()) >= 5) {
+      zeroArm();
+    }
+  }
+
+  public void handleForwardLimitSwitch() {
+    if (m_rotator.isFwdLimitSwitchClosed() == 1) {
+      m_rotator.configPeakOutputForward(0.1);
+    } else {
+      m_rotator.configPeakOutputForward(1);
+    }
+  }
+
+  public double getAngleFromAbsolute() {
     double angle = (m_armEncoder.getAbsolutePosition() / Constants.ENCODER_TO_ARM_RATIO) + ARM_OFFSET.getValue();
     angle = (angle + Constants.ARM_ENCODER_SHIFT) % (360. / Constants.ENCODER_TO_ARM_RATIO);
     if(angle < 0) {
       angle += 360. / Constants.ENCODER_TO_ARM_RATIO;
     }
     angle -= Constants.ARM_ENCODER_SHIFT;
-    armOffsetTicks = convertArmDegreesToEncoderTicks(angle) - m_rotator.getSelectedSensorPosition();
-    m_rotator.configForwardSoftLimitEnable(true);
-    m_rotator.configForwardSoftLimitThreshold(convertArmDegreesToEncoderTicks(Constants.ARM_HIGH_LIMIT));
-    m_rotator.configReverseSoftLimitEnable(true);
-    m_rotator.configReverseSoftLimitThreshold(convertArmDegreesToEncoderTicks(Constants.ARM_LOW_LIMIT));
+    return angle;
   }
 
   public void calibrateArm() {
@@ -134,6 +163,10 @@ public class Arm extends SubsystemBase {
 
   public double getCurrentArmPosition() {
     return convertEncoderTicksToArmDegrees(m_rotator.getSelectedSensorPosition());
+  }
+
+  public boolean isOnTarget() {
+    return Math.abs(convertEncoderTicksToArmDegrees(m_rotator.getClosedLoopError())) < Constants.ARM_TOLERANCE;
   }
 
   /**
@@ -187,8 +220,12 @@ public class Arm extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    zeroArmIfOff();
+    handleForwardLimitSwitch();
+
     SmartDashboard.putNumber("Arm Position", convertEncoderTicksToArmDegrees(m_rotator.getSelectedSensorPosition()));
+    SmartDashboard.putNumber("Arm Abs Position", getAngleFromAbsolute());
+    SmartDashboard.putNumber("Arm current offset", armOffsetTicks);
     SmartDashboard.putNumber("Arm Velocity", convertEncoderVelocityToArmVelocity(m_rotator.getSelectedSensorVelocity()));
     SmartDashboard.putNumber("Expected Arm Position", convertEncoderTicksToArmDegrees(m_rotator.getActiveTrajectoryPosition()));
     SmartDashboard.putNumber("Expected Arm Velocity", convertEncoderVelocityToArmVelocity(m_rotator.getActiveTrajectoryVelocity()));
