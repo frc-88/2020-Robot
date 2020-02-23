@@ -5,31 +5,26 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.drive;
+package frc.robot.commands.climber;
 
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.Drive;
-public class ArcadeDrive extends CommandBase {
-  private Drive drive;
-  private DoubleSupplier speed;
-  private DoubleSupplier turn;
-  private BooleanSupplier inHighGear;
-  private DoubleSupplier maxSpeed;
-  /**
-   * Creates a new ArcadeDrive.
-   */
-  public ArcadeDrive(Drive drive, DoubleSupplier speed, DoubleSupplier turn, BooleanSupplier inHighGear, DoubleSupplier maxSpeed) {
-    this.turn=turn;
-    this.drive=drive;
-    this.speed=speed;
-    this.inHighGear = inHighGear;
-    this.maxSpeed = maxSpeed;
-    addRequirements(drive);
+import frc.robot.subsystems.Climber;
 
+public class RunClimber extends CommandBase {
+  private Climber climber;
+  private DoubleSupplier xSpeed;
+  private DoubleSupplier ySpeed;
+  /**
+   * Creates a new RunClimber.
+   */
+  public RunClimber(Climber climber, DoubleSupplier xSpeed, DoubleSupplier ySpeed) {
+    this.climber=climber;
+    this.xSpeed=xSpeed;
+    this.ySpeed=ySpeed;
+    addRequirements(climber);
   }
 
   // Called when the command is initially scheduled.
@@ -40,20 +35,24 @@ public class ArcadeDrive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    drive.setMaxSpeed(maxSpeed.getAsDouble());
-    if (inHighGear.getAsBoolean()) {
-      drive.shiftToHigh();
-    } else {
-      drive.shiftToLow();
-    }
-    drive.arcadeDrive(speed.getAsDouble(), turn.getAsDouble());
+
+    double tilt;
+    double speed;
+
+    //Sets speed value
+    speed = ySpeed.getAsDouble();
+
+    //Sets tilt value
+    tilt = xSpeed.getAsDouble();
+
+    climber.setRightMotor(speed + tilt);
+    climber.setLeftMotor(speed - tilt);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    drive.setMaxSpeed(Constants.MAX_SPEED_HIGH);
-    drive.arcadeDrive(0, 0);
+    climber.setMotors(0);
   }
 
   // Returns true when the command should end.

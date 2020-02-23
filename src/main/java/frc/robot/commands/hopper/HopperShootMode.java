@@ -5,55 +5,45 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.drive;
-
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
+package frc.robot.commands.hopper;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.Drive;
-public class ArcadeDrive extends CommandBase {
-  private Drive drive;
-  private DoubleSupplier speed;
-  private DoubleSupplier turn;
-  private BooleanSupplier inHighGear;
-  private DoubleSupplier maxSpeed;
-  /**
-   * Creates a new ArcadeDrive.
-   */
-  public ArcadeDrive(Drive drive, DoubleSupplier speed, DoubleSupplier turn, BooleanSupplier inHighGear, DoubleSupplier maxSpeed) {
-    this.turn=turn;
-    this.drive=drive;
-    this.speed=speed;
-    this.inHighGear = inHighGear;
-    this.maxSpeed = maxSpeed;
-    addRequirements(drive);
+import frc.robot.subsystems.Hopper;
 
+/**
+ * Run both sides at the same speed forward to feed power cells into the
+ * shooter.
+ */
+public class HopperShootMode extends CommandBase {
+  private Hopper m_hopper;
+  private double m_percentOutput;
+
+  public HopperShootMode(Hopper hopper) {
+    this(hopper, Constants.HOPPER_SHOOT_PERCENT_OUTPUT);
+  }
+
+  public HopperShootMode(Hopper hopper, double percentOutput) {
+    m_hopper = hopper;
+    m_percentOutput = percentOutput;
+    addRequirements(m_hopper);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    m_hopper.setFeeders(m_percentOutput, m_percentOutput);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    drive.setMaxSpeed(maxSpeed.getAsDouble());
-    if (inHighGear.getAsBoolean()) {
-      drive.shiftToHigh();
-    } else {
-      drive.shiftToLow();
-    }
-    drive.arcadeDrive(speed.getAsDouble(), turn.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    drive.setMaxSpeed(Constants.MAX_SPEED_HIGH);
-    drive.arcadeDrive(0, 0);
+    m_hopper.setFeeders(0, 0);
   }
 
   // Returns true when the command should end.

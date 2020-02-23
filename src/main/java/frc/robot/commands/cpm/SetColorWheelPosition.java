@@ -10,17 +10,15 @@ package frc.robot.commands.cpm;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ControlPanelManipulator;
-import frc.robot.util.TJController;
 
 public class SetColorWheelPosition extends CommandBase {
   private ControlPanelManipulator cpm;
-  private TJController controller;
   private int state;
 
   /**
    * Creates a new SetWheelPosition.
    */
-  public SetColorWheelPosition(ControlPanelManipulator cpm, TJController controller) {
+  public SetColorWheelPosition(ControlPanelManipulator cpm) {
     SmartDashboard.putNumber("CPM Desired Wheel Position", 0);
     this.cpm = cpm;
     addRequirements(cpm);

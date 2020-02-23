@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean constants. This class should not be used for any other
@@ -36,18 +37,66 @@ public final class Constants {
 	public static final double CPM_NUM_SLICES = 8.;
 	public static final int CPM_NUM_MOTOR_TICKS_PER_WHEEL_ROTATION = 4096;
 
+    //Climber constants
+    public static final int CLIMBER_MOTOR_LEFT = 13;
+	public static final int CLIMBER_MOTOR_RIGHT = 2;
+	public static final int CLIMBER_PNEUMATICS_FORWARD = 4;
+	public static final int CLIMBER_PNEUMATICS_REVERSE = 3;
+	public static final int CLIMBER_MIN_POSITION = 0;
+	public static final int CLIMBER_MAX_POSITION = (int) (30 * 8.33 * 2048);
+	public static final int CLIMBER_EXPONENTIAL = 2;
+	public static final double CLIMBER_CONTROLLER_DEADZONE = 0.12;
+	
 	// Shooter constants
-	public static final int SHOOTER_MOTOR = 12;
-	public static final int SHOOTER_MOTOR_2 = 3;
-	public static final int SHOOTER_ANGLE_ENCODER_CHANNEL_1A = 9;
-	public static final int SHOOTER_ANGLE_ENCODER_CHANNEL_1B = 10;
-	public static final int SHOOTER_FEEDER_MOTOR = 0;
-	public static final int SHOOTER_ROTATOR_MOTOR = 0;
+	public static final int SHOOTER_FLYWHEEL_MASTER = 12;
+	public static final int SHOOTER_FLYWHEEL_FOLLOWER = 3;
+	public static final double SHOOTER_FLYWHEEL_MAX_SPEED = 1;
+	public static final double SHOOTER_FLYWHEEL_TOLERANCE = 25;
+	public static final int SHOOTER_FLYWHEEL_SPEED_EXP = 1;
+	public static final double SHOOTER_MOTOR_TO_FLYWHEEL_RATIO = 1.5;
+	public static final int SHOOTER_MOTOR_TICKS_PER_ROTATION = 2048;
+
+	// Feeder constants
+	public static final int FEEDER_MOTOR = 8;
+	public static final int FEEDER_CPM_PCM = 1;
+	public static final int FEEDER_CPM_PISTON_FORWARD = 0;
+	public static final int FEEDER_CPM_PISTON_REVERSE = 7;
+
+	// Arm constants
+	public static final int ARM_MOTOR = 4;
+	public static final int ARM_CANCODER = 4;
+	public static final double ARM_SHOOTER_ANGLE_1 = 0;
+	public static final double ARM_SHOOTER_ANGLE_2 = 45;
+	public static final double ARM_SHOOTER_ANGLE_3 = 90;
+	public static final int ARM_ENCODER_TICKS_PER_ROTATION = 4096;
+	public static final int FALCON_TO_ENCODER_RATIO = 2;
+	public static final int ENCODER_TO_ARM_RATIO = 3;
+	public static final int FALCON_TO_ARM_RATIO = 6;
+	public static final double ARM_MAXIMUM_VELOCITY = 60;
+	public static final double ARM_LOW_LIMIT = -5;
+	public static final double ARM_HIGH_LIMIT = 93;
+	public static final double ARM_ENCODER_SHIFT = 15;
+	public static final int ARM_SPEED_EXP = 2;
+	public static final double ARM_TOLERANCE = 0.5;
 
 	// Intake constants
-	public static final int ROLLER_ID = 5;
+	public static final int ROLLER_ID = 11;
 	public static final int INTAKE_DEPLOY_PISTON = 0;
 	public static final int INTAKE_RETRACT_PISTON = 7;
+
+	// Hopper constants
+	public static final int LEFT_HOPPER = 9;
+	public static final int RIGHT_HOPPER = 10;
+	public static final double HOPPER_SHOOT_PERCENT_OUTPUT = .5;
+	public static final double HOPPER_INTAKE_PERCENT_OUTPUT = 0.5;
+
+	// Sensor constants
+	public static final double LIMELIGHT_HEIGHT = 21.0;
+	public static final double LIMELIGHT_ANGLE = 5.0; // TODO
+	public static final double LIMELIGHT_CENTER_OFFSET = 8.0;
+
+	// Field constants
+	public static final double FIELD_PORT_TARGET_HEIGHT = 90.75;
 
 	/********************************************************************
     * 
@@ -60,12 +109,12 @@ public final class Constants {
 	*/
 	
 	// Drive CAN IDs
-	public static final int LEFT_MASTER_DRIVE_ID = 15;
-	public static final int LEFT_FOLLOWER_DRIVE_ID = 14;
-	public static final int RIGHT_MASTER_DRIVE_ID = 0;
-	public static final int RIGHT_FOLLOWER_DRIVE_ID = 1;
-	public static final int LEFT_DRIVE_ENCODER_ID = 15;
-	public static final int RIGHT_DRIVE_ENCODER_ID = 0;
+	public static final int LEFT_MASTER_DRIVE_ID = 0;
+	public static final int LEFT_FOLLOWER_DRIVE_ID = 1;
+	public static final int RIGHT_MASTER_DRIVE_ID = 15;
+	public static final int RIGHT_FOLLOWER_DRIVE_ID = 14;
+	public static final int LEFT_DRIVE_ENCODER_ID = 0;
+	public static final int RIGHT_DRIVE_ENCODER_ID = 15;
 	public static final int SHIFTER_LEFT_PCM = 0;
 	public static final int SHIFTER_LEFT_OUT = 2;
 	public static final int SHIFTER_LEFT_IN = 5;
@@ -93,6 +142,11 @@ public final class Constants {
 	public static final double DRIVE_JOYSTICK_DEADBAND = 0.12;
 	public static final double CHEESY_DRIVE_MIN_TURN = 0.4;
 	public static final double CHEESY_DRIVE_MAX_TURN = 0.6;
+	public static final double CHEESY_DRIVE_FORCE_LOW_MIN_TURN = 0.6;
+	public static final double CHEESY_DRIVE_FORCE_LOW_MAX_TURN = 1.;
+
+	//Test
+	public static final double TEST_JOYSTICK_DEADBAND = 0.12;
 
 	/*******************************************************************/
 
