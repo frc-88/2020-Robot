@@ -8,6 +8,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -33,6 +34,14 @@ public class Intake extends SubsystemBase {
    */
   public Intake() {
     rollerMotor = new TalonSRX(Constants.ROLLER_ID);
+
+    rollerMotor.configFactoryDefault();
+    SupplyCurrentLimitConfiguration currentLimit = new SupplyCurrentLimitConfiguration();
+    currentLimit.enable = true;
+    currentLimit.triggerThresholdTime = 0.250;
+    currentLimit.triggerThresholdCurrent = 55;
+    currentLimit.currentLimit = 35;
+
     deployPiston = new DoubleSolenoid(Constants.INTAKE_DEPLOY_PISTON, Constants.INTAKE_RETRACT_PISTON);
   }
 
