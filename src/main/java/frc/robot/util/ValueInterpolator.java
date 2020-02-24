@@ -4,7 +4,7 @@ public class ValueInterpolator {
 
     private ValuePair[] m_pairs;
 
-    public class ValuePair {
+    public static class ValuePair {
         public final double first;
         public final double second;
 

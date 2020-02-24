@@ -129,7 +129,7 @@ public final class Constants {
 	public static final double MAX_SPEED_LOW = 8.8;
 	public static final double MAX_SPEED_HIGH = 18;
 	public static final double WHEEL_BASE_WIDTH = (25. + 5./16.) / 12.; // feet
-	public static final double DRIVE_CURRENT_LIMIT = 250;
+	public static final double DRIVE_CURRENT_LIMIT = 200;
 	public static final int DRIVE_SPEED_EXP = 2;
 	public static final int DRIVE_TURN_EXP = 2;
 	public static final double DRIVE_JOYSTICK_DEADBAND = 0.12;

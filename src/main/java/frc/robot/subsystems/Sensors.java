@@ -66,6 +66,13 @@ public class Sensors extends SubsystemBase {
     return distance;
   }
 
+  public double getAngleToTarget() {
+    return -limelight.getTargetHorizontalOffsetAngle();
+  }
+
+  public boolean doesLimelightHaveTarget() {
+    return limelight.hasTarget();
+  }
 
   @Override
   public void periodic() {
@@ -81,7 +88,7 @@ public class Sensors extends SubsystemBase {
     SmartDashboard.putBoolean("Limelight connected?", limelight.isConnected());
     SmartDashboard.putBoolean("Limelight has target?", limelight.hasTarget());
     SmartDashboard.putNumber("Limelight Distance", getDistanceToTarget());
-    SmartDashboard.putNumber("Limelight H-Angle", limelight.getTargetHorizontalOffsetAngle());
+    SmartDashboard.putNumber("Limelight H-Angle", getAngleToTarget());
     SmartDashboard.putNumber("Limelight V-Angle", limelight.getTargetVerticalOffsetAngle());
   }
 }

@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.commands.WaitForDriveAimed;
 import frc.robot.commands.WaitForShooterReady;
 import frc.robot.commands.Intake.DeployIntake;
 import frc.robot.commands.Intake.RetractIntake;
@@ -42,6 +43,7 @@ import frc.robot.commands.drive.CalculateDriveEfficiency;
 import frc.robot.commands.drive.TankDrive;
 import frc.robot.commands.drive.TestDriveStaticFriction;
 import frc.robot.commands.drive.TurnToHeading;
+import frc.robot.commands.drive.TurnToLimelight;
 import frc.robot.commands.feeder.FeederRun;
 import frc.robot.commands.feeder.FeederStop;
 import frc.robot.commands.hopper.HopperEject;
@@ -53,6 +55,7 @@ import frc.robot.commands.hopper.HopperStop;
 import frc.robot.commands.hopper.HopperTest;
 import frc.robot.commands.shooter.ShooterFlywheelRun;
 import frc.robot.commands.shooter.ShooterFlywheelRunBasic;
+import frc.robot.commands.shooter.ShooterRunFromLimelight;
 import frc.robot.commands.shooter.ShooterStop;
 import frc.robot.commands.vision.LimelightToggle;
 import frc.robot.driveutil.DriveUtils;
@@ -116,7 +119,7 @@ public class RobotContainer {
   private final Arm m_arm = new Arm(m_driverController::isButtonStartPressed);
   private final Feeder m_feeder = new Feeder();
   private final Hopper m_hopper = new Hopper();
-  private final Shooter m_shooter = new Shooter();
+  private final Shooter m_shooter = new Shooter(m_sensors);
   private final Intake m_intake = new Intake();
   // private final ControlPanelManipulator m_cpm = new ControlPanelManipulator();
 
@@ -154,7 +157,7 @@ public class RobotContainer {
     ),
     new ParallelCommandGroup(
       new ArmFullUp(m_arm),
-      new ShooterFlywheelRun(m_shooter, m_shooterUpSpeed.getValue()),
+      new ShooterRunFromLimelight(m_shooter),
       new LimelightToggle(m_sensors, true)
     ),
     m_buttonBox.button7::get);
@@ -179,12 +182,16 @@ public class RobotContainer {
       new SequentialCommandGroup(
         new ParallelRaceGroup(
           new ArmFullUp(m_arm), 
-          new ShooterFlywheelRun(m_shooter, m_shooterUpSpeed.getValue()),
-          new WaitForShooterReady(m_arm, m_shooter)),
+          new ShooterRunFromLimelight(m_shooter),
+          new ParallelCommandGroup(
+            new WaitForShooterReady(m_arm, m_shooter),
+            new WaitForDriveAimed(m_drive)
+          )
+        ),
         new ParallelCommandGroup(
           new HopperShootMode(m_hopper), 
           new ArmFullUp(m_arm),
-          new ShooterFlywheelRun(m_shooter, m_shooterUpSpeed.getValue()), 
+          new ShooterRunFromLimelight(m_shooter), 
           new FeederRun(m_feeder, 1.0)
         )
       ),
@@ -211,12 +218,12 @@ public class RobotContainer {
             new WaitCommand(1),
             new FeederStop(m_feeder), 
             new ArmFullUp(m_arm),
-            new ShooterFlywheelRun(m_shooter, m_shooterUpSpeed.getValue())),
+            new ShooterRunFromLimelight(m_shooter)),
         new ParallelCommandGroup(
           new HopperStop(m_hopper),
           new FeederStop(m_feeder), 
           new ArmFullUp(m_arm),
-          new ShooterFlywheelRun(m_shooter, m_shooterUpSpeed.getValue()))),
+          new ShooterRunFromLimelight(m_shooter))),
       m_buttonBox.button7::get);
 
   // stopShoot - stows arm, stops shooter, stops feeder, turns limelight off
@@ -285,7 +292,7 @@ public class RobotContainer {
     new ParallelCommandGroup(
       new HopperEject(m_hopper, -1), 
       new ArmFullUp(m_arm),
-      new ShooterFlywheelRun(m_shooter, m_shooterUpSpeed.getValue()), 
+      new ShooterRunFromLimelight(m_shooter), 
       new FeederRun(m_feeder, 1.0)
     ),
     m_buttonBox.button7::get);
@@ -333,6 +340,8 @@ public class RobotContainer {
     DoubleSupplier tankDriveRightSupplier = m_driverController::getRightStickY;
     CommandBase m_tankDrive = new TankDrive(m_drive, tankDriveLeftSupplier, tankDriveRightSupplier);
     SmartDashboard.putData("Tank Drive", m_tankDrive);
+
+    m_driverController.buttonA.whileHeld(new TurnToLimelight(m_drive, m_sensors));
 
     // m_driverController.buttonB.whileHeld(m_reportColor);
     // m_driverController.buttonA.whenPressed(m_moveColorWheelToTargetColor);
@@ -444,6 +453,9 @@ public class RobotContainer {
 
     SmartDashboard.putData("Engage Ratchets", new EngageRatchets(m_climber));
     SmartDashboard.putData("Disengage Ratchets", new DisengageRatchets(m_climber));
+
+    SmartDashboard.putData("Turn To Limelight", new TurnToLimelight(m_drive, m_sensors));
+    SmartDashboard.putData("Shoot Limelight", new ShooterRunFromLimelight(m_shooter));
   }
 
 
