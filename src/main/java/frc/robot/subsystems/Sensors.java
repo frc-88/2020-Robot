@@ -59,8 +59,17 @@ public class Sensors extends SubsystemBase {
     double distance = 0;
 
     if (limelight.isConnected() && limelight.hasTarget()) {
-      distance = (Constants.FIELD_PORT_TARGET_HEIGHT - Constants.LIMELIGHT_HEIGHT) / 
-        Math.tan(Math.toRadians(Constants.LIMELIGHT_ANGLE + limelight.getTargetVerticalOffsetAngle()));
+      // distance = (Constants.FIELD_PORT_TARGET_HEIGHT - Constants.LIMELIGHT_HEIGHT) / 
+      //   Math.tan(Math.toRadians(Constants.LIMELIGHT_ANGLE + limelight.getTargetVerticalOffsetAngle()));
+      //
+      // After further analysis of the spreadsheet data, 
+      // a polynomial curve matches the empirical data best
+      // Sorry, Bill, for the magic numbers. They came from
+      // a spreadsheet, I swear! :D
+
+      double ty = limelight.getTargetVerticalOffsetAngle();
+
+      distance = 190 - 11.7 * ty + 0.32 * ty * ty;
     }
 
     return distance;
