@@ -35,7 +35,7 @@ public class SetColorWheelPosition extends CommandBase {
   public void execute() {
     switch(state) {
       case 0: //wait to be engaged
-        if(cpm.isEngaged()) {
+        if(cpm.isCPMEngaged()) {
           //controller.startLightRumble();
           state = 1;
         }

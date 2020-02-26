@@ -8,14 +8,14 @@
 package frc.robot.commands.feeder;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Feeder;
+import frc.robot.subsystems.ControlPanelManipulator;;
 
 public class FeederStop extends CommandBase {
-  private Feeder m_feeder;
+  private ControlPanelManipulator m_feeder;
  /**
    * Creates a new FeederStop.
    */
-  public FeederStop(Feeder feeder) {
+  public FeederStop(ControlPanelManipulator feeder) {
     m_feeder = feeder;
     addRequirements(m_feeder);
   }

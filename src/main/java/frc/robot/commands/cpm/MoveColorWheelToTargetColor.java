@@ -37,7 +37,7 @@ public class MoveColorWheelToTargetColor extends CommandBase {
     // If we are in phase 3 and we are in contact with the color wheel 
     // then rotate color wheel to the color that we are given by the FMS
     System.out.println("CPM: Executing the move color wheel to target command " + Integer.toString(this.state));
-    System.out.println("CPM: Is CPM Switch Engaged: " + cpm.isEngaged());
+    System.out.println("CPM: Is CPM Switch Engaged: " + cpm.isCPMEngaged());
     System.out.println("CPM: FRC Target color is: " + cpm.getFMSColorTarget());
     switch(state) {
       case 0: // wait to be engaged and have a color from the FMS

@@ -30,13 +30,16 @@ public final class Constants {
 	public static final int CPM_JOINT_ENCODER_CHANNEL_1B = 2;
 	public static final int CPM_PNEUMATICS_FORWARD = 3;
 	public static final int CPM_PNEUMATICS_REVERSE = 4;
+	public static final int CPM_AUX_SENSOR_SLOT_IDX = 88; //Needs validation
+	public static final int CPM_MAIN_SLOT_IDX = 88; //Needs validation
 	//--Constants
 	public static final int CPM_WRIST_ENCODER_COUNTS_PER_REV = 2048;
 	public static final double CPM_PHASE_2_WHEEL_ROTATIONS = 3.5;
 	public static final double CPM_INCHES_PER_SLICE = 12.5;
 	public static final double CPM_NUM_SLICES = 8.;
 	public static final int CPM_NUM_MOTOR_TICKS_PER_WHEEL_ROTATION = 4096;
-
+	public static final int CPM_SENSOR_TIMEOUTMS = 0;
+	public static final int CPM_NUM_ENCODER_TICS_PER_MOTOR_ROTATION = 4096; // SRX Mag Encoder
     //Climber constants
     public static final int CLIMBER_MOTOR_LEFT = 13;
 	public static final int CLIMBER_MOTOR_RIGHT = 2;

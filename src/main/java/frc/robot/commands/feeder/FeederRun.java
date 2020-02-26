@@ -8,16 +8,16 @@
 package frc.robot.commands.feeder;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Feeder;
+import frc.robot.subsystems.ControlPanelManipulator;;
 
 public class FeederRun extends CommandBase {
-  private Feeder m_feeder;
+  private ControlPanelManipulator m_feeder;
   private double m_percentOutput;
   
   /**
    * Sets feeder to desired percent output
    */
-  public FeederRun(Feeder feeder, double percentOutput) {
+  public FeederRun(ControlPanelManipulator feeder, double percentOutput) {
     m_feeder = feeder;
     m_percentOutput = percentOutput;
     addRequirements(m_feeder);

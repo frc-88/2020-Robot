@@ -33,7 +33,7 @@ public class ReportColor extends CommandBase {
     SmartDashboard.putNumber("Red", cpm.getRawColor().red);
     SmartDashboard.putNumber("Green", cpm.getRawColor().green);
     SmartDashboard.putNumber("Blue", cpm.getRawColor().blue);
-    SmartDashboard.putBoolean("CPM Contact Sensor", cpm.isEngaged());
+    SmartDashboard.putBoolean("CPM Contact Sensor", cpm.isCPMEngaged());
   }
 
   // Called once the command ends or is interrupted.

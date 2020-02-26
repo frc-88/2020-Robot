@@ -46,7 +46,7 @@ public class RotateColorWheel extends CommandBase {
     switch(state) {
       case 0: //wait to be engaged
         System.out.println("CPM RotateColorWheel State: "+ state);
-        if(cpm.isEngaged()) {
+        if(cpm.isCPMEngaged()) {
           //controller.startLightRumble();
           state = 1;
         }
@@ -55,8 +55,9 @@ public class RotateColorWheel extends CommandBase {
         System.out.println("\nCPM RotateColorWheel State: "+ state);
         //controller.stopRumble();
         // TODO: take control from the driver
-        while(cpm.getMotorSensorPosition() !=0){
+        if(cpm.getMotorSensorPosition() !=0){
           cpm.setMotorSensorPosition(0);
+          break;
         }
         cpm.getColor();
         state = 2;

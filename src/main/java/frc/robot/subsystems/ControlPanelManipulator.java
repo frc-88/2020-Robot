@@ -8,30 +8,39 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonFXPIDSetConfiguration;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+
 import com.kauailabs.navx.frc.AHRS;
+
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
-import java.util.*;
+
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.Constants;
-import frc.robot.util.CPMConfig;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 
 
 public class ControlPanelManipulator extends SubsystemBase {
+  
+  private TalonSRX m_feederSpinner = new TalonSRX(Constants.FEEDER_MOTOR);
+  private TalonSRXConfiguration m_config;
+
+  private DoubleSolenoid m_deployer = new DoubleSolenoid(Constants.FEEDER_CPM_PCM, Constants.FEEDER_CPM_PISTON_FORWARD, Constants.FEEDER_CPM_PISTON_REVERSE);
+
   /**
    * Creates a new ControlPanelManipulator.
    */
@@ -43,16 +52,14 @@ public class ControlPanelManipulator extends SubsystemBase {
 
   // set constants for how the motor motion relates to movement of the color wheel
   private final double motorRotationsPerWheelRotation = (100. / (2. * Math.PI));
-  private final int ticksPerMotorRotation = 2048;
+  private final int ticksPerMotorRotation = Constants.CPM_NUM_ENCODER_TICS_PER_MOTOR_ROTATION;
 
   private final ColorMatch m_colorMatcher = new ColorMatch();
-  private TalonFX m_spinner = new TalonFX(Constants.CPM_MOTOR);
+
   private final I2C.Port m_i2cPort = I2C.Port.kOnboard;
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(m_i2cPort);
-  private Encoder m_wristEncoder = new Encoder(Constants.CPM_JOINT_ENCODER_CHANNEL_1A, Constants.CPM_JOINT_ENCODER_CHANNEL_1B);
-  private DoubleSolenoid m_pneumatics = new DoubleSolenoid(Constants.CPM_PNEUMATICS_FORWARD, Constants.CPM_PNEUMATICS_REVERSE);
   private AHRS m_navX = new AHRS(SPI.Port.kMXP); 
-  private DigitalInput m_contactSensor = new DigitalInput(Constants.CPM_DIGITAL_INPUT_CHANNEL);
+  //private DigitalInput m_contactSensor = new DigitalInput(Constants.CPM_DIGITAL_INPUT_CHANNEL);
 
   // because we can't move the color wheel more than 1 rotation per second 
   private double MAXIMUM_WHEEL_VELOCITY = (59. / 60.); // degrees/second  - just under 1 rotation per second
@@ -61,54 +68,77 @@ public class ControlPanelManipulator extends SubsystemBase {
   private DoublePreferenceConstant MAXIMUM_WHEEL_ACCELERATION;
   private double COLOR_WHEEL_SENSOR_SLICE_OFFSET = 2.;
   
-  private DoublePreferenceConstant spinner_kP;
+  private DoublePreferenceConstant spinner_kP; 
   private DoublePreferenceConstant spinner_kI;
   private DoublePreferenceConstant spinner_kD;
   private DoublePreferenceConstant spinner_kF;
-  
-  private CPMConfig cpmConfig;
-
-  
+    
   public ControlPanelManipulator() {
-    m_wristEncoder.reset();
 
+    m_config = new TalonSRXConfiguration();
+    m_config.primaryPID.selectedFeedbackSensor = FeedbackDevice.CTRE_MagEncoder_Relative;
+
+    // Creates a new Feeder
+    // Common settings
+    m_feederSpinner.configFactoryDefault();
+    m_feederSpinner.configAllSettings(m_config);
+    // TODO: Experiment with deadband as time allows. 
+    //m_feederSpinner.configNeutralDeadband(0.003, Constants.CPM_SENSOR_TIMEOUTMS);
+    m_feederSpinner.enableVoltageCompensation(true);
+    m_feederSpinner.setInverted(false);
+    m_feederSpinner.setSensorPhase(false);
+    m_feederSpinner.setNeutralMode(NeutralMode.Brake);
+    
+    // CPM 
     m_colorMatcher.addColorMatch(kBlueTarget);
     m_colorMatcher.addColorMatch(kGreenTarget);
     m_colorMatcher.addColorMatch(kRedTarget);
     m_colorMatcher.addColorMatch(kYellowTarget);
 
-    m_spinner.configFactoryDefault();
-    //m_spinner.configAllSettings(cpmConfig.cpmConfiguration);
-    m_spinner.enableVoltageCompensation(true);
-    m_spinner.setSensorPhase(false);
-    m_spinner.setInverted(false);
-    m_spinner.setNeutralMode(NeutralMode.Brake);
-
     /* Motion Magic */
-    m_spinner.selectProfileSlot(0, 0);
+    m_feederSpinner.selectProfileSlot(0, 0);
     MAXIMUM_WHEEL_ACCELERATION = new DoublePreferenceConstant("CPM Acceleration", INIT_MAX_WHEEL_ACCELERATION);
     MAXIMUM_WHEEL_ACCELERATION.addChangeHandler(
-      (Double acceleration) -> m_spinner.configMotionAcceleration(convertWheelVelocityToMotorVelocity(acceleration)));
+      (Double acceleration) -> m_feederSpinner.configMotionAcceleration(convertWheelVelocityToMotorVelocity(acceleration)));
     spinner_kP = new DoublePreferenceConstant("CPM Spinner kP", 0);
-    spinner_kP.addChangeHandler((Double kP) -> m_spinner.config_kP(0, kP));
+    spinner_kP.addChangeHandler((Double kP) -> m_feederSpinner.config_kP(0, kP));
     spinner_kI = new DoublePreferenceConstant("CPM Spinner kI", 0);
-    spinner_kI.addChangeHandler((Double kI) -> m_spinner.config_kI(0, kI));
+    spinner_kI.addChangeHandler((Double kI) -> m_feederSpinner.config_kI(0, kI));
     spinner_kD = new DoublePreferenceConstant("CPM Spinner kD", 0);
-    spinner_kD.addChangeHandler((Double kD) -> m_spinner.config_kD(0, kD));
+    spinner_kD.addChangeHandler((Double kD) -> m_feederSpinner.config_kD(0, kD));
     spinner_kF = new DoublePreferenceConstant("CPM Spinner kF", 0);
-    spinner_kF.addChangeHandler((Double kF) -> m_spinner.config_kF(0, kF));
+    spinner_kF.addChangeHandler((Double kF) -> m_feederSpinner.config_kF(0, kF));
 
-    m_spinner.configMotionCruiseVelocity(convertWheelVelocityToMotorVelocity(MAXIMUM_WHEEL_VELOCITY));
-    m_spinner.configMotionAcceleration(convertWheelVelocityToMotorVelocity(MAXIMUM_WHEEL_ACCELERATION.getValue()));
+    m_feederSpinner.configMotionCruiseVelocity(convertWheelVelocityToMotorVelocity(MAXIMUM_WHEEL_VELOCITY));
+    m_feederSpinner.configMotionAcceleration(convertWheelVelocityToMotorVelocity(MAXIMUM_WHEEL_ACCELERATION.getValue()));
   
     SmartDashboard.putBoolean("Zero CPM", false);
   }
 
-  public boolean isEngaged() {
-    return m_contactSensor.get();
+  // Feeder
+  public void setFeeder(double percentOutput) {
+    m_feederSpinner.set(ControlMode.PercentOutput, percentOutput);
+  }
+
+  // CPM
+  public void retractCPM() {
+    m_deployer.set(Value.kReverse);
+  }
+
+  public void deployCPM() {
+    m_deployer.set(Value.kForward);
+  }
+  
+  public boolean isCPMEngaged() {
+    //return m_contactSensor.get();
+    return true; // right now there is no contact sensor for the CPM
   }
 
   public String getColor() {
+    // Feeder
+    retractCPM();
+
+    // CPM
     Color detectedColor = m_colorSensor.getColor();
     String colorString;
     ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
@@ -135,10 +165,6 @@ public class ControlPanelManipulator extends SubsystemBase {
     return m_navX.getYaw();
   }
 
-  public double getRobotWrist() {
-    return m_wristEncoder.get()/Constants.CPM_WRIST_ENCODER_COUNTS_PER_REV*360;
-  }
-
   public double calcPositionControlTargetPosition() {
     //calculate number of slices to move
     final String colorListString = "yrgb"; //string for what half the wheel looks like
@@ -147,8 +173,6 @@ public class ControlPanelManipulator extends SubsystemBase {
     
     System.out.println("CPM: Robot Sensor Color Position: "+ robotSensorColorPosition);
     System.out.println("CPM: Game Sensor Color Position: "+ gameSensorColorPosition);
-
-    //double positionDistance = ((robotSensorColorPosition - gameSensorColorPosition) + 2)%4;
   
     int positionDistance = robotSensorColorPosition - gameSensorColorPosition;
     System.out.println("CPM: Distance in color array position"+positionDistance);
@@ -198,7 +222,7 @@ public class ControlPanelManipulator extends SubsystemBase {
    * @return The motor position from the integrated sensor in ticks
    */
   public double getMotorSensorPosition(){
-    return m_spinner.getSelectedSensorPosition();
+    return m_feederSpinner.getSelectedSensorPosition();
   }
 
 
@@ -233,19 +257,19 @@ public class ControlPanelManipulator extends SubsystemBase {
   }
 
   public double getWheelPosition() {
-    return convertMotorPositionToWheelPosition(m_spinner.getSelectedSensorPosition());
+    return convertMotorPositionToWheelPosition(m_feederSpinner.getSelectedSensorPosition());
   }
 
   public double getWheelVelocity() {
-    return convertMotorVelocityToWheelVelocity(m_spinner.getSelectedSensorVelocity());
+    return convertMotorVelocityToWheelVelocity(m_feederSpinner.getSelectedSensorVelocity());
   }
 
   public void setWheelPosition(double position) {
-    m_spinner.setSelectedSensorPosition(convertWheelPositionToMotorPosition(position));
+    m_feederSpinner.setSelectedSensorPosition(convertWheelPositionToMotorPosition(position));
   }
 
   public void setMotorSensorPosition(int sensorPosition){
-    m_spinner.setSelectedSensorPosition(sensorPosition);
+    m_feederSpinner.setSelectedSensorPosition(sensorPosition);
   }
 
   public void moveWheelToPosition(double wheelPosition) {
@@ -253,7 +277,7 @@ public class ControlPanelManipulator extends SubsystemBase {
     SmartDashboard.putNumber("CPM Convert Wheel pos To Motor pos",convertWheelPositionToMotorPosition(wheelPosition));
     SmartDashboard.putNumber("CPM Wheel Position",wheelPosition);
     //m_spinner.set(ControlMode.Position, convertWheelPositionToMotorPosition(wheelPosition));
-    m_spinner.set(ControlMode.MotionMagic, convertWheelPositionToMotorPosition(wheelPosition));
+    m_feederSpinner.set(ControlMode.MotionMagic, convertWheelPositionToMotorPosition(wheelPosition));
   }
 
   @Override
@@ -262,26 +286,26 @@ public class ControlPanelManipulator extends SubsystemBase {
     SmartDashboard.putNumber("CPM Wheel Velocity", getWheelVelocity());
     SmartDashboard.putNumber("CPM Wheel Position", getWheelPosition());
     SmartDashboard.putNumber("CPM Motor Position", getMotorSensorPosition());
-    SmartDashboard.putNumber("CPM Motor Velocity", m_spinner.getActiveTrajectoryVelocity());
+    SmartDashboard.putNumber("CPM Motor Velocity", m_feederSpinner.getActiveTrajectoryVelocity());
 
-    SmartDashboard.putNumber("CPM Target Position", convertMotorPositionToWheelPosition(m_spinner.getActiveTrajectoryPosition()));
-    SmartDashboard.putNumber("CPM Target Velocity", convertMotorVelocityToWheelVelocity(m_spinner.getActiveTrajectoryVelocity()));
+    SmartDashboard.putNumber("CPM Target Position", convertMotorPositionToWheelPosition(m_feederSpinner.getActiveTrajectoryPosition()));
+    SmartDashboard.putNumber("CPM Target Velocity", convertMotorVelocityToWheelVelocity(m_feederSpinner.getActiveTrajectoryVelocity()));
 
     SmartDashboard.putString("CPM sensor color", getColor());
     SmartDashboard.putNumber("Red", getRawColor().red);
     SmartDashboard.putNumber("Green", getRawColor().green);
     SmartDashboard.putNumber("Blue", getRawColor().blue);
 
-    SmartDashboard.putBoolean("CPM isEngaged", isEngaged());
+    SmartDashboard.putBoolean("CPM isEngaged", isCPMEngaged());
 
     if(SmartDashboard.getBoolean("Zero CPM Sensor", false)) {
       setMotorSensorPosition(0);
       System.out.println("CPM: Setting wheel sensor postion to 0");
     }
 
-    m_spinner.config_kP(0, spinner_kP.getValue());
-    m_spinner.config_kI(0, spinner_kI.getValue());
-    m_spinner.config_kD(0, spinner_kD.getValue());
-    m_spinner.config_kF(0, spinner_kF.getValue());
+    m_feederSpinner.config_kP(0, spinner_kP.getValue());
+    m_feederSpinner.config_kI(0, spinner_kI.getValue());
+    m_feederSpinner.config_kD(0, spinner_kD.getValue());
+    m_feederSpinner.config_kF(0, spinner_kF.getValue());
   }
 }
