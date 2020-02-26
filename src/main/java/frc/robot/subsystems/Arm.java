@@ -48,6 +48,8 @@ public class Arm extends SubsystemBase {
 
   private int armOffsetTicks = 0;
 
+  private double currentSetpoint = 0;
+
   BooleanSupplier coastEnabled;
 
   public Arm(BooleanSupplier coastEnabled) {
@@ -106,6 +108,7 @@ public class Arm extends SubsystemBase {
   }
 
   public void setArmPosition(double armPosition) {
+    this.currentSetpoint = armPosition;
     m_rotator.set(ControlMode.MotionMagic, convertArmDegreesToEncoderTicks(armPosition));
   }
 
@@ -164,7 +167,7 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean isOnTarget() {
-    return Math.abs(convertEncoderTicksToArmDegrees(m_rotator.getClosedLoopError())) < Constants.ARM_TOLERANCE;
+    return Math.abs(this.currentSetpoint - getCurrentArmPosition()) < Constants.ARM_TOLERANCE;
   }
 
   /**

@@ -27,6 +27,6 @@ public class WaitForShooterReady extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return this.arm.isOnTarget() && this.shooter.flywheelOnTarget();
+    return true; //this.arm.isOnTarget() && this.shooter.flywheelOnTarget();
   }
 }
