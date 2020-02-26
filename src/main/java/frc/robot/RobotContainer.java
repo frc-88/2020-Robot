@@ -106,7 +106,7 @@ public class RobotContainer {
   *                                                                                                                      
   */
 
-  public final Sensors m_sensors = new Sensors();
+  public final Sensors m_sensors = new Sensors(m_driverController::isButtonAPressed);
   private final Drive m_drive = new Drive(m_sensors);
   private final Climber m_climber = new Climber();
   private final Arm m_arm = new Arm(m_driverController::isButtonStartPressed);

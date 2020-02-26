@@ -7,6 +7,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoSink;
 import edu.wpi.first.cameraserver.CameraServer;
@@ -25,7 +27,9 @@ import frc.robot.util.Limelight;
 
 public class Sensors extends SubsystemBase {
   public final NavX navx;
-  public final Limelight limelight;
+  
+  private final Limelight limelight;
+  private BooleanSupplier ledOverride;
 
   UsbCamera frontCamera = CameraServer.getInstance().startAutomaticCapture(0);
   UsbCamera rearCamera = CameraServer.getInstance().startAutomaticCapture(1);
@@ -34,7 +38,9 @@ public class Sensors extends SubsystemBase {
   /**
    * Creates a new Sensors subsystem
    */
-  public Sensors() {
+  public Sensors(BooleanSupplier ledOverride) {
+    this.ledOverride = ledOverride;
+
     navx = new NavX();
     navx.zeroYaw();
 
@@ -53,6 +59,16 @@ public class Sensors extends SubsystemBase {
 
   public void setToRearCamera() {
     server.setSource(rearCamera);
+  }
+
+  public void ledOn() {
+    limelight.ledOn();
+  }
+
+  public void ledOff() {
+    if(!ledOverride.getAsBoolean()) {
+      limelight.ledOff();
+    }
   }
 
   public double getDistanceToTarget() {
@@ -82,5 +98,10 @@ public class Sensors extends SubsystemBase {
     SmartDashboard.putBoolean("Limelight has target?", limelight.hasTarget());
     SmartDashboard.putNumber("Distance to target", getDistanceToTarget());
     SmartDashboard.putNumber("Angle to target", limelight.getTargetHorizontalOffsetAngle());
+
+    // Check LED override
+    if(ledOverride.getAsBoolean()) {
+      limelight.ledOn();
+    }
   }
 }
