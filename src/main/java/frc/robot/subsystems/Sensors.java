@@ -68,6 +68,8 @@ public class Sensors extends SubsystemBase {
     hopperCamera = cameraServer.startAutomaticCapture(Constants.PCC_CAMERA_NAME, Constants.PCC_CAMERA_ID);
     
     startCounter(hopperCamera);
+
+    cameraServer.getServer().setSource(intakeCamera);
   }
 
   public void startCounter(UsbCamera camera) {
