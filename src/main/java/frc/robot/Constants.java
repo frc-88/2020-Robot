@@ -69,7 +69,7 @@ public final class Constants {
 	// Sensor constants
 	public static final String PCC_CAMERA_NAME = "PCC";
 	public static final String PCC_STREAM_NAME = "PCC";
-	public static final int PCC_CAMERA_ID = 2;
+	public static final int PCC_CAMERA_ID = 1;
 	public static final int PCC_IMAGE_WIDTH = 640;
 	public static final int PCC_IMAGE_HEIGHT = 480;
 	public static final int PCC_HUE_LO = 10;
@@ -148,7 +148,7 @@ public final class Constants {
 
 	//Test
 	public static final double TEST_JOYSTICK_DEADBAND = 0.12;
-	
+
 	/*******************************************************************/
 
 }
