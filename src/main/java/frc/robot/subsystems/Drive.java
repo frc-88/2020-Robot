@@ -211,6 +211,11 @@ public class Drive extends SubsystemBase {
     return m_leftTransmission.isInHighGear();
   }
 
+  public void resetEncoderPositions() {
+    m_leftDrive.setSelectedSensorPosition(0);
+    m_rightDrive.setSelectedSensorPosition(0);
+  }
+
   public double getLeftPosition() {
     return m_leftDrive.getScaledSensorPosition();
   }

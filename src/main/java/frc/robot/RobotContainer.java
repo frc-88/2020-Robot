@@ -176,7 +176,8 @@ public class RobotContainer {
         new ParallelCommandGroup(
           new HopperShootMode(m_hopper), 
           new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
-          new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()), new FeederRun(m_feeder, 1.0)
+          new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()), 
+          new FeederRun(m_feeder, 1.0)
         )
       ),
       new SequentialCommandGroup(
