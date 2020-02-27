@@ -12,6 +12,7 @@ import java.util.function.BooleanSupplier;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoSink;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -66,7 +67,7 @@ public class Sensors extends SubsystemBase {
   }
 
   public void ledOff() {
-    if(!ledOverride.getAsBoolean()) {
+    if(!(DriverStation.getInstance().isDisabled() && ledOverride.getAsBoolean())) {
       limelight.ledOff();
     }
   }
@@ -99,8 +100,8 @@ public class Sensors extends SubsystemBase {
     SmartDashboard.putNumber("Distance to target", getDistanceToTarget());
     SmartDashboard.putNumber("Angle to target", limelight.getTargetHorizontalOffsetAngle());
 
-    // Check LED override
-    if(ledOverride.getAsBoolean()) {
+    // Check LED override, only when disabled
+    if(DriverStation.getInstance().isDisabled() && ledOverride.getAsBoolean()) {
       limelight.ledOn();
     }
   }
