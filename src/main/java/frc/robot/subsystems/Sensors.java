@@ -45,7 +45,7 @@ public class Sensors extends SubsystemBase {
   private BooleanSupplier ledOverride;
 
   private CameraServer cameraServer = CameraServer.getInstance();
-  private UsbCamera frontCamera, rearCamera, hopperCamera;
+  private UsbCamera intakeCamera, hopperCamera;
 
   private double m_totalYellow = 0.0;
   private double m_totalYellowChamber = 0.0;
@@ -64,14 +64,9 @@ public class Sensors extends SubsystemBase {
     limelight.camVision();
     limelight.ledOff();
 
-    frontCamera = cameraServer.startAutomaticCapture(0);
-    rearCamera = cameraServer.startAutomaticCapture(1);
+    intakeCamera = cameraServer.startAutomaticCapture(0);
     hopperCamera = cameraServer.startAutomaticCapture(Constants.PCC_CAMERA_NAME, Constants.PCC_CAMERA_ID);
     
-    setToFrontCamera();
-    // frontCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-    // rearCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-
     startCounter(hopperCamera);
   }
 
@@ -122,14 +117,6 @@ public class Sensors extends SubsystemBase {
         outputStream.putFrame(output);
       }
     }).start();
-  }
-
-  public void setToFrontCamera() {
-    cameraServer.getServer().setSource(frontCamera);
-  }
-
-  public void setToRearCamera() {
-    cameraServer.getServer().setSource(rearCamera);
   }
 
   public void ledOn() {
