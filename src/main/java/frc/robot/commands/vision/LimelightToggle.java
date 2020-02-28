@@ -27,9 +27,9 @@ public class LimelightToggle extends InstantCommand {
   @Override
   public void initialize() {
     if(toggle) {
-      sensors.limelight.ledOn();
+      sensors.ledOn();
     } else {
-      sensors.limelight.ledOff();
+      sensors.ledOff();
     }
   }
 }
