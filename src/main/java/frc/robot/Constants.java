@@ -84,6 +84,7 @@ public final class Constants {
 	public static final double HOPPER_INTAKE_PERCENT_OUTPUT = 0.5;
 
 	// Sensor constants
+	public static final int SHOOTER_BALL_SENSOR_ID = 0;
 	public static final double LIMELIGHT_HEIGHT = 21.0;
 	public static final double LIMELIGHT_ANGLE = 21.0; // Rough measure on 2-23
 	public static final double LIMELIGHT_CENTER_OFFSET = 8.0;

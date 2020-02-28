@@ -12,11 +12,13 @@ import java.util.function.BooleanSupplier;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoSink;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.util.NavX;
+import frc.robot.Constants;
 import frc.robot.util.Limelight;
 
 /**
@@ -35,6 +37,8 @@ public class Sensors extends SubsystemBase {
   UsbCamera rearCamera = CameraServer.getInstance().startAutomaticCapture(1);
   VideoSink server = CameraServer.getInstance().getServer();
 
+  private DigitalInput shooterBallSensor;
+
   /**
    * Creates a new Sensors subsystem
    */
@@ -47,6 +51,8 @@ public class Sensors extends SubsystemBase {
     limelight = new Limelight();
     limelight.camVision();
     limelight.ledOff();
+
+    shooterBallSensor = new DigitalInput(Constants.SHOOTER_BALL_SENSOR_ID);
 
     setToFrontCamera();
     // frontCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
@@ -115,6 +121,9 @@ public class Sensors extends SubsystemBase {
     SmartDashboard.putNumber("Limelight Distance", getDistanceToTarget());
     SmartDashboard.putNumber("Limelight H-Angle", getAngleToTarget());
     SmartDashboard.putNumber("Limelight V-Angle", limelight.getTargetVerticalOffsetAngle());
+
+    // Beam breaks
+    SmartDashboard.putBoolean("Shooter Ball Sensor", shooterBallSensor.get());
 
     // Check LED override, only when disabled
     if(DriverStation.getInstance().isDisabled() && ledOverride.getAsBoolean()) {
