@@ -7,17 +7,6 @@
 
 package frc.robot;
 
-
-/**
- * The Constants class provides a convenient place for teams to hold robot-wide
- * numerical or boolean constants. This class should not be used for any other
- * purpose. All constants should be declared globally (i.e. public static). Do
- * not put anything functional in this class.
- *
- * <p>
- * It is advised to statically import this class (or one of its inner classes)
- * wherever the constants are needed, to reduce verbosity.
- */
 public final class Constants {
 
 	// CPM constants
@@ -76,6 +65,25 @@ public final class Constants {
 	public static final int ROLLER_ID = 11;
 	public static final int INTAKE_DEPLOY_PISTON = 0;
 	public static final int INTAKE_RETRACT_PISTON = 7;
+
+	// Sensor constants
+	public static final String PCC_CAMERA_NAME = "PCC";
+	public static final String PCC_STREAM_NAME = "PCC";
+	public static final int PCC_CAMERA_ID = 1;
+	public static final int PCC_IMAGE_WIDTH = 640;
+	public static final int PCC_IMAGE_HEIGHT = 480;
+	public static final int PCC_HUE_LO = 10;
+	public static final int PCC_HUE_HI = 60;
+	public static final int PCC_SAT_LO = 0;
+	public static final int PCC_SAT_HI = 255;
+	public static final int PCC_VAL_LO = 0;
+	public static final int PCC_VAL_HI = 255;
+
+	public static final int PCC_CHAMBER_X = 200;
+	public static final int PCC_CHAMBER_Y = 285;
+	public static final int PCC_CHAMBER_WIDTH = 185;
+	public static final int PCC_CHAMBER_HEIGHT = 185;
+	public static final double PCC_CHAMBER_THRESHOLD = 30000;
 
 	// Hopper constants
 	public static final int LEFT_HOPPER = 9;
