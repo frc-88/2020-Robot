@@ -9,6 +9,7 @@ package frc.robot.commands.drive;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drive;
+import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 
 public class BasicAutoDrive extends CommandBase {
 
@@ -16,6 +17,14 @@ public class BasicAutoDrive extends CommandBase {
   private final double m_leftDistance;
   private final double m_rightDistance;
   private final double m_maxSpeed;
+
+  private double m_leftSpeed;
+  private double m_rightSpeed;
+
+  private final DoublePreferenceConstant m_syncP;
+
+  private int m_numLoops;
+
   /**
    * Creates a new BasicAutoDrive.
    */
@@ -24,39 +33,49 @@ public class BasicAutoDrive extends CommandBase {
     m_leftDistance = leftDistance;
     m_rightDistance = rightDistance;
     m_maxSpeed = maxSpeed;
+    m_syncP = new DoublePreferenceConstant("Basic Auto Drive kP", 0);
+
+    if (m_leftDistance > m_rightDistance) {
+      m_leftSpeed = m_maxSpeed;
+      m_rightSpeed = (m_rightDistance / m_leftDistance) * m_maxSpeed;
+    } else {
+      m_rightSpeed = m_maxSpeed;
+      m_leftSpeed = (m_leftDistance / m_rightDistance) * m_maxSpeed;
+    }
+
+    m_leftSpeed *= Math.signum(m_leftDistance);
+    m_rightSpeed *= Math.signum(m_rightDistance);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     m_drive.resetEncoderPositions();
+    m_numLoops = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double leftSpeed;
-    double rightSpeed;
-    if (m_leftDistance > m_rightDistance) {
-      leftSpeed = m_maxSpeed;
-      rightSpeed = (m_rightDistance / m_leftDistance) * m_maxSpeed;
-    } else {
-      rightSpeed = m_maxSpeed;
-      leftSpeed = (m_leftDistance / m_rightDistance) * m_maxSpeed;
-    }
-    m_drive.basicDriveLimited(leftSpeed, rightSpeed);
+    m_numLoops++;
+
+    double desyncAmount = (m_drive.getRightPosition() / (m_rightSpeed / m_maxSpeed)) 
+        - (m_drive.getLeftPosition() / (m_leftSpeed / m_maxSpeed));
+    m_leftSpeed += desyncAmount * m_syncP.getValue();
+    m_rightSpeed -= desyncAmount * m_syncP.getValue();
+
+    m_drive.basicDriveLimited(m_leftSpeed, m_rightSpeed);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_drive.basicDriveLimited(0, 0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Math.abs(m_leftDistance) > Math.abs(m_drive.getLeftPosition())
-        || Math.abs(m_rightDistance) > Math.abs(m_drive.getRightPosition());
+    return m_numLoops > 5 // The encoders don't reseting immediately, causing the command to end early without this
+        && Math.abs(m_drive.getLeftPosition() / m_leftDistance) + Math.abs(m_drive.getRightPosition() / m_rightDistance) > 2;
   }
 }
