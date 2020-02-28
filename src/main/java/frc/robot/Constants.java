@@ -72,11 +72,12 @@ public final class Constants {
 	public static final int PCC_CAMERA_ID = 1;
 	public static final int PCC_IMAGE_WIDTH = 640;
 	public static final int PCC_IMAGE_HEIGHT = 480;
+	public static final int PCC_BLUR = 10;
 	public static final int PCC_HUE_LO = 10;
-	public static final int PCC_HUE_HI = 60;
-	public static final int PCC_SAT_LO = 0;
+	public static final int PCC_HUE_HI = 80;
+	public static final int PCC_SAT_LO = 20;
 	public static final int PCC_SAT_HI = 255;
-	public static final int PCC_VAL_LO = 0;
+	public static final int PCC_VAL_LO = 20;
 	public static final int PCC_VAL_HI = 255;
 
 	public static final int PCC_CHAMBER_X = 200;
