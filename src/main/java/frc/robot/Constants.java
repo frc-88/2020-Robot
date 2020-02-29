@@ -40,7 +40,8 @@ public final class Constants {
 	public static final int CPM_NUM_MOTOR_TICKS_PER_WHEEL_ROTATION = 4096;
 	public static final int CPM_SENSOR_TIMEOUTMS = 0;
 	public static final int CPM_NUM_ENCODER_TICS_PER_MOTOR_ROTATION = 4096; // SRX Mag Encoder
-    //Climber constants
+	public static final double CPM_TINY_TURN_ROTATIONS = .25/8.; // number of slices for correction rotation
+	//Climber constants
     public static final int CLIMBER_MOTOR_LEFT = 13;
 	public static final int CLIMBER_MOTOR_RIGHT = 2;
 	public static final int CLIMBER_PNEUMATICS_FORWARD = 4;

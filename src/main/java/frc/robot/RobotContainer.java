@@ -41,6 +41,7 @@ import frc.robot.commands.cpm.CPMRotationControl;
 import frc.robot.commands.cpm.CPMTestDeploy;
 import frc.robot.commands.cpm.CPMTestGoToPosition;
 import frc.robot.commands.cpm.CPMTestRetract;
+import frc.robot.commands.cpm.CPMTinyCorrectionRotation;
 import frc.robot.commands.drive.ArcadeDrive;
 import frc.robot.commands.drive.CalculateDriveEfficiency;
 import frc.robot.commands.drive.TankDrive;
@@ -398,6 +399,8 @@ public class RobotContainer {
     SmartDashboard.putData("CPM Test Deploy", new CPMTestDeploy(m_cpm));
     SmartDashboard.putData("CPM Test Retract", new CPMTestRetract(m_cpm));
     SmartDashboard.putData("CPM TestColorWheelPositionControl", new CPMTestGoToPosition(m_cpm, SmartDashboard.getNumber("CPM Desired Wheel Position", 0)));
+    // Tiny Wheel Correction may become the third CPM button to correct for position errors
+    SmartDashboard.putData("CPM TestTinyWheelCorrection", new CPMTinyCorrectionRotation(m_cpm));
 
     // Shooter
     SmartDashboard.putNumber("ShooterTestFlywheelSpeed", 0);

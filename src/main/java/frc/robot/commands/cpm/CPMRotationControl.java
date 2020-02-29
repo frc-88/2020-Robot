@@ -88,9 +88,11 @@ public class CPMRotationControl extends CommandBase {
         break;
       case 4: //give control back to the driver + rumble 
         System.out.println("\nCPM RotateColorWheel State: "+ state);
-        //controller.startHeavyRumble();
         // TODO: give back control to driver
-        state = 5;
+        if (cpm.getMotorVelocity() == 0){ // motor has stopped moving, motor is in break mode, proceed
+          //controller.startHeavyRumble();
+          state = 5;
+        }
         break;
       case 5: //stop heavy rumble after driver gets control back
         cpm.retractCPM();
@@ -98,7 +100,6 @@ public class CPMRotationControl extends CommandBase {
         //controller.stopRumble();
         break;
     }
-    
   }
 
   // Called once the command ends or is interrupted.
