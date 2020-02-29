@@ -262,6 +262,10 @@ public class ControlPanelManipulator extends SubsystemBase {
   public double getWheelVelocity() {
     return convertMotorVelocityToWheelVelocity(m_feederSpinner.getSelectedSensorVelocity());
   }
+  
+  public double getMotorVelocity() {
+    return m_feederSpinner.getSelectedSensorVelocity();
+  }
 
   public void setWheelPosition(double position) {
     m_feederSpinner.setSelectedSensorPosition(convertWheelPositionToMotorPosition(position));
@@ -281,7 +285,7 @@ public class ControlPanelManipulator extends SubsystemBase {
     SmartDashboard.putNumber("CPM Wheel Velocity", getWheelVelocity());
     SmartDashboard.putNumber("CPM Wheel Position", getWheelPosition());
     SmartDashboard.putNumber("CPM Motor Position", getMotorSensorPosition());
-    SmartDashboard.putNumber("CPM Motor Velocity", m_feederSpinner.getActiveTrajectoryVelocity());
+    SmartDashboard.putNumber("CPM Motor Velocity", getMotorVelocity());
 
     SmartDashboard.putNumber("CPM Target Position", convertMotorPositionToWheelPosition(m_feederSpinner.getActiveTrajectoryPosition()));
     SmartDashboard.putNumber("CPM Target Velocity", convertMotorVelocityToWheelVelocity(m_feederSpinner.getActiveTrajectoryVelocity()));
@@ -290,8 +294,6 @@ public class ControlPanelManipulator extends SubsystemBase {
     SmartDashboard.putNumber("Red", getRawColor().red);
     SmartDashboard.putNumber("Green", getRawColor().green);
     SmartDashboard.putNumber("Blue", getRawColor().blue);
-
-    SmartDashboard.putBoolean("CPM isEngaged", isCPMEngaged());
 
     if(SmartDashboard.getBoolean("Zero CPM Sensor", false)) {
       setMotorSensorPosition(0);

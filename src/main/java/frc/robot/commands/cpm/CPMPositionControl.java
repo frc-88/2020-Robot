@@ -60,7 +60,7 @@ public class CPMPositionControl extends CommandBase {
         System.out.println("\nCPM: In state "+ state);
         System.out.println("\nCPM: Target position: "+ cpm.calcPositionControlTargetPosition());
         cpm.moveWheelToPosition(cpm.calcPositionControlTargetPosition());
-        if (cpm.getWheelVelocity() == 0){ // we've stopped moving
+        if (cpm.getMotorVelocity() == 0){ // The motor has stopped moving,and we motor is in break mode
           state = 3;
           break;
         }
