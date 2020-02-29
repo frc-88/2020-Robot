@@ -60,7 +60,6 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.ControlPanelManipulator;
 import frc.robot.subsystems.Drive;
-import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Sensors;

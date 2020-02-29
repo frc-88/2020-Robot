@@ -60,7 +60,10 @@ public class CPMPositionControl extends CommandBase {
         System.out.println("\nCPM: In state "+ state);
         System.out.println("\nCPM: Target position: "+ cpm.calcPositionControlTargetPosition());
         cpm.moveWheelToPosition(cpm.calcPositionControlTargetPosition());
-        state = 3;
+        if (cpm.getWheelVelocity() == 0){ // we've stopped moving
+          state = 3;
+          break;
+        }
         break;
       case 3: // give control back to the driver + rumble 
         //controller.startHeavyRumble();

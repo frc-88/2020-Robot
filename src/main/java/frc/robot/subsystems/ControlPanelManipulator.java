@@ -19,7 +19,6 @@ import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
 
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
@@ -273,10 +272,6 @@ public class ControlPanelManipulator extends SubsystemBase {
   }
 
   public void moveWheelToPosition(double wheelPosition) {
-    //System.out.println("CPM: convert wheel postion to motor postion"+convertWheelPositionToMotorPosition(wheelPosition));
-    SmartDashboard.putNumber("CPM Convert Wheel pos To Motor pos",convertWheelPositionToMotorPosition(wheelPosition));
-    SmartDashboard.putNumber("CPM Wheel Position",wheelPosition);
-    //m_spinner.set(ControlMode.Position, convertWheelPositionToMotorPosition(wheelPosition));
     m_feederSpinner.set(ControlMode.MotionMagic, convertWheelPositionToMotorPosition(wheelPosition));
   }
 
