@@ -36,9 +36,9 @@ import frc.robot.commands.climber.DisengageRatchets;
 import frc.robot.commands.climber.EngageRatchets;
 import frc.robot.commands.climber.RunClimber;
 import frc.robot.commands.climber.ZeroClimber;
-import frc.robot.commands.cpm.MoveColorWheelToTargetColor;
-import frc.robot.commands.cpm.RotateColorWheel;
-import frc.robot.commands.cpm.SetColorWheelPosition;
+import frc.robot.commands.cpm.CPMPositionControl;
+import frc.robot.commands.cpm.CPMRotationControl;
+import frc.robot.commands.cpm.CPMTestGoToPosition;
 import frc.robot.commands.drive.ArcadeDrive;
 import frc.robot.commands.drive.CalculateDriveEfficiency;
 import frc.robot.commands.drive.TankDrive;
@@ -388,9 +388,9 @@ public class RobotContainer {
     SmartDashboard.putData("FeederTest",new InstantCommand(() -> (new FeederRun(m_cpm, SmartDashboard.getNumber("FeederTestSpeed", 0))).schedule()));
     SmartDashboard.putData("FeederStop", new FeederStop(m_cpm));
 
-    SmartDashboard.putData("CPM SetColorWheelPosition", new SetColorWheelPosition(m_cpm));
-    SmartDashboard.putData("CPM RotationControl", new RotateColorWheel(m_cpm));
-    SmartDashboard.putData("CPM PositionControl", new MoveColorWheelToTargetColor(m_cpm));
+    SmartDashboard.putData("CPM TestColorWheelPositionControl", new CPMTestGoToPosition(m_cpm, SmartDashboard.getNumber("CPM Desired Wheel Position", 0)));
+    SmartDashboard.putData("CPM RotationControl", new CPMRotationControl(m_cpm));
+    SmartDashboard.putData("CPM PositionControl", new CPMPositionControl(m_cpm));
 
     SmartDashboard.putNumber("ShooterTestFlywheelSpeed", 0);
     SmartDashboard.putData("ShooterTestFlywheel", new InstantCommand(() -> (new ShooterFlywheelRun(m_shooter, SmartDashboard.getNumber("ShooterTestFlywheelSpeed", 0))).schedule()));
