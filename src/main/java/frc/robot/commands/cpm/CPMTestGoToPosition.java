@@ -7,7 +7,6 @@
 
 package frc.robot.commands.cpm;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ControlPanelManipulator;
 
@@ -35,31 +34,38 @@ public class CPMTestGoToPosition extends CommandBase {
   @Override
   public void execute() {
     switch(state) {
-      case 0: //wait to be engaged
-        if(cpm.isCPMEngaged()) {
+      case 0: //deploy the CPM
+        cpm.deployCPM();
+        state = 1;
+        break;
+      case 1: 
+        if(cpm.isCPMDeployed()) {
           //controller.startLightRumble();
-          state = 1;
+          state = 2;
+        } else {
+          cpm.deployCPM();
         }
         break;
-      case 1: //freezes drive, move to case 2 when stopped
+      case 2: //freezes drive, move to case 2 when stopped
         //controller.stopRumble();
         // TODO: take control from the driver
         if(cpm.getMotorSensorPosition() !=0){
           cpm.setMotorSensorPosition(0);
-          break;
+        } else {
+          state = 3;
         }
-        state = 2;
         break;
-      case 2: //start spinning motor, spins motor extra distance to target color if already received
+      case 3: //start spinning motor, spins motor extra distance to target color if already received
         cpm.moveWheelToPosition(m_colorWheelRotations);
-        state = 3;
-        break;
-      case 3: //give control back to the driver + rumble 
-        //controller.startHeavyRumble();
-        // TODO: give back control to driver
         state = 4;
         break;
-      case 4: //stop heavy rumble after driver gets control back
+      case 4: //give control back to the driver + rumble 
+        //controller.startHeavyRumble();
+        // TODO: give back control to driver
+        state = 5;
+        break;
+      case 5: //stop heavy rumble after driver gets control back
+        cpm.retractCPM();
         //controller.stopRumble();
         break;
     }
@@ -74,6 +80,6 @@ public class CPMTestGoToPosition extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (state == 4);
+    return (state == 5);
   }
 }

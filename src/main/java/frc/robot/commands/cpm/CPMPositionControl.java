@@ -37,42 +37,50 @@ public class CPMPositionControl extends CommandBase {
     // If we are in phase 3 and we are in contact with the color wheel 
     // then rotate color wheel to the color that we are given by the FMS
     switch(state) {
-      case 0: // wait to be engaged and have a color from the FMS
+      case 0: // wait to have a color from the FMS and deploy the CPM
         System.out.println("\nCPM: In state "+ state);
         if((cpm.getFMSColorTarget().length()>0)) {
           //controller.startLightRumble();
-          state = 1;
+          cpm.deployCPM();
           System.out.println("\nCPM: Has FRC Color - New State" + state);
         }
         break;
-      case 1: // freezes drive, move to case 2 when stopped
+      case 1: // Wait for CPM to be deployed
+        if(cpm.isCPMDeployed()) {
+          //controller.startLightRumble();
+          state = 2;
+        } else {
+          cpm.deployCPM();
+        }
+        break;
+      case 2: // freezes drive, move to case 2 when stopped
         //controller.stopRumble();
         // TODO: take control from the driver
         System.out.println("\nCPM: In state "+ state);
         // Make sure that the sensor postion returns 0 before moving on
         if(cpm.getMotorSensorPosition() !=0){
           cpm.setMotorSensorPosition(0);
-          break;
+        } else {
+          state = 3;
         }
-        state = 2;
         break;
-      case 2: // start spinning motor, spins motor extra distance to target color if already received
+      case 3: // start spinning motor, spins motor extra distance to target color if already received
         System.out.println("\nCPM: In state "+ state);
         System.out.println("\nCPM: Target position: "+ cpm.calcPositionControlTargetPosition());
         cpm.moveWheelToPosition(cpm.calcPositionControlTargetPosition());
-        if (cpm.getMotorVelocity() == 0){ // The motor has stopped moving,and we motor is in break mode
-          state = 3;
-          break;
+        if (cpm.getMotorVelocity() == 0){ // motor has stopped moving, motor is in break mode, proceed
+          state = 4;
         }
         break;
-      case 3: // give control back to the driver + rumble 
+      case 4: // give control back to the driver + rumble 
         //controller.startHeavyRumble();
         System.out.println("\nCPM: MoveColorWheelToTargetColor in state: "+ state);
         // TODO: give back control to driver
         state = 4;
         break;
-      case 4: // stop heavy rumble after driver gets control back
+      case 5: // stop heavy rumble after driver gets control back
         //controller.stopRumble();
+        cpm.retractCPM();
         System.out.println("\nCPM: MoveColorWheelToTargetColor in state: "+ state);
         break;
     }
@@ -86,6 +94,6 @@ public class CPMPositionControl extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (state == 4);
+    return (state == 5);
   }
 }

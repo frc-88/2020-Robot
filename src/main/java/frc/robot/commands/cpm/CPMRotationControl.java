@@ -19,7 +19,7 @@ public class CPMRotationControl extends CommandBase {
   private double directionCorrection = 3./8.; //if calcPositionControlTargetPosition returns a negative value
   
   /**
-   * Creates a new ReportColor.
+   * Creates a new CPMRotationControl
    */
 
   public CPMRotationControl(ControlPanelManipulator cpm) {
@@ -32,37 +32,43 @@ public class CPMRotationControl extends CommandBase {
   @Override
   public void initialize() {
     state = 0;
-    // TODO: deploy the CPM
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     // If we are in phase 2 and we are in contact with the color wheel 
-    // then rotate color wheel 4 times and rumble the controller when done
+    // then rotate color wheel x times and rumble the controller when done
     // If not phase 2 then just exit and rumble the controller
     System.out.println("CPM: Executing the Rotate Color Wheel command");
     
     switch(state) {
-      case 0: //wait to be engaged
+      case 0: // Deploy the CPM
         System.out.println("CPM RotateColorWheel State: "+ state);
-        if(cpm.isCPMEngaged()) {
+        cpm.deployCPM();
+        //controller.startLightRumble();
+        state = 1;
+        break;
+      case 1: 
+        if(cpm.isCPMDeployed()) {
           //controller.startLightRumble();
-          state = 1;
+          state = 2;
+        } else {
+          cpm.deployCPM();
         }
         break;
-      case 1: //freezes drive, move to case 2 when stopped
+      case 2: //freezes drive, move to case 2 when stopped
         System.out.println("\nCPM RotateColorWheel State: "+ state);
         //controller.stopRumble();
         // TODO: take control from the driver
         if(cpm.getMotorSensorPosition() !=0){
           cpm.setMotorSensorPosition(0);
-          break;
+        } else {
+          cpm.getColor();
+          state = 3;
         }
-        cpm.getColor();
-        state = 2;
         break;
-      case 2: //start spinning motor, spins motor extra distance to target color if already received
+      case 3: //start spinning motor, spins motor extra distance to target color if already received
         System.out.println("\nCPM RotateColorWheel State: "+ state);
         targetColor = cpm.getFMSColorTarget();
         finalRotationDistance = Constants.CPM_PHASE_2_WHEEL_ROTATIONS;
@@ -78,15 +84,16 @@ public class CPMRotationControl extends CommandBase {
         }
         System.out.println("\nCPM target distance: "+ finalRotationDistance);
         cpm.moveWheelToPosition(finalRotationDistance);
-        state = 3;
+        state = 4;
         break;
-      case 3: //give control back to the driver + rumble 
+      case 4: //give control back to the driver + rumble 
         System.out.println("\nCPM RotateColorWheel State: "+ state);
         //controller.startHeavyRumble();
         // TODO: give back control to driver
-        state = 4;
+        state = 5;
         break;
-      case 4: //stop heavy rumble after driver gets control back
+      case 5: //stop heavy rumble after driver gets control back
+        cpm.retractCPM();
         System.out.println("\nCPM RotateColorWheel State: "+ state);
         //controller.stopRumble();
         break;
@@ -102,6 +109,6 @@ public class CPMRotationControl extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (state == 4);
+    return (state == 5);
   }
 }

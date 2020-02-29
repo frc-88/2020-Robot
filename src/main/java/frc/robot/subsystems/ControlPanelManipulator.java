@@ -127,6 +127,10 @@ public class ControlPanelManipulator extends SubsystemBase {
   public void deployCPM() {
     m_deployer.set(Value.kForward);
   }
+
+  public boolean isCPMDeployed() {
+    return m_deployer.get() == Value.kForward;
+  }
   
   public boolean isCPMEngaged() {
     //return m_contactSensor.get();

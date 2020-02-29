@@ -38,7 +38,9 @@ import frc.robot.commands.climber.RunClimber;
 import frc.robot.commands.climber.ZeroClimber;
 import frc.robot.commands.cpm.CPMPositionControl;
 import frc.robot.commands.cpm.CPMRotationControl;
+import frc.robot.commands.cpm.CPMTestDeploy;
 import frc.robot.commands.cpm.CPMTestGoToPosition;
+import frc.robot.commands.cpm.CPMTestRetract;
 import frc.robot.commands.drive.ArcadeDrive;
 import frc.robot.commands.drive.CalculateDriveEfficiency;
 import frc.robot.commands.drive.TankDrive;
@@ -368,6 +370,7 @@ public class RobotContainer {
     SmartDashboard.putData("Stop Intake", new StopIntake(m_intake));
     SmartDashboard.putData("Eject Intake", new RunIntake(m_intake, -1));
 
+    // Hopper
     SmartDashboard.putNumber("Hopper Left Speed", 0);
     SmartDashboard.putNumber("Hopper Right Speed", 0);
     SmartDashboard.putData("Hopper Intake Mode", new HopperIntakeMode(m_hopper));
@@ -375,6 +378,7 @@ public class RobotContainer {
     SmartDashboard.putData("Hopper Stop", new HopperStop(m_hopper));
     SmartDashboard.putData("Hopper Test", new InstantCommand(() -> (new HopperTest(m_hopper, SmartDashboard.getNumber("Hopper Left Speed", 0), SmartDashboard.getNumber("Hopper Right Speed", 0))).schedule()));
 
+    // Arm
     SmartDashboard.putData("Arm Calibrate", new CalibrateArm(m_arm));
     SmartDashboard.putNumber("ArmTestPosition", 0);
     SmartDashboard.putData("Arm to Position", new InstantCommand(() -> new ArmMotionMagic(m_arm, SmartDashboard.getNumber("ArmTestPosition", 0)).schedule()));
@@ -383,14 +387,19 @@ public class RobotContainer {
     SmartDashboard.putData("Arm Hold Position", new InstantCommand(() -> new ArmMotionMagic(m_arm, m_arm.getCurrentArmPosition()).schedule(), m_arm));
     SmartDashboard.putData("Arm Test Brake Mode", new TestBrakeMode(m_arm));
     
+    // Feeder
     SmartDashboard.putNumber("FeederTestSpeed", 0);
     SmartDashboard.putData("FeederTest",new InstantCommand(() -> (new FeederRun(m_cpm, SmartDashboard.getNumber("FeederTestSpeed", 0))).schedule()));
     SmartDashboard.putData("FeederStop", new FeederStop(m_cpm));
 
-    SmartDashboard.putData("CPM TestColorWheelPositionControl", new CPMTestGoToPosition(m_cpm, SmartDashboard.getNumber("CPM Desired Wheel Position", 0)));
+    // CPM
     SmartDashboard.putData("CPM RotationControl", new CPMRotationControl(m_cpm));
     SmartDashboard.putData("CPM PositionControl", new CPMPositionControl(m_cpm));
+    SmartDashboard.putData("CPM Test Deploy", new CPMTestDeploy(m_cpm));
+    SmartDashboard.putData("CPM Test Retract", new CPMTestRetract(m_cpm));
+    SmartDashboard.putData("CPM TestColorWheelPositionControl", new CPMTestGoToPosition(m_cpm, SmartDashboard.getNumber("CPM Desired Wheel Position", 0)));
 
+    // Shooter
     SmartDashboard.putNumber("ShooterTestFlywheelSpeed", 0);
     SmartDashboard.putData("ShooterTestFlywheel", new InstantCommand(() -> (new ShooterFlywheelRun(m_shooter, SmartDashboard.getNumber("ShooterTestFlywheelSpeed", 0))).schedule()));
     SmartDashboard.putData("ShooterStopFlywheel", new ShooterFlywheelRun(m_shooter, 0));
