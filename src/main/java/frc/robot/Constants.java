@@ -94,8 +94,8 @@ public final class Constants {
 
 	// Sensor constants
 	public static final int SHOOTER_BALL_SENSOR_ID = 0;
-	public static final double LIMELIGHT_HEIGHT = 21.0;
-	public static final double LIMELIGHT_ANGLE = 21.0; // Rough measure on 2-23
+	public static final double LIMELIGHT_HEIGHT = 19.50;
+	public static final double LIMELIGHT_ANGLE = 19.96; // Rough measure on 2-23
 	public static final double LIMELIGHT_CENTER_OFFSET = 8.0;
 
 	// Field constants
