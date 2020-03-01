@@ -42,6 +42,7 @@ import frc.robot.commands.climber.RunClimber;
 import frc.robot.commands.climber.StopClimber;
 import frc.robot.commands.climber.ZeroClimber;
 import frc.robot.commands.drive.ArcadeDrive;
+import frc.robot.commands.drive.BasicAutoDrive;
 import frc.robot.commands.drive.CalculateDriveEfficiency;
 import frc.robot.commands.drive.TankDrive;
 import frc.robot.commands.drive.TestDriveStaticFriction;
@@ -167,7 +168,8 @@ public class RobotContainer {
         new ParallelCommandGroup(
           new HopperShootMode(m_hopper), 
           new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
-          new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()), new FeederRun(m_feeder, 1.0)
+          new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()), 
+          new FeederRun(m_feeder, 1.0)
         )
       ),
       new SequentialCommandGroup(
@@ -464,6 +466,9 @@ public class RobotContainer {
 
     SmartDashboard.putData("Turn To Limelight", new TurnToLimelight(m_drive, m_sensors));
     SmartDashboard.putData("Shoot Limelight", new ShooterRunFromLimelight(m_shooter));
+
+    SmartDashboard.putData("Test Basic Auto 1", new BasicAutoDrive(m_drive, -10, -10, 8));
+    SmartDashboard.putData("Test Basic Auto 2", new BasicAutoDrive(m_drive, -1, -6, 8));
   }
 
 
