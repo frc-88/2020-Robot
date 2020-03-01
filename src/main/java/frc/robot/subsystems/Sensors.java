@@ -176,6 +176,14 @@ public class Sensors extends SubsystemBase {
     return -limelight.getTargetHorizontalOffsetAngle();
   }
 
+  public double getShooterAngle() {
+    double distance = getDistanceToTarget();
+    double tx = -limelight.getTargetHorizontalOffsetAngle();
+
+    return Math.atan( ( ( distance * Math.sin(Math.toRadians(tx)) ) + Constants.LIMELIGHT_CENTER_OFFSET ) /
+                      ( distance * Math.cos(Math.toRadians(tx)) ) );
+  }
+
   public boolean doesLimelightHaveTarget() {
     return limelight.hasTarget();
   }
@@ -194,6 +202,7 @@ public class Sensors extends SubsystemBase {
     SmartDashboard.putNumber("Limelight Distance", getDistanceToTarget());
     SmartDashboard.putNumber("Limelight H-Angle", getAngleToTarget());
     SmartDashboard.putNumber("Limelight V-Angle", limelight.getTargetVerticalOffsetAngle());
+    SmartDashboard.putNumber("Limelight Shooter Angle", getShooterAngle());
 
     // Beam breaks
     SmartDashboard.putBoolean("Shooter Ball Sensor", shooterBallSensor.get());
