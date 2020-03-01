@@ -120,6 +120,7 @@ public class Limelight {
     }
 
     public void ledOff() {
+        m_ledOn = false;
         m_ledMode.setNumber(1);
     }
 
@@ -128,6 +129,7 @@ public class Limelight {
     }
 
     public void ledOn() {
+        m_ledOn = true;
         m_ledMode.setNumber(3);
     }
 
