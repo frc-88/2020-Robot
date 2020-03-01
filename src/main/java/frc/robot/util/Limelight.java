@@ -28,6 +28,8 @@ public class Limelight {
     private NetworkTableEntry m_pipeline;
     private NetworkTableEntry m_getpipe;
 
+    private boolean m_ledOn;
+
     /**
      * Construct a Limelight instance with the default NetworkTables table name.
      */
@@ -49,6 +51,7 @@ public class Limelight {
         m_ledMode = m_table.getEntry("ledMode");
         m_stream = m_table.getEntry("stream");
         m_camMode = m_table.getEntry("camMode");
+        m_ledOn = false;
 
         m_stream.setNumber(0);
         setPipeline(0);
@@ -69,7 +72,7 @@ public class Limelight {
      * @return True if the Limelight has a recognized target.
      */
     public boolean hasTarget() {
-        return m_tv.getDouble(0.0) == 1.0;
+        return m_ledOn && (m_tv.getDouble(0.0) == 1.0);
     }
 
     /**
@@ -79,7 +82,7 @@ public class Limelight {
      * @return A measurement in degrees in the range [-27, 27]
      */
     public double getTargetHorizontalOffsetAngle() {
-        return m_tx.getDouble(0.0);
+        return hasTarget() ? m_tx.getDouble(0.0) : 0.0;
     }
 
     /**
@@ -89,7 +92,7 @@ public class Limelight {
      * @return A measurement in degrees in the range [-20.5, 20.5]
      */
     public double getTargetVerticalOffsetAngle() {
-        return m_ty.getDouble(0.0);
+        return hasTarget() ? m_ty.getDouble(0.0) : 0.0;
     }
 
     /**
@@ -99,7 +102,7 @@ public class Limelight {
      * @return A percentage in the range of [0, 1]
      */
     public double getTargetArea() {
-        return m_ta.getDouble(0.0);
+        return hasTarget() ? m_ta.getDouble(0.0) : 0.0;
     }
 
     /**
@@ -108,7 +111,7 @@ public class Limelight {
      * @return -90 degrees to 0 degrees
      */
     public double getTargetSkew() {
-        return m_ts.getDouble(0.0);
+        return hasTarget() ? m_ts.getDouble(0.0) : 0.0;
     }
 
     // LED control
