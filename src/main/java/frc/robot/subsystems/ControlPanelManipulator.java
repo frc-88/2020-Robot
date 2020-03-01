@@ -138,8 +138,6 @@ public class ControlPanelManipulator extends SubsystemBase {
   }
 
   public String getColor() {
-    // Feeder
-    retractCPM();
 
     // CPM
     Color detectedColor = m_colorSensor.getColor();

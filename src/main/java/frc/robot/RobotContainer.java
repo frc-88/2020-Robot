@@ -387,7 +387,8 @@ public class RobotContainer {
     SmartDashboard.putData("Arm to Layup", new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()));
     SmartDashboard.putData("Arm Hold Position", new InstantCommand(() -> new ArmMotionMagic(m_arm, m_arm.getCurrentArmPosition()).schedule(), m_arm));
     SmartDashboard.putData("Arm Test Brake Mode", new TestBrakeMode(m_arm));
-    
+    SmartDashboard.putData("Arm Full up", new ArmFullUp(m_arm));
+
     // Feeder
     SmartDashboard.putNumber("FeederTestSpeed", 0);
     SmartDashboard.putData("FeederTest",new InstantCommand(() -> (new FeederRun(m_cpm, SmartDashboard.getNumber("FeederTestSpeed", 0))).schedule()));
