@@ -16,7 +16,7 @@ public class TurnToLimelight extends CommandBase {
 
   private static final boolean LOG_DEBUG = true;
 
-  private static final double TOLERANCE = 0.5;
+  private static final double TOLERANCE = 0.75;
   private static final int TOLERANCE_TICKS = 5;
   private static final double TOLERANCE_SPEED = 5;
 
@@ -52,6 +52,7 @@ public class TurnToLimelight extends CommandBase {
     SmartDashboard.putBoolean("LimelightHeadingOnTarget", drive.isOnLimelightTarget());
     if (drive.isOnLimelightTarget()) {
       if (LOG_DEBUG) {
+        drive.turnToHeading(currentHeadingTarget);
         System.out.println("On limelight target");
       }
       return;
@@ -60,11 +61,12 @@ public class TurnToLimelight extends CommandBase {
       if (LOG_DEBUG) {
         System.out.println("On navx target");
       }
-      if (sensors.getAngleToTarget() < TOLERANCE * 2) {
-        drive.setOnLimelightTarget(true);
+      if (!sensors.doesLimelightHaveTarget()) {
+        drive.basicDrive(0,0);
         return;
       }
-      if (!sensors.doesLimelightHaveTarget()) {
+      if (Math.abs(sensors.getAngleToTarget()) < TOLERANCE) {
+        drive.setOnLimelightTarget(true);
         return;
       }
       firstRun = false;
@@ -90,6 +92,7 @@ public class TurnToLimelight extends CommandBase {
   }
 
   private boolean isOnNavxTarget() {
+    System.out.println(sensors.navx.getYaw() - currentHeadingTarget);
     if (Math.abs(sensors.navx.getYaw() - currentHeadingTarget) <= TOLERANCE && sensors.navx.getYawRate() < TOLERANCE_SPEED) {
       ticksOnTarget++;
     } else if (Math.abs(sensors.navx.getYaw() - currentHeadingTarget) > TOLERANCE) {
