@@ -7,17 +7,6 @@
 
 package frc.robot;
 
-
-/**
- * The Constants class provides a convenient place for teams to hold robot-wide
- * numerical or boolean constants. This class should not be used for any other
- * purpose. All constants should be declared globally (i.e. public static). Do
- * not put anything functional in this class.
- *
- * <p>
- * It is advised to statically import this class (or one of its inner classes)
- * wherever the constants are needed, to reduce verbosity.
- */
 public final class Constants {
  
 	// CPM constants
@@ -45,7 +34,7 @@ public final class Constants {
 	public static final int CLIMBER_PNEUMATICS_FORWARD = 4;
 	public static final int CLIMBER_PNEUMATICS_REVERSE = 3;
 	public static final int CLIMBER_MIN_POSITION = 0;
-	public static final int CLIMBER_MAX_POSITION = (int) (30 * 8.33 * 2048);
+	public static final int CLIMBER_MAX_POSITION = (int) (30 * 9 * 2048);
 	public static final int CLIMBER_EXPONENTIAL = 2;
 	public static final double CLIMBER_CONTROLLER_DEADZONE = 0.12;
 	
@@ -53,7 +42,7 @@ public final class Constants {
 	public static final int SHOOTER_FLYWHEEL_MASTER = 12;
 	public static final int SHOOTER_FLYWHEEL_FOLLOWER = 3;
 	public static final double SHOOTER_FLYWHEEL_MAX_SPEED = 1;
-	public static final double SHOOTER_FLYWHEEL_TOLERANCE = 25;
+	public static final double SHOOTER_FLYWHEEL_TOLERANCE = 100;
 	public static final int SHOOTER_FLYWHEEL_SPEED_EXP = 1;
 	public static final double SHOOTER_MOTOR_TO_FLYWHEEL_RATIO = 1.5;
 	public static final int SHOOTER_MOTOR_TICKS_PER_ROTATION = 2048;
@@ -79,12 +68,32 @@ public final class Constants {
 	public static final double ARM_HIGH_LIMIT = 93;
 	public static final double ARM_ENCODER_SHIFT = 15;
 	public static final int ARM_SPEED_EXP = 2;
-	public static final double ARM_TOLERANCE = 0.5;
+	public static final double ARM_TOLERANCE = 5;
 
 	// Intake constants
 	public static final int ROLLER_ID = 11;
 	public static final int INTAKE_DEPLOY_PISTON = 0;
 	public static final int INTAKE_RETRACT_PISTON = 7;
+
+	// Sensor constants
+	public static final String PCC_CAMERA_NAME = "PCC";
+	public static final String PCC_STREAM_NAME = "PCC";
+	public static final int PCC_CAMERA_ID = 1;
+	public static final int PCC_IMAGE_WIDTH = 640;
+	public static final int PCC_IMAGE_HEIGHT = 480;
+	public static final int PCC_BLUR = 10;
+	public static final int PCC_HUE_LO = 10;
+	public static final int PCC_HUE_HI = 80;
+	public static final int PCC_SAT_LO = 20;
+	public static final int PCC_SAT_HI = 255;
+	public static final int PCC_VAL_LO = 20;
+	public static final int PCC_VAL_HI = 255;
+
+	public static final int PCC_CHAMBER_X = 200;
+	public static final int PCC_CHAMBER_Y = 285;
+	public static final int PCC_CHAMBER_WIDTH = 185;
+	public static final int PCC_CHAMBER_HEIGHT = 185;
+	public static final double PCC_CHAMBER_THRESHOLD = 30000;
 
 	// Hopper constants
 	public static final int LEFT_HOPPER = 9;
@@ -93,12 +102,11 @@ public final class Constants {
 	public static final double HOPPER_INTAKE_PERCENT_OUTPUT = 0.5;
 
 	// Sensor constants
-	public static final double LIMELIGHT_HEIGHT = 21.0;
-	public static final double LIMELIGHT_ANGLE = 5.0; // TODO
-	public static final double LIMELIGHT_CENTER_OFFSET = 8.0;
+	public static final int SHOOTER_BALL_SENSOR_ID = 0;
 
 	// Field constants
 	public static final double FIELD_PORT_TARGET_HEIGHT = 90.75;
+	public static final double FIELD_INNER_PORT_OFFSET = 29.25;
 
 	/********************************************************************
     * 

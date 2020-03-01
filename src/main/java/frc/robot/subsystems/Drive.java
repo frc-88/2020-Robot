@@ -51,6 +51,8 @@ public class Drive extends SubsystemBase {
   private DoublePreferenceConstant commandDownshiftSpeed;
   private DoublePreferenceConstant commandDownshiftCommandValue;
 
+  private boolean isOnLimelightTarget = false;
+
   // Constants for negative inertia
   private static final double LARGE_TURN_RATE_THRESHOLD = 0.65;
   private static final double INCREASE_TURN_SCALAR = 2;
@@ -209,6 +211,11 @@ public class Drive extends SubsystemBase {
     return m_leftTransmission.isInHighGear();
   }
 
+  public void resetEncoderPositions() {
+    m_leftEncoder.setPosition(0);
+    m_rightEncoder.setPosition(0);
+  }
+
   public double getLeftPosition() {
     return m_leftDrive.getScaledSensorPosition();
   }
@@ -241,6 +248,14 @@ public class Drive extends SubsystemBase {
 
   public void setMaxSpeed(double maxSpeed) {
     m_maxSpeed = maxSpeed;
+  }
+
+  public void setOnLimelightTarget(boolean onLimelightTarget) {
+    this.isOnLimelightTarget = onLimelightTarget;
+  }
+
+  public boolean isOnLimelightTarget() {
+    return this.isOnLimelightTarget;
   }
 
   // Negative inertia! The idea is that the robot has some inertia
@@ -308,6 +323,7 @@ public class Drive extends SubsystemBase {
     SmartDashboard.putNumber("R Drive Voltage", m_rightDrive.getMotorOutputVoltage());
     SmartDashboard.putBoolean("In High Gear?", isInHighGear());
     SmartDashboard.putNumber("Max Drive Speed", m_maxSpeed);
+    SmartDashboard.putBoolean("LimelightHeadingOnTarget", isOnLimelightTarget);
 
     if (DriverStation.getInstance().isEnabled()) {
       this.setBrakeMode();

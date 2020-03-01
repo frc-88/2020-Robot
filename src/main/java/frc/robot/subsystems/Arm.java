@@ -9,8 +9,6 @@ package frc.robot.subsystems;
 
 import java.util.function.BooleanSupplier;
 
-import com.ctre.phoenix.CANifier;
-import com.ctre.phoenix.VelocityPeriod;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
@@ -49,6 +47,8 @@ public class Arm extends SubsystemBase {
   private int remoteSensorID = 0;
 
   private int armOffsetTicks = 0;
+
+  private double currentSetpoint = 0;
 
   BooleanSupplier coastEnabled;
 
@@ -91,13 +91,13 @@ public class Arm extends SubsystemBase {
     m_rotator.config_kP(0, rotator_kP.getValue());
     rotator_kI = new DoublePreferenceConstant("Arm rotator kI", 0.0003);
     rotator_kI.addChangeHandler((Double kI) -> m_rotator.config_kI(0, kI));
-    m_rotator.config_kP(0, rotator_kI.getValue());
+    m_rotator.config_kI(0, rotator_kI.getValue());
     rotator_kD = new DoublePreferenceConstant("Arm rotator kD", 0.1);
     rotator_kD.addChangeHandler((Double kD) -> m_rotator.config_kD(0, kD));
-    m_rotator.config_kP(0, rotator_kD.getValue());
+    m_rotator.config_kD(0, rotator_kD.getValue());
     rotator_kF = new DoublePreferenceConstant("Arm rotator kF", 2.2);
     rotator_kF.addChangeHandler((Double kF) -> m_rotator.config_kF(0, kF));
-    m_rotator.config_kP(0, rotator_kF.getValue());
+    m_rotator.config_kF(0, rotator_kF.getValue());
 
     m_rotator.configMotionCruiseVelocity(convertArmVelocityToEncoderVelocity(MAXIMUM_ARM_VELOCITY.getValue()));
     m_rotator.configMotionAcceleration(convertArmVelocityToEncoderVelocity(MAXIMUM_ARM_ACCELERATION.getValue()));
@@ -108,6 +108,7 @@ public class Arm extends SubsystemBase {
   }
 
   public void setArmPosition(double armPosition) {
+    this.currentSetpoint = armPosition;
     m_rotator.set(ControlMode.MotionMagic, convertArmDegreesToEncoderTicks(armPosition));
   }
 
@@ -166,7 +167,7 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean isOnTarget() {
-    return Math.abs(convertEncoderTicksToArmDegrees(m_rotator.getClosedLoopError())) < Constants.ARM_TOLERANCE;
+    return Math.abs(this.currentSetpoint - getCurrentArmPosition()) < Constants.ARM_TOLERANCE;
   }
 
   /**
@@ -232,6 +233,8 @@ public class Arm extends SubsystemBase {
 
     SmartDashboard.putNumber("Arm Current Use", m_rotator.getSupplyCurrent());
     SmartDashboard.putNumber("Arm Abs Encoder Pos", m_armEncoder.getAbsolutePosition() / Constants.ENCODER_TO_ARM_RATIO);
+
+    SmartDashboard.putBoolean("Arm Up Limit Switch", m_rotator.isFwdLimitSwitchClosed() == 1);
 
     if(coastEnabled.getAsBoolean() && DriverStation.getInstance().isDisabled()) {
       setToCoastMode();

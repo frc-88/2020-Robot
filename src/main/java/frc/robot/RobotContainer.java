@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.BooleanSupplier;
 
 import java.util.function.DoubleSupplier;
@@ -21,6 +23,8 @@ import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.WaitForDriveAimed;
 import frc.robot.commands.WaitForShooterReady;
 import frc.robot.commands.Intake.DeployIntake;
 import frc.robot.commands.Intake.RetractIntake;
@@ -35,6 +39,7 @@ import frc.robot.commands.arm.TestBrakeMode;
 import frc.robot.commands.climber.DisengageRatchets;
 import frc.robot.commands.climber.EngageRatchets;
 import frc.robot.commands.climber.RunClimber;
+import frc.robot.commands.climber.StopClimber;
 import frc.robot.commands.climber.ZeroClimber;
 import frc.robot.commands.cpm.CPMPositionControl;
 import frc.robot.commands.cpm.CPMRotationControl;
@@ -43,19 +48,24 @@ import frc.robot.commands.cpm.CPMTestGoToPosition;
 import frc.robot.commands.cpm.CPMTestRetract;
 import frc.robot.commands.cpm.CPMTinyCorrectionRotation;
 import frc.robot.commands.drive.ArcadeDrive;
+import frc.robot.commands.drive.BasicAutoDrive;
 import frc.robot.commands.drive.CalculateDriveEfficiency;
 import frc.robot.commands.drive.TankDrive;
 import frc.robot.commands.drive.TestDriveStaticFriction;
 import frc.robot.commands.drive.TurnToHeading;
+import frc.robot.commands.drive.TurnToLimelight;
 import frc.robot.commands.feeder.FeederRun;
 import frc.robot.commands.feeder.FeederStop;
 import frc.robot.commands.hopper.HopperEject;
+import frc.robot.commands.hopper.HopperIntakeFinishMode;
 import frc.robot.commands.hopper.HopperIntakeMode;
 import frc.robot.commands.hopper.HopperShootMode;
+import frc.robot.commands.hopper.HopperShootUnjamMode;
 import frc.robot.commands.hopper.HopperStop;
 import frc.robot.commands.hopper.HopperTest;
 import frc.robot.commands.shooter.ShooterFlywheelRun;
 import frc.robot.commands.shooter.ShooterFlywheelRunBasic;
+import frc.robot.commands.shooter.ShooterRunFromLimelight;
 import frc.robot.commands.shooter.ShooterStop;
 import frc.robot.commands.vision.LimelightToggle;
 import frc.robot.driveutil.DriveUtils;
@@ -85,6 +95,7 @@ public class RobotContainer {
 
   private final DoublePreferenceConstant m_armLayupAngle = new DoublePreferenceConstant("Arm Layup Angle", 45);
   private final DoublePreferenceConstant m_shooterLayupSpeed = new DoublePreferenceConstant("Shooter Layup Speed", 2500);
+  private final DoublePreferenceConstant m_shooterUpSpeed = new DoublePreferenceConstant("Shooter Up Speed", 5100);
 
 
   /***
@@ -112,13 +123,13 @@ public class RobotContainer {
   *                                                                                                                      
   */
 
-  public final Sensors m_sensors = new Sensors();
+  private final Sensors m_sensors = new Sensors(m_driverController::isButtonAPressed);
   private final Drive m_drive = new Drive(m_sensors);
   private final Climber m_climber = new Climber();
   private final Arm m_arm = new Arm(m_driverController::isButtonStartPressed);
   //private final Feeder m_feederSpinner = new Feeder();
   private final Hopper m_hopper = new Hopper();
-  private final Shooter m_shooter = new Shooter();
+  private final Shooter m_shooter = new Shooter(m_sensors);
   private final ControlPanelManipulator m_cpm = new ControlPanelManipulator();
   private final Intake m_intake = new Intake();
   // private final ControlPanelManipulator m_cpm = new ControlPanelManipulator();
@@ -133,7 +144,6 @@ public class RobotContainer {
   *                                                                                             
   */
   
-  private final CommandBase m_autoCommand = new WaitCommand(1);
   private CommandBase m_arcadeDrive;
   private CommandBase m_testArcadeDrive;
 
@@ -146,7 +156,7 @@ public class RobotContainer {
     ),
     new ParallelCommandGroup(
       new ArmFullUp(m_arm),
-      new ShooterFlywheelRun(m_shooter, 5000),
+      new ShooterRunFromLimelight(m_shooter),
       new LimelightToggle(m_sensors, true)
     ),
     m_buttonBox.button7::get);
@@ -154,7 +164,7 @@ public class RobotContainer {
   // shoot - runs shooter, moves arm to shooting angle, waits to be ready
   //    when ready, run feeder
   //    TODO - freeze driver control and aim using vision data
-  private final CommandBase m_shoot = 
+  private final CommandBase m_shoot =
     new ConditionalCommand(
       new SequentialCommandGroup(
         new ParallelRaceGroup(
@@ -165,18 +175,23 @@ public class RobotContainer {
         new ParallelCommandGroup(
           new HopperShootMode(m_hopper), 
           new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
-          new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()), new FeederRun(m_cpm, 1.0)
+          new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()), 
+          new FeederRun(m_cpm, 1.0)
         )
       ),
       new SequentialCommandGroup(
         new ParallelRaceGroup(
           new ArmFullUp(m_arm), 
-          new ShooterFlywheelRun(m_shooter, 5000),
-          new WaitForShooterReady(m_arm, m_shooter)),
+          new ShooterRunFromLimelight(m_shooter),
+          new ParallelCommandGroup(
+            new WaitForShooterReady(m_arm, m_shooter),
+            new WaitForDriveAimed(m_drive)
+          )
+        ),
         new ParallelCommandGroup(
           new HopperShootMode(m_hopper), 
           new ArmFullUp(m_arm),
-          new ShooterFlywheelRun(m_shooter, 5000), 
+          new ShooterRunFromLimelight(m_shooter), 
           new FeederRun(m_cpm, 1.0)
         )
       ),
@@ -203,12 +218,12 @@ public class RobotContainer {
             new WaitCommand(1),
             new FeederStop(m_cpm), 
             new ArmFullUp(m_arm),
-            new ShooterFlywheelRun(m_shooter, 5000)),
+            new ShooterRunFromLimelight(m_shooter)),
         new ParallelCommandGroup(
           new HopperStop(m_hopper),
           new FeederStop(m_cpm), 
           new ArmFullUp(m_arm),
-          new ShooterFlywheelRun(m_shooter, 5000))),
+          new ShooterRunFromLimelight(m_shooter))),
       m_buttonBox.button7::get);
 
   // stopShoot - stows arm, stops shooter, stops feeder, turns limelight off
@@ -225,8 +240,7 @@ public class RobotContainer {
     new SequentialCommandGroup(
       new DeployIntake(m_intake),
       new ParallelCommandGroup(
-        new RunIntake(m_intake, 1.), 
-        new HopperIntakeMode(m_hopper)
+        new RunIntake(m_intake, 1.)
       )
     );
 
@@ -235,12 +249,10 @@ public class RobotContainer {
     new SequentialCommandGroup(
       new ParallelDeadlineGroup(
         new WaitCommand(0.75),
-        new HopperShootMode(m_hopper, Constants.HOPPER_INTAKE_PERCENT_OUTPUT), 
         new RetractIntake(m_intake)
       ),
       new ParallelCommandGroup(
-        new StopIntake(m_intake), 
-        new HopperStop(m_hopper)
+        new StopIntake(m_intake)
       )
     );
 
@@ -250,7 +262,7 @@ public class RobotContainer {
       new DeployIntake(m_intake),
       new ParallelCommandGroup(
         new RunIntake(m_intake, -1.), 
-        new HopperShootMode(m_hopper, -1.),
+        new HopperEject(m_hopper, 1.),
         new FeederRun(m_cpm, -1.)
       )
     );
@@ -267,7 +279,46 @@ public class RobotContainer {
       new StopIntake(m_intake)
     );
 
+  // The currently running FASH (Feeder/Arm/Shooter/Hopper) combined command
+  private CommandBase m_currentFASHCommand = m_stopShoot;
   
+  private final CommandBase m_autoDoNothing = new ParallelCommandGroup(
+    new SequentialCommandGroup(
+      new ParallelDeadlineGroup(
+        new WaitCommand(SmartDashboard.getNumber("Auto Drive Wait", 10)),
+        new ArcadeDrive(m_drive, () -> 0, () -> 0, () -> false, () -> Constants.MAX_SPEED_HIGH)
+      )
+    ),
+    new ShooterStop(m_shooter),
+    new FeederStop(m_cpm),
+    new HopperStop(m_hopper),
+    new StopIntake(m_intake),
+    new SequentialCommandGroup(
+      new DisengageRatchets(m_climber),
+      new ZeroClimber(m_climber),
+      new StopClimber(m_climber)
+    )
+  );
+
+  private CommandBase m_autoCommand = m_autoDoNothing;
+  private class ButtonAutoPair {
+    private Trigger button;
+    private CommandBase auto;
+
+    public ButtonAutoPair(Trigger button, CommandBase auto) {
+      this.button = button;
+      this.auto = auto;
+    }
+
+    public void check() {
+      if (this.button.get()) {
+        m_autoCommand = this.auto;
+      }
+    }
+  }
+  private final List<ButtonAutoPair> autoSelectors = Arrays.asList(
+    new ButtonAutoPair(m_buttonBox.button2, m_autoDoNothing)
+  );
 
   /***
   *      ______   ______   .__   __.      _______.___________..______       __    __    ______ .___________.  ______   .______      
@@ -309,6 +360,8 @@ public class RobotContainer {
     CommandBase m_tankDrive = new TankDrive(m_drive, tankDriveLeftSupplier, tankDriveRightSupplier);
     SmartDashboard.putData("Tank Drive", m_tankDrive);
 
+    m_driverController.buttonA.whileHeld(new TurnToLimelight(m_drive, m_sensors));
+
     // m_driverController.buttonB.whileHeld(m_reportColor);
     // m_driverController.buttonA.whenPressed(m_moveColorWheelToTargetColor);
     // m_driverController.buttonY.whenPressed(m_rotateColorWheel);
@@ -319,17 +372,29 @@ public class RobotContainer {
 
 
   private void configureButtonBox() {
-    m_buttonBox.button1.whileHeld(m_shoot);
-    m_buttonBox.button1.whenReleased(m_pauseShoot);
-    m_buttonBox.button2.whenPressed(m_prepShoot);
-    m_buttonBox.button3.whenPressed(m_stopShoot);
-    m_buttonBox.button4.whenPressed(m_activateIntake);
-    m_buttonBox.button4.whenReleased(m_deactivateIntake);
-    m_buttonBox.button6.whenPressed(m_regurgitate);
-    m_buttonBox.button6.whenReleased(m_regurgitateStop);
+    m_buttonBox.button2.whenPressed(m_shoot);
+    m_buttonBox.button2.whenPressed(new InstantCommand(() -> m_currentFASHCommand = m_shoot));
+    m_buttonBox.button2.whenReleased(m_pauseShoot);
+    m_buttonBox.button2.whenReleased(new InstantCommand(() -> m_currentFASHCommand = m_pauseShoot));
+    m_buttonBox.button3.whenPressed(m_prepShoot);
+    m_buttonBox.button3.whenPressed(new InstantCommand(() -> m_currentFASHCommand = m_prepShoot));
+    m_buttonBox.button4.whenPressed(m_stopShoot);
+    m_buttonBox.button4.whenPressed(new InstantCommand(() -> m_currentFASHCommand = m_stopShoot));
+    m_buttonBox.button9.whenPressed(m_activateIntake);
+    m_buttonBox.button9.whenReleased(m_deactivateIntake);
+    m_buttonBox.button8.whenPressed(m_regurgitate);
+    m_buttonBox.button8.whenReleased(m_regurgitateStop);
+    m_buttonBox.button7.whenPressed(new InstantCommand(() -> {
+      m_currentFASHCommand.cancel();
+      m_currentFASHCommand.schedule();
+    }));
+    m_buttonBox.button7.whenReleased(new InstantCommand(() -> {
+      m_currentFASHCommand.cancel();
+      m_currentFASHCommand.schedule();
+    }));
 
-    m_buttonBox.button8.whenPressed(new EngageRatchets(m_climber));
-    m_buttonBox.button8.whenReleased(new DisengageRatchets(m_climber));
+    m_buttonBox.button14.whenPressed(new EngageRatchets(m_climber));
+    m_buttonBox.button14.whenReleased(new DisengageRatchets(m_climber));
   }
 
 
@@ -411,9 +476,19 @@ public class RobotContainer {
     SmartDashboard.putData("Regurgitate", m_regurgitate);
     SmartDashboard.putData("Regurgitate Stop", m_regurgitateStop);
 
+    SmartDashboard.putData("Limelight On", new LimelightToggle(m_sensors, true));
+    SmartDashboard.putData("Limelight Off", new LimelightToggle(m_sensors, false));
+
     SmartDashboard.putData("Zero Climber", new ZeroClimber(m_climber));
 
+    SmartDashboard.putData("Engage Ratchets", new EngageRatchets(m_climber));
+    SmartDashboard.putData("Disengage Ratchets", new DisengageRatchets(m_climber));
 
+    SmartDashboard.putData("Turn To Limelight", new TurnToLimelight(m_drive, m_sensors));
+    SmartDashboard.putData("Shoot Limelight", new ShooterRunFromLimelight(m_shooter));
+
+    SmartDashboard.putData("Test Basic Auto 1", new BasicAutoDrive(m_drive, -10, -10, 8));
+    SmartDashboard.putData("Test Basic Auto 2", new BasicAutoDrive(m_drive, -1, -6, 8));
   }
 
 
@@ -427,12 +502,19 @@ public class RobotContainer {
 
     // DoubleSupplier climbSpeedXSupplier = m_buttonBox::getClimberTiltAxis;
     // DoubleSupplier climbSpeedYSupplier = m_buttonBox::getClimberSpeedAxis;  
-    DoubleSupplier climbSpeedXSupplier = DriveUtils.deadbandExponential(m_testController::getLeftStickX, Constants.CLIMBER_EXPONENTIAL, Constants.CLIMBER_CONTROLLER_DEADZONE);
-    DoubleSupplier climbSpeedYSupplier = DriveUtils.deadbandExponential(m_testController::getLeftStickY, Constants.CLIMBER_EXPONENTIAL, Constants.CLIMBER_CONTROLLER_DEADZONE);
+    DoubleSupplier climbSpeedXSupplier = DriveUtils.deadbandExponential(m_buttonBox::getClimberTiltAxis, Constants.CLIMBER_EXPONENTIAL, Constants.CLIMBER_CONTROLLER_DEADZONE);
+    DoubleSupplier climbSpeedYSupplier = DriveUtils.deadbandExponential(m_buttonBox::getClimberSpeedAxis, Constants.CLIMBER_EXPONENTIAL, Constants.CLIMBER_CONTROLLER_DEADZONE);
     m_climber.setDefaultCommand(new RunClimber(m_climber, climbSpeedXSupplier, climbSpeedYSupplier));
   }
 
-  
+  public void disabledPeriodic() {
+    m_sensors.ledOff();
+
+    for (ButtonAutoPair selector : autoSelectors) {
+      selector.check();
+    }
+  }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

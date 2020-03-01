@@ -5,35 +5,32 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.arm;
+package frc.robot.commands.climber;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Climber;
 
-public class ArmStow extends CommandBase {
-  private Arm arm;
+public class StopClimber extends CommandBase {
+
+  private final Climber m_climber;
+
   /**
-   * Creates a new ArmFullUp.
+   * Creates a new StopClimber.
    */
-  public ArmStow(Arm arm) {
-    this.arm = arm;
-    addRequirements(arm);
+  public StopClimber(final Climber climber) {
+    m_climber = climber;
+    addRequirements(m_climber);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    arm.setArmPosition(0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (arm.getCurrentArmPosition() < 2) {
-      arm.setPercentOutput(-0.0275);
-    } else {
-      arm.setArmPosition(0);
-    }
+    m_climber.setMotors(0);
   }
 
   // Called once the command ends or is interrupted.
