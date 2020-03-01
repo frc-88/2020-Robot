@@ -58,10 +58,10 @@ public class ButtonBox extends Joystick {
 	}
 
 	public double getClimberSpeedAxis() {
-		return this.getRawAxis(0);
+		return this.getRawAxis(1);
 	}
 
 	public double getClimberTiltAxis() {
-		return this.getRawAxis(1);
+		return this.getRawAxis(0);
 	}
 }

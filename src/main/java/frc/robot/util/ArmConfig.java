@@ -8,6 +8,7 @@
 package frc.robot.util;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
 /**
@@ -38,5 +39,6 @@ public class ArmConfig {
         // armConfiguration.slot0.closedLoopPeakOutput = 0.869990;
         // armConfiguration.slot0.closedLoopPeriod = 33;
         armConfiguration.voltageCompSaturation = 12;
+        armConfiguration.forwardLimitSwitchSource = LimitSwitchSource.Deactivated;
     }
 }

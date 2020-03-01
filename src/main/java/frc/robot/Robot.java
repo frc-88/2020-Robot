@@ -62,7 +62,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    m_robotContainer.m_sensors.limelight.ledOff();
+    m_robotContainer.disabledPeriodic();
   }
 
   /**
