@@ -17,9 +17,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.ShooterConfig;
+import frc.robot.util.ValueInterpolator;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 
 public class Shooter extends SubsystemBase {
+  private Sensors m_sensors;
+
   private TalonFX m_flywheelMaster = new TalonFX(Constants.SHOOTER_FLYWHEEL_MASTER);
   private TalonFX m_flywheelFollower = new TalonFX(Constants.SHOOTER_FLYWHEEL_FOLLOWER);
   private ShooterConfig m_shooterConfig = new ShooterConfig();
@@ -31,10 +34,25 @@ public class Shooter extends SubsystemBase {
   private DoublePreferenceConstant flywheel_iZone;
   private DoublePreferenceConstant flywheel_iMax;
 
+  private final ValueInterpolator distanceToSpeedInterpolator = new ValueInterpolator(
+    new ValueInterpolator.ValuePair(92, 5375),
+    new ValueInterpolator.ValuePair(113, 5280),
+    new ValueInterpolator.ValuePair(119, 5280),
+    new ValueInterpolator.ValuePair(128, 5280),
+    new ValueInterpolator.ValuePair(162, 5210),
+    new ValueInterpolator.ValuePair(224, 5260),
+    new ValueInterpolator.ValuePair(239, 5270),
+    new ValueInterpolator.ValuePair(254, 5390),
+    new ValueInterpolator.ValuePair(277, 5360),
+    new ValueInterpolator.ValuePair(284, 5550)
+  );
+
   /**
    * Creates a new Shooter.
    */
-  public Shooter() {
+  public Shooter(Sensors sensors) {
+
+    m_sensors = sensors;
 
     m_flywheelMaster.configFactoryDefault();
     m_flywheelMaster.configAllSettings(m_shooterConfig.flywheelConfiguration);
@@ -79,6 +97,14 @@ public class Shooter extends SubsystemBase {
 
   public void setFlywheel(double velocity) {
     m_flywheelMaster.set(ControlMode.Velocity, convertFlywheelVelocityToEncoderVelocity(velocity));
+  }
+
+  public void setFlywheelFromLimelight() {
+    if (m_sensors.doesLimelightHaveTarget()) {
+      this.setFlywheel(distanceToSpeedInterpolator.getInterpolatedValue(m_sensors.getDistanceToTarget()));
+    } else {
+      this.setFlywheel(5300);
+    }
   }
 
   public boolean flywheelOnTarget() {

@@ -23,13 +23,14 @@ public class ArmFullUp extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    arm.setArmPosition(90);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     if (arm.getCurrentArmPosition() > 85) {
-      arm.setPercentOutput(0.04);
+      arm.setPercentOutput(0.07);
     } else {
       arm.setArmPosition(90);
     }
