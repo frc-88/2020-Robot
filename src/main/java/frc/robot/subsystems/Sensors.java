@@ -47,7 +47,7 @@ public class Sensors extends SubsystemBase {
   private BooleanSupplier ledOverride;
 
   private CameraServer cameraServer = CameraServer.getInstance();
-  private UsbCamera intakeCamera, hopperCamera;
+  // private UsbCamera intakeCamera, hopperCamera;
 
   private double m_totalYellow = 0.0;
   private double m_totalYellowChamber = 0.0;
@@ -76,10 +76,10 @@ public class Sensors extends SubsystemBase {
     //intakeCamera.setResolution(160, 120);
     //intakeCamera.setPixelFormat(PixelFormat.kMJPEG);
 
-    hopperCamera = cameraServer.startAutomaticCapture(Constants.PCC_CAMERA_NAME, Constants.PCC_CAMERA_ID);
-    hopperCamera.setFPS(15);
-    hopperCamera.setResolution(320, 240);
-    hopperCamera.setPixelFormat(PixelFormat.kMJPEG);
+    // hopperCamera = cameraServer.startAutomaticCapture(Constants.PCC_CAMERA_NAME, Constants.PCC_CAMERA_ID);
+    // hopperCamera.setFPS(15);
+    // hopperCamera.setResolution(320, 240);
+    // hopperCamera.setPixelFormat(PixelFormat.kMJPEG);
 
     
     // startCounter(hopperCamera);
