@@ -40,7 +40,7 @@ public class Shooter extends SubsystemBase {
     new ValueInterpolator.ValuePair(119, 5280),
     new ValueInterpolator.ValuePair(128, 5280),
     new ValueInterpolator.ValuePair(162, 5210),
-    new ValueInterpolator.ValuePair(224, 5210),
+    new ValueInterpolator.ValuePair(224, 5260),
     new ValueInterpolator.ValuePair(239, 5270),
     new ValueInterpolator.ValuePair(254, 5390),
     new ValueInterpolator.ValuePair(277, 5360),

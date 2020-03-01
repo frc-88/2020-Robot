@@ -16,7 +16,7 @@ public class TurnToLimelight extends CommandBase {
 
   private static final boolean LOG_DEBUG = true;
 
-  private static final double TOLERANCE = 0.4;
+  private static final double TOLERANCE = 0.75;
   private static final int TOLERANCE_TICKS = 5;
   private static final double TOLERANCE_SPEED = 5;
 
@@ -62,10 +62,9 @@ public class TurnToLimelight extends CommandBase {
         System.out.println("On navx target");
       }
       if (!sensors.doesLimelightHaveTarget()) {
-        drive.basicDrive(0,0);
         return;
       }
-      if (Math.abs(sensors.getAngleToTarget()) < TOLERANCE) {
+      if (Math.abs(sensors.getShooterAngle()) < TOLERANCE) {
         drive.setOnLimelightTarget(true);
         return;
       }

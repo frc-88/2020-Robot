@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.BooleanSupplier;
 
 import java.util.function.DoubleSupplier;
@@ -21,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.WaitForDriveAimed;
 import frc.robot.commands.WaitForShooterReady;
 import frc.robot.commands.Intake.DeployIntake;
@@ -113,7 +116,7 @@ public class RobotContainer {
   *                                                                                                                      
   */
 
-  public final Sensors m_sensors = new Sensors(m_driverController::isButtonAPressed);
+  private final Sensors m_sensors = new Sensors(m_driverController::isButtonAPressed);
   private final Drive m_drive = new Drive(m_sensors);
   private final Climber m_climber = new Climber();
   private final Arm m_arm = new Arm(m_driverController::isButtonStartPressed);
@@ -133,18 +136,6 @@ public class RobotContainer {
   *                                                                                             
   */
   
-  private final CommandBase m_autoCommand = new ParallelCommandGroup(
-    new ArcadeDrive(m_drive, () -> 0, () -> 0, () -> false, () -> Constants.MAX_SPEED_HIGH),
-    new ShooterStop(m_shooter),
-    new FeederStop(m_feeder),
-    new HopperStop(m_hopper),
-    new StopIntake(m_intake),
-    new SequentialCommandGroup(
-      new DisengageRatchets(m_climber),
-      new ZeroClimber(m_climber),
-      new StopClimber(m_climber)
-    )
-  );
   private CommandBase m_arcadeDrive;
   private CommandBase m_testArcadeDrive;
 
@@ -282,6 +273,43 @@ public class RobotContainer {
   // The currently running FASH (Feeder/Arm/Shooter/Hopper) combined command
   private CommandBase m_currentFASHCommand = m_stopShoot;
   
+  private final CommandBase m_autoDoNothing = new ParallelCommandGroup(
+    new SequentialCommandGroup(
+      new ParallelDeadlineGroup(
+        new WaitCommand(SmartDashboard.getNumber("Auto Drive Wait", 10)),
+        new ArcadeDrive(m_drive, () -> 0, () -> 0, () -> false, () -> Constants.MAX_SPEED_HIGH)
+      )
+    ),
+    new ShooterStop(m_shooter),
+    new FeederStop(m_feeder),
+    new HopperStop(m_hopper),
+    new StopIntake(m_intake),
+    new SequentialCommandGroup(
+      new DisengageRatchets(m_climber),
+      new ZeroClimber(m_climber),
+      new StopClimber(m_climber)
+    )
+  );
+
+  private CommandBase m_autoCommand = m_autoDoNothing;
+  private class ButtonAutoPair {
+    private Trigger button;
+    private CommandBase auto;
+
+    public ButtonAutoPair(Trigger button, CommandBase auto) {
+      this.button = button;
+      this.auto = auto;
+    }
+
+    public void check() {
+      if (this.button.get()) {
+        m_autoCommand = this.auto;
+      }
+    }
+  }
+  private final List<ButtonAutoPair> autoSelectors = Arrays.asList(
+    new ButtonAutoPair(m_buttonBox.button2, m_autoDoNothing)
+  );
 
   /***
   *      ______   ______   .__   __.      _______.___________..______       __    __    ______ .___________.  ______   .______      
@@ -454,7 +482,14 @@ public class RobotContainer {
     m_climber.setDefaultCommand(new RunClimber(m_climber, climbSpeedXSupplier, climbSpeedYSupplier));
   }
 
-  
+  public void disabledPeriodic() {
+    m_sensors.ledOff();
+
+    for (ButtonAutoPair selector : autoSelectors) {
+      selector.check();
+    }
+  }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
