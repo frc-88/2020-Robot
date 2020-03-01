@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.util.NavX;
+import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 import frc.robot.Constants;
 import frc.robot.util.Limelight;
 
@@ -52,6 +53,9 @@ public class Sensors extends SubsystemBase {
   private double m_totalYellow = 0.0;
   private double m_totalYellowChamber = 0.0;
   private boolean m_cellInChamber = false;
+  private final DoublePreferenceConstant m_limelightHeight = new DoublePreferenceConstant("Limelight Height", 19.5);
+  private final DoublePreferenceConstant m_limelightAngle = new DoublePreferenceConstant("Limelight Angle", 20.0);
+  private final DoublePreferenceConstant m_limelightOffset = new DoublePreferenceConstant("Limelight Offset", 8.0);
 
   private DigitalInput shooterBallSensor;
 
@@ -164,8 +168,8 @@ public class Sensors extends SubsystemBase {
 
       double ty = limelight.getTargetVerticalOffsetAngle();
 
-      distance = (Constants.FIELD_PORT_TARGET_HEIGHT - Constants.LIMELIGHT_HEIGHT) / 
-         Math.tan(Math.toRadians(Constants.LIMELIGHT_ANGLE + ty));
+      distance = (Constants.FIELD_PORT_TARGET_HEIGHT - m_limelightHeight.getValue()) / 
+         Math.tan(Math.toRadians(m_limelightAngle.getValue() + ty));
 
     }
 
@@ -180,7 +184,7 @@ public class Sensors extends SubsystemBase {
     double distance = getDistanceToTarget();
     double tx = -limelight.getTargetHorizontalOffsetAngle();
 
-    return Math.toDegrees( Math.atan( ( ( distance * Math.sin(Math.toRadians(tx)) ) + Constants.LIMELIGHT_CENTER_OFFSET ) /
+    return Math.toDegrees( Math.atan( ( ( distance * Math.sin(Math.toRadians(tx)) ) + m_limelightOffset.getValue() ) /
                       ( distance * Math.cos(Math.toRadians(tx)) ) ) );
   }
 
