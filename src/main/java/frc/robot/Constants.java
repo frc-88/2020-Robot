@@ -25,7 +25,7 @@ public final class Constants {
 	public static final int CLIMBER_PNEUMATICS_FORWARD = 4;
 	public static final int CLIMBER_PNEUMATICS_REVERSE = 3;
 	public static final int CLIMBER_MIN_POSITION = 0;
-	public static final int CLIMBER_MAX_POSITION = (int) (30 * 8.33 * 2048);
+	public static final int CLIMBER_MAX_POSITION = (int) (30 * 9 * 2048);
 	public static final int CLIMBER_EXPONENTIAL = 2;
 	public static final double CLIMBER_CONTROLLER_DEADZONE = 0.12;
 	
@@ -72,11 +72,12 @@ public final class Constants {
 	public static final int PCC_CAMERA_ID = 1;
 	public static final int PCC_IMAGE_WIDTH = 640;
 	public static final int PCC_IMAGE_HEIGHT = 480;
+	public static final int PCC_BLUR = 10;
 	public static final int PCC_HUE_LO = 10;
-	public static final int PCC_HUE_HI = 60;
-	public static final int PCC_SAT_LO = 0;
+	public static final int PCC_HUE_HI = 80;
+	public static final int PCC_SAT_LO = 20;
 	public static final int PCC_SAT_HI = 255;
-	public static final int PCC_VAL_LO = 0;
+	public static final int PCC_VAL_LO = 20;
 	public static final int PCC_VAL_HI = 255;
 
 	public static final int PCC_CHAMBER_X = 200;
@@ -93,8 +94,8 @@ public final class Constants {
 
 	// Sensor constants
 	public static final int SHOOTER_BALL_SENSOR_ID = 0;
-	public static final double LIMELIGHT_HEIGHT = 21.0;
-	public static final double LIMELIGHT_ANGLE = 21.0; // Rough measure on 2-23
+	public static final double LIMELIGHT_HEIGHT = 19.50;
+	public static final double LIMELIGHT_ANGLE = 19.96; // Rough measure on 2-23
 	public static final double LIMELIGHT_CENTER_OFFSET = 8.0;
 
 	// Field constants
@@ -138,7 +139,7 @@ public final class Constants {
 	public static final double MAX_SPEED_LOW = 8.8;
 	public static final double MAX_SPEED_HIGH = 18;
 	public static final double WHEEL_BASE_WIDTH = (25. + 5./16.) / 12.; // feet
-	public static final double DRIVE_CURRENT_LIMIT = 200;
+	public static final double DRIVE_CURRENT_LIMIT = 250;
 	public static final int DRIVE_SPEED_EXP = 2;
 	public static final int DRIVE_TURN_EXP = 2;
 	public static final double DRIVE_JOYSTICK_DEADBAND = 0.12;

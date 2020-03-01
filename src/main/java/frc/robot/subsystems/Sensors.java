@@ -23,6 +23,7 @@ import org.opencv.imgproc.Imgproc;
 import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoMode.PixelFormat;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -46,7 +47,7 @@ public class Sensors extends SubsystemBase {
   private BooleanSupplier ledOverride;
 
   private CameraServer cameraServer = CameraServer.getInstance();
-  private UsbCamera intakeCamera, hopperCamera;
+  // private UsbCamera intakeCamera, hopperCamera;
 
   private double m_totalYellow = 0.0;
   private double m_totalYellowChamber = 0.0;
@@ -68,13 +69,24 @@ public class Sensors extends SubsystemBase {
     limelight.ledOff();
 
     shooterBallSensor = new DigitalInput(Constants.SHOOTER_BALL_SENSOR_ID);
-    intakeCamera = cameraServer.startAutomaticCapture(0);
-    hopperCamera = cameraServer.startAutomaticCapture(Constants.PCC_CAMERA_NAME, Constants.PCC_CAMERA_ID);
-    
-    startCounter(hopperCamera);
 
-    cameraServer.getServer().setSource(intakeCamera);
+    //intakeCamera = cameraServer.startAutomaticCapture(0);
+    //intakeCamera.setConfigJson("{'fps':15,'height':120,'pixel format':'MJPEG','width':160}");
+    //intakeCamera.setFPS(15);
+    //intakeCamera.setResolution(160, 120);
+    //intakeCamera.setPixelFormat(PixelFormat.kMJPEG);
+
+    // hopperCamera = cameraServer.startAutomaticCapture(Constants.PCC_CAMERA_NAME, Constants.PCC_CAMERA_ID);
+    // hopperCamera.setFPS(15);
+    // hopperCamera.setResolution(320, 240);
+    // hopperCamera.setPixelFormat(PixelFormat.kMJPEG);
+
+    
+    // startCounter(hopperCamera);
+
+    // cameraServer.getServer().setSource(intakeCamera);
   }
+ 
 
   public void startCounter(UsbCamera camera) {
     new Thread(() -> {
@@ -98,7 +110,7 @@ public class Sensors extends SubsystemBase {
         }
         double area = 0.0;
         Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2HSV);
-        Imgproc.blur(output, output, new Size(32, 32));
+        Imgproc.blur(output, output, new Size(Constants.PCC_BLUR, Constants.PCC_BLUR));
         Core.inRange(output, new Scalar(Constants.PCC_HUE_LO, Constants.PCC_SAT_LO, Constants.PCC_VAL_LO),
             new Scalar(Constants.PCC_HUE_HI, Constants.PCC_SAT_HI, Constants.PCC_VAL_HI), output);
         contours.clear();
@@ -143,17 +155,18 @@ public class Sensors extends SubsystemBase {
     double distance = 0;
 
     if (limelight.isConnected() && limelight.hasTarget()) {
-      // distance = (Constants.FIELD_PORT_TARGET_HEIGHT - Constants.LIMELIGHT_HEIGHT) / 
-      //   Math.tan(Math.toRadians(Constants.LIMELIGHT_ANGLE + limelight.getTargetVerticalOffsetAngle()));
       //
       // After further analysis of the spreadsheet data, 
       // a polynomial curve matches the empirical data best
       // Sorry, Bill, for the magic numbers. They came from
       // a spreadsheet, I swear! :D
+      // distance = 190 - 11.7 * ty + 0.32 * ty * ty;
 
       double ty = limelight.getTargetVerticalOffsetAngle();
 
-      distance = 190 - 11.7 * ty + 0.32 * ty * ty;
+      distance = (Constants.FIELD_PORT_TARGET_HEIGHT - Constants.LIMELIGHT_HEIGHT) / 
+         Math.tan(Math.toRadians(Constants.LIMELIGHT_ANGLE + ty));
+
     }
 
     return distance;
@@ -161,6 +174,14 @@ public class Sensors extends SubsystemBase {
 
   public double getAngleToTarget() {
     return -limelight.getTargetHorizontalOffsetAngle();
+  }
+
+  public double getShooterAngle() {
+    double distance = getDistanceToTarget();
+    double tx = -limelight.getTargetHorizontalOffsetAngle();
+
+    return Math.toDegrees( Math.atan( ( ( distance * Math.sin(Math.toRadians(tx)) ) + Constants.LIMELIGHT_CENTER_OFFSET ) /
+                      ( distance * Math.cos(Math.toRadians(tx)) ) ) );
   }
 
   public boolean doesLimelightHaveTarget() {
@@ -181,6 +202,7 @@ public class Sensors extends SubsystemBase {
     SmartDashboard.putNumber("Limelight Distance", getDistanceToTarget());
     SmartDashboard.putNumber("Limelight H-Angle", getAngleToTarget());
     SmartDashboard.putNumber("Limelight V-Angle", limelight.getTargetVerticalOffsetAngle());
+    SmartDashboard.putNumber("Limelight Shooter Angle", getShooterAngle());
 
     // Beam breaks
     SmartDashboard.putBoolean("Shooter Ball Sensor", shooterBallSensor.get());
