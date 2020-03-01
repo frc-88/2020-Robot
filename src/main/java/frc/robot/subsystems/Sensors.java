@@ -23,6 +23,7 @@ import org.opencv.imgproc.Imgproc;
 import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoMode.PixelFormat;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -68,13 +69,24 @@ public class Sensors extends SubsystemBase {
     limelight.ledOff();
 
     shooterBallSensor = new DigitalInput(Constants.SHOOTER_BALL_SENSOR_ID);
-    // intakeCamera = cameraServer.startAutomaticCapture(0);
+
+    //intakeCamera = cameraServer.startAutomaticCapture(0);
+    //intakeCamera.setConfigJson("{'fps':15,'height':120,'pixel format':'MJPEG','width':160}");
+    //intakeCamera.setFPS(15);
+    //intakeCamera.setResolution(160, 120);
+    //intakeCamera.setPixelFormat(PixelFormat.kMJPEG);
+
     // hopperCamera = cameraServer.startAutomaticCapture(Constants.PCC_CAMERA_NAME, Constants.PCC_CAMERA_ID);
+    // hopperCamera.setFPS(15);
+    // hopperCamera.setResolution(320, 240);
+    // hopperCamera.setPixelFormat(PixelFormat.kMJPEG);
+
     
     // startCounter(hopperCamera);
 
     // cameraServer.getServer().setSource(intakeCamera);
   }
+ 
 
   public void startCounter(UsbCamera camera) {
     new Thread(() -> {
@@ -143,17 +155,18 @@ public class Sensors extends SubsystemBase {
     double distance = 0;
 
     if (limelight.isConnected() && limelight.hasTarget()) {
-      // distance = (Constants.FIELD_PORT_TARGET_HEIGHT - Constants.LIMELIGHT_HEIGHT) / 
-      //   Math.tan(Math.toRadians(Constants.LIMELIGHT_ANGLE + limelight.getTargetVerticalOffsetAngle()));
       //
       // After further analysis of the spreadsheet data, 
       // a polynomial curve matches the empirical data best
       // Sorry, Bill, for the magic numbers. They came from
       // a spreadsheet, I swear! :D
+      // distance = 190 - 11.7 * ty + 0.32 * ty * ty;
 
       double ty = limelight.getTargetVerticalOffsetAngle();
 
-      distance = 190 - 11.7 * ty + 0.32 * ty * ty;
+      distance = (Constants.FIELD_PORT_TARGET_HEIGHT - Constants.LIMELIGHT_HEIGHT) / 
+         Math.tan(Math.toRadians(Constants.LIMELIGHT_ANGLE + ty));
+
     }
 
     return distance;
