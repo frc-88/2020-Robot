@@ -46,7 +46,7 @@ public class Sensors extends SubsystemBase {
   private BooleanSupplier ledOverride;
 
   private CameraServer cameraServer = CameraServer.getInstance();
-  private UsbCamera intakeCamera, hopperCamera;
+  // private UsbCamera intakeCamera, hopperCamera;
 
   private double m_totalYellow = 0.0;
   private double m_totalYellowChamber = 0.0;
@@ -68,12 +68,12 @@ public class Sensors extends SubsystemBase {
     limelight.ledOff();
 
     shooterBallSensor = new DigitalInput(Constants.SHOOTER_BALL_SENSOR_ID);
-    intakeCamera = cameraServer.startAutomaticCapture(0);
-    hopperCamera = cameraServer.startAutomaticCapture(Constants.PCC_CAMERA_NAME, Constants.PCC_CAMERA_ID);
+    // intakeCamera = cameraServer.startAutomaticCapture(0);
+    // hopperCamera = cameraServer.startAutomaticCapture(Constants.PCC_CAMERA_NAME, Constants.PCC_CAMERA_ID);
     
-    startCounter(hopperCamera);
+    // startCounter(hopperCamera);
 
-    cameraServer.getServer().setSource(intakeCamera);
+    // cameraServer.getServer().setSource(intakeCamera);
   }
 
   public void startCounter(UsbCamera camera) {

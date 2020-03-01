@@ -240,8 +240,7 @@ public class RobotContainer {
     new SequentialCommandGroup(
       new DeployIntake(m_intake),
       new ParallelCommandGroup(
-        new RunIntake(m_intake, 1.), 
-        new HopperIntakeMode(m_hopper)
+        new RunIntake(m_intake, 1.)
       )
     );
 
@@ -250,12 +249,10 @@ public class RobotContainer {
     new SequentialCommandGroup(
       new ParallelDeadlineGroup(
         new WaitCommand(0.75),
-        new HopperIntakeFinishMode(m_hopper), 
         new RetractIntake(m_intake)
       ),
       new ParallelCommandGroup(
-        new StopIntake(m_intake), 
-        new HopperStop(m_hopper)
+        new StopIntake(m_intake)
       )
     );
 
@@ -265,7 +262,7 @@ public class RobotContainer {
       new DeployIntake(m_intake),
       new ParallelCommandGroup(
         new RunIntake(m_intake, -1.), 
-        new HopperShootMode(m_hopper, -1.),
+        new HopperEject(m_hopper, 1.),
         new FeederRun(m_feeder, -1.)
       )
     );
@@ -281,21 +278,6 @@ public class RobotContainer {
       ),
       new StopIntake(m_intake)
     );
-
-  private final CommandBase m_shootHopperBackwards =
-  new ConditionalCommand(
-    new ParallelCommandGroup(
-      new HopperEject(m_hopper, -1), 
-      new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
-      new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()), new FeederRun(m_feeder, 1.0)
-    ),
-    new ParallelCommandGroup(
-      new HopperEject(m_hopper, -1), 
-      new ArmFullUp(m_arm),
-      new ShooterRunFromLimelight(m_shooter), 
-      new FeederRun(m_feeder, 1.0)
-    ),
-    m_buttonBox.button7::get);
 
   // The currently running FASH (Feeder/Arm/Shooter/Hopper) combined command
   private CommandBase m_currentFASHCommand = m_stopShoot;
@@ -363,8 +345,6 @@ public class RobotContainer {
     m_buttonBox.button3.whenPressed(new InstantCommand(() -> m_currentFASHCommand = m_stopShoot));
     m_buttonBox.button4.whenPressed(m_activateIntake);
     m_buttonBox.button4.whenReleased(m_deactivateIntake);
-    m_buttonBox.button5.whenPressed(m_shootHopperBackwards);
-    m_buttonBox.button5.whenReleased(m_shoot);
     m_buttonBox.button6.whenPressed(m_regurgitate);
     m_buttonBox.button6.whenReleased(m_regurgitateStop);
     m_buttonBox.button7.whenPressed(new InstantCommand(() -> {

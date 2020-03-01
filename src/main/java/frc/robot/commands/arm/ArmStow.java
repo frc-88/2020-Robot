@@ -28,8 +28,8 @@ public class ArmStow extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (arm.getCurrentArmPosition() < 5) {
-      arm.setPercentOutput(-0.02);
+    if (arm.getCurrentArmPosition() < 2) {
+      arm.setPercentOutput(-0.0275);
     } else {
       arm.setArmPosition(0);
     }

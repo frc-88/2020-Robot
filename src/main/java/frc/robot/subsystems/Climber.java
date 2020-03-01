@@ -9,6 +9,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
@@ -34,6 +35,8 @@ public class Climber extends SubsystemBase{
         m_climber_motor_right.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
         m_climber_motor_left.setInverted(true);
         m_climber_motor_right.setInverted(false);
+        m_climber_motor_left.setNeutralMode(NeutralMode.Brake);
+        m_climber_motor_right.setNeutralMode(NeutralMode.Brake);
 
         exitZeroMode();
 

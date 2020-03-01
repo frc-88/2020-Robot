@@ -14,7 +14,9 @@ import frc.robot.subsystems.Sensors;
 
 public class TurnToLimelight extends CommandBase {
 
-  private static final double TOLERANCE = 0.25;
+  private static final boolean LOG_DEBUG = true;
+
+  private static final double TOLERANCE = 0.5;
   private static final int TOLERANCE_TICKS = 5;
   private static final double TOLERANCE_SPEED = 5;
 
@@ -23,7 +25,7 @@ public class TurnToLimelight extends CommandBase {
 
   private double currentHeadingTarget;
   private int ticksOnTarget = 0;
-  private boolean onLimelightTarget = false;
+  private boolean firstRun;
 
   /**
    * Creates a new TurnToHeading.
@@ -38,19 +40,26 @@ public class TurnToLimelight extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    ticksOnTarget = TOLERANCE_TICKS;
-    onLimelightTarget = false;
+    ticksOnTarget = 0;
+    drive.setOnLimelightTarget(false);
+    firstRun = true;
     drive.shiftToLow();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    SmartDashboard.putBoolean("LimelightHeadingOnTarget", onLimelightTarget);
+    SmartDashboard.putBoolean("LimelightHeadingOnTarget", drive.isOnLimelightTarget());
     if (drive.isOnLimelightTarget()) {
+      if (LOG_DEBUG) {
+        System.out.println("On limelight target");
+      }
       return;
     }
-    if (isOnNavxTarget()) {
+    if (isOnNavxTarget() || firstRun) {
+      if (LOG_DEBUG) {
+        System.out.println("On navx target");
+      }
       if (sensors.getAngleToTarget() < TOLERANCE * 2) {
         drive.setOnLimelightTarget(true);
         return;
@@ -58,9 +67,14 @@ public class TurnToLimelight extends CommandBase {
       if (!sensors.doesLimelightHaveTarget()) {
         return;
       }
+      firstRun = false;
       currentHeadingTarget = sensors.navx.getYaw() - sensors.getAngleToTarget();
       ticksOnTarget = 0;
       drive.resetHeadingPID();
+
+      if (LOG_DEBUG) {
+        System.out.println("Limelight horizontal offset: " + sensors.getAngleToTarget());
+      }
       SmartDashboard.putBoolean("NavxHeadingOnTarget", true);
     } else {
       SmartDashboard.putBoolean("NavxHeadingOnTarget", false);
