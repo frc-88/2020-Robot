@@ -335,18 +335,18 @@ public class RobotContainer {
 
 
   private void configureButtonBox() {
-    m_buttonBox.button1.whenPressed(m_shoot);
-    m_buttonBox.button1.whenPressed(new InstantCommand(() -> m_currentFASHCommand = m_shoot));
-    m_buttonBox.button1.whenReleased(m_pauseShoot);
-    m_buttonBox.button1.whenReleased(new InstantCommand(() -> m_currentFASHCommand = m_pauseShoot));
-    m_buttonBox.button2.whenPressed(m_prepShoot);
-    m_buttonBox.button2.whenPressed(new InstantCommand(() -> m_currentFASHCommand = m_prepShoot));
-    m_buttonBox.button3.whenPressed(m_stopShoot);
-    m_buttonBox.button3.whenPressed(new InstantCommand(() -> m_currentFASHCommand = m_stopShoot));
-    m_buttonBox.button4.whenPressed(m_activateIntake);
-    m_buttonBox.button4.whenReleased(m_deactivateIntake);
-    m_buttonBox.button6.whenPressed(m_regurgitate);
-    m_buttonBox.button6.whenReleased(m_regurgitateStop);
+    m_buttonBox.button2.whenPressed(m_shoot);
+    m_buttonBox.button2.whenPressed(new InstantCommand(() -> m_currentFASHCommand = m_shoot));
+    m_buttonBox.button2.whenReleased(m_pauseShoot);
+    m_buttonBox.button2.whenReleased(new InstantCommand(() -> m_currentFASHCommand = m_pauseShoot));
+    m_buttonBox.button3.whenPressed(m_prepShoot);
+    m_buttonBox.button3.whenPressed(new InstantCommand(() -> m_currentFASHCommand = m_prepShoot));
+    m_buttonBox.button4.whenPressed(m_stopShoot);
+    m_buttonBox.button4.whenPressed(new InstantCommand(() -> m_currentFASHCommand = m_stopShoot));
+    m_buttonBox.button9.whenPressed(m_activateIntake);
+    m_buttonBox.button9.whenReleased(m_deactivateIntake);
+    m_buttonBox.button8.whenPressed(m_regurgitate);
+    m_buttonBox.button8.whenReleased(m_regurgitateStop);
     m_buttonBox.button7.whenPressed(new InstantCommand(() -> {
       m_currentFASHCommand.cancel();
       m_currentFASHCommand.schedule();
@@ -356,8 +356,8 @@ public class RobotContainer {
       m_currentFASHCommand.schedule();
     }));
 
-    m_buttonBox.button8.whenPressed(new EngageRatchets(m_climber));
-    m_buttonBox.button8.whenReleased(new DisengageRatchets(m_climber));
+    m_buttonBox.button14.whenPressed(new EngageRatchets(m_climber));
+    m_buttonBox.button14.whenReleased(new DisengageRatchets(m_climber));
   }
 
 
@@ -449,8 +449,8 @@ public class RobotContainer {
 
     // DoubleSupplier climbSpeedXSupplier = m_buttonBox::getClimberTiltAxis;
     // DoubleSupplier climbSpeedYSupplier = m_buttonBox::getClimberSpeedAxis;  
-    DoubleSupplier climbSpeedXSupplier = DriveUtils.deadbandExponential(m_testController::getLeftStickX, Constants.CLIMBER_EXPONENTIAL, Constants.CLIMBER_CONTROLLER_DEADZONE);
-    DoubleSupplier climbSpeedYSupplier = DriveUtils.deadbandExponential(m_testController::getLeftStickY, Constants.CLIMBER_EXPONENTIAL, Constants.CLIMBER_CONTROLLER_DEADZONE);
+    DoubleSupplier climbSpeedXSupplier = DriveUtils.deadbandExponential(m_buttonBox::getClimberTiltAxis, Constants.CLIMBER_EXPONENTIAL, Constants.CLIMBER_CONTROLLER_DEADZONE);
+    DoubleSupplier climbSpeedYSupplier = DriveUtils.deadbandExponential(m_buttonBox::getClimberSpeedAxis, Constants.CLIMBER_EXPONENTIAL, Constants.CLIMBER_CONTROLLER_DEADZONE);
     m_climber.setDefaultCommand(new RunClimber(m_climber, climbSpeedXSupplier, climbSpeedYSupplier));
   }
 
