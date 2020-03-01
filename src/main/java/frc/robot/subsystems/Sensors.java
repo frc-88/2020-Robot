@@ -180,8 +180,8 @@ public class Sensors extends SubsystemBase {
     double distance = getDistanceToTarget();
     double tx = -limelight.getTargetHorizontalOffsetAngle();
 
-    return Math.atan( ( ( distance * Math.sin(Math.toRadians(tx)) ) + Constants.LIMELIGHT_CENTER_OFFSET ) /
-                      ( distance * Math.cos(Math.toRadians(tx)) ) );
+    return Math.toDegrees( Math.atan( ( ( distance * Math.sin(Math.toRadians(tx)) ) + Constants.LIMELIGHT_CENTER_OFFSET ) /
+                      ( distance * Math.cos(Math.toRadians(tx)) ) ) );
   }
 
   public boolean doesLimelightHaveTarget() {

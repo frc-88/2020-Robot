@@ -16,7 +16,7 @@ public class TurnToLimelight extends CommandBase {
 
   private static final boolean LOG_DEBUG = true;
 
-  private static final double TOLERANCE = 0.75;
+  private static final double TOLERANCE = 0.4;
   private static final int TOLERANCE_TICKS = 5;
   private static final double TOLERANCE_SPEED = 5;
 
@@ -70,12 +70,12 @@ public class TurnToLimelight extends CommandBase {
         return;
       }
       firstRun = false;
-      currentHeadingTarget = sensors.navx.getYaw() - sensors.getAngleToTarget();
+      currentHeadingTarget = sensors.navx.getYaw() - sensors.getShooterAngle();
       ticksOnTarget = 0;
       drive.resetHeadingPID();
 
       if (LOG_DEBUG) {
-        System.out.println("Limelight horizontal offset: " + sensors.getAngleToTarget());
+        System.out.println("Limelight horizontal offset: " + sensors.getShooterAngle());
       }
       SmartDashboard.putBoolean("NavxHeadingOnTarget", true);
     } else {
