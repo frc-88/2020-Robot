@@ -439,7 +439,7 @@ public class RobotContainer {
     SmartDashboard.putData("Turn To Limelight", new TurnToLimelight(m_drive, m_sensors));
     SmartDashboard.putData("Shoot Limelight", new ShooterRunFromLimelight(m_shooter));
 
-    SmartDashboard.putData("Test Basic Auto 1", new BasicAutoDrive(m_drive, 2, 2, 4));
+    SmartDashboard.putData("Test Basic Auto 1", new BasicAutoDrive(m_drive, -10, -10, 8));
     SmartDashboard.putData("Test Basic Auto 2", new BasicAutoDrive(m_drive, -1, -6, 8));
   }
 
