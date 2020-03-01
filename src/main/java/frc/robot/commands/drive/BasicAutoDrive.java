@@ -33,7 +33,7 @@ public class BasicAutoDrive extends CommandBase {
     m_leftDistance = leftDistance;
     m_rightDistance = rightDistance;
     m_maxSpeed = maxSpeed;
-    m_syncP = new DoublePreferenceConstant("Basic Auto Drive kP", 0);
+    m_syncP = new DoublePreferenceConstant("Basic Auto Drive kP", 0.2);
 
     if (m_leftDistance > m_rightDistance) {
       m_leftSpeed = m_maxSpeed;
