@@ -97,6 +97,7 @@ public final class Constants {
 
 	// Field constants
 	public static final double FIELD_PORT_TARGET_HEIGHT = 90.75;
+	public static final double FIELD_INNER_PORT_OFFSET = 29.25;
 
 	/********************************************************************
     * 
