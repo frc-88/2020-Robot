@@ -458,6 +458,7 @@ public class RobotContainer {
 
     SmartDashboard.putData("Limelight On", new LimelightToggle(m_sensors, true));
     SmartDashboard.putData("Limelight Off", new LimelightToggle(m_sensors, false));
+    SmartDashboard.putNumber("Limelight Test Distance", 120.0);
 
     SmartDashboard.putData("Zero Climber", new ZeroClimber(m_climber));
 
