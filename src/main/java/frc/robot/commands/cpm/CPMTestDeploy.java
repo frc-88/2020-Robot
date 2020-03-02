@@ -5,17 +5,17 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.cpm;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.ControlPanelManipulator;
 
-public class MoveColorWheelToTargetColor extends CommandBase {
+public class CPMTestDeploy extends InstantCommand {
   private ControlPanelManipulator cpm;
   /**
-   * Creates a new MoveColorWheelToTargetColor.
+   * Creates a new CPMTestDeploy.
    */
-  public MoveColorWheelToTargetColor(ControlPanelManipulator cpm) {
+  public CPMTestDeploy(ControlPanelManipulator cpm) {
     this.cpm=cpm;
     addRequirements(cpm);
     // Use addRequirements() here to declare subsystem dependencies.
@@ -24,30 +24,6 @@ public class MoveColorWheelToTargetColor extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    cpm.deployCPM();
   }
-
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-  
-    float distanceToColor;
-    distanceToColor = cpm.calcPositionControlTargetPosition();
-    cpm.spinColorWheelNumRotations(distanceToColor);
-    // TODO: rumble the controller
- 
-    
-  }
-
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-  }
-
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
-
-
 }

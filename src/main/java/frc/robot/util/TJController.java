@@ -117,5 +117,17 @@ public class TJController extends Joystick {
 	public void rumbleRight(double rumble) {
 		this.setRumble(RumbleType.kRightRumble, rumble);
 	}
+
+	public void startHeavyRumble() {
+		this.rumble(1);
+	}
+
+	public void startLightRumble() {
+		this.rumble(0.5);
+	}
+
+	public void stopRumble() {
+		this.rumble(0);
+	}
 	
 }

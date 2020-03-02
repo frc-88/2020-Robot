@@ -41,6 +41,12 @@ import frc.robot.commands.climber.EngageRatchets;
 import frc.robot.commands.climber.RunClimber;
 import frc.robot.commands.climber.StopClimber;
 import frc.robot.commands.climber.ZeroClimber;
+import frc.robot.commands.cpm.CPMPositionControl;
+import frc.robot.commands.cpm.CPMRotationControl;
+import frc.robot.commands.cpm.CPMTestDeploy;
+import frc.robot.commands.cpm.CPMTestGoToPosition;
+import frc.robot.commands.cpm.CPMTestRetract;
+import frc.robot.commands.cpm.CPMTinyCorrectionRotation;
 import frc.robot.commands.drive.ArcadeDrive;
 import frc.robot.commands.drive.BasicAutoDrive;
 import frc.robot.commands.drive.CalculateDriveEfficiency;
@@ -65,8 +71,8 @@ import frc.robot.commands.vision.LimelightToggle;
 import frc.robot.driveutil.DriveUtils;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.ControlPanelManipulator;
 import frc.robot.subsystems.Drive;
-import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Sensors;
@@ -121,9 +127,10 @@ public class RobotContainer {
   private final Drive m_drive = new Drive(m_sensors);
   private final Climber m_climber = new Climber();
   private final Arm m_arm = new Arm(m_driverController::isButtonStartPressed);
-  private final Feeder m_feeder = new Feeder();
+  //private final Feeder m_feederSpinner = new Feeder();
   private final Hopper m_hopper = new Hopper();
   private final Shooter m_shooter = new Shooter(m_sensors);
+  private final ControlPanelManipulator m_cpm = new ControlPanelManipulator();
   private final Intake m_intake = new Intake();
   // private final ControlPanelManipulator m_cpm = new ControlPanelManipulator();
 
@@ -169,7 +176,7 @@ public class RobotContainer {
           new HopperShootMode(m_hopper), 
           new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
           new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()), 
-          new FeederRun(m_feeder, 1.0)
+          new FeederRun(m_cpm, 1.0)
         )
       ),
       new SequentialCommandGroup(
@@ -185,7 +192,7 @@ public class RobotContainer {
           new HopperShootMode(m_hopper), 
           new ArmFullUp(m_arm),
           new ShooterRunFromLimelight(m_shooter), 
-          new FeederRun(m_feeder, 1.0)
+          new FeederRun(m_cpm, 1.0)
         )
       ),
       m_buttonBox.button7::get);
@@ -197,24 +204,24 @@ public class RobotContainer {
           new ParallelRaceGroup(
             new HopperEject(m_hopper, -1.),
             new WaitCommand(1),
-            new FeederStop(m_feeder),
+            new FeederStop(m_cpm),
             new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
             new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue())),
           new ParallelCommandGroup(
             new HopperStop(m_hopper),
-            new FeederStop(m_feeder),
+            new FeederStop(m_cpm),
             new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
             new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()))),
         new SequentialCommandGroup(
           new ParallelRaceGroup(
             new HopperEject(m_hopper, -1.),
             new WaitCommand(1),
-            new FeederStop(m_feeder), 
+            new FeederStop(m_cpm), 
             new ArmFullUp(m_arm),
             new ShooterRunFromLimelight(m_shooter)),
         new ParallelCommandGroup(
           new HopperStop(m_hopper),
-          new FeederStop(m_feeder), 
+          new FeederStop(m_cpm), 
           new ArmFullUp(m_arm),
           new ShooterRunFromLimelight(m_shooter))),
       m_buttonBox.button7::get);
@@ -225,7 +232,7 @@ public class RobotContainer {
       new LimelightToggle(m_sensors, false),
       new ArmStow(m_arm), 
       new ShooterStop(m_shooter), 
-      new FeederStop(m_feeder)
+      new FeederStop(m_cpm)
     );
 
   // activateIntake - deploys and runs the intake, run hopper in intake mode
@@ -256,7 +263,7 @@ public class RobotContainer {
       new ParallelCommandGroup(
         new RunIntake(m_intake, -1.), 
         new HopperEject(m_hopper, 1.),
-        new FeederRun(m_feeder, -1.)
+        new FeederRun(m_cpm, -1.)
       )
     );
 
@@ -266,7 +273,7 @@ public class RobotContainer {
       new ParallelDeadlineGroup(
         new WaitCommand(0.75), 
         new HopperStop(m_hopper),
-        new FeederStop(m_feeder), 
+        new FeederStop(m_cpm), 
         new RetractIntake(m_intake)
       ),
       new StopIntake(m_intake)
@@ -283,7 +290,7 @@ public class RobotContainer {
       )
     ),
     new ShooterStop(m_shooter),
-    new FeederStop(m_feeder),
+    new FeederStop(m_cpm),
     new HopperStop(m_hopper),
     new StopIntake(m_intake),
     new SequentialCommandGroup(
@@ -412,7 +419,6 @@ public class RobotContainer {
     DoubleSupplier armSpeedSupplier = DriveUtils.deadbandExponential(m_testController::getRightStickY,
         Constants.ARM_SPEED_EXP, Constants.TEST_JOYSTICK_DEADBAND);
     SmartDashboard.putData("Arm Manual", new RotateArm(m_arm, armSpeedSupplier));
-
   }
 
 
@@ -430,6 +436,7 @@ public class RobotContainer {
     SmartDashboard.putData("Stop Intake", new StopIntake(m_intake));
     SmartDashboard.putData("Eject Intake", new RunIntake(m_intake, -1));
 
+    // Hopper
     SmartDashboard.putNumber("Hopper Left Speed", 0);
     SmartDashboard.putNumber("Hopper Right Speed", 0);
     SmartDashboard.putData("Hopper Intake Mode", new HopperIntakeMode(m_hopper));
@@ -437,6 +444,7 @@ public class RobotContainer {
     SmartDashboard.putData("Hopper Stop", new HopperStop(m_hopper));
     SmartDashboard.putData("Hopper Test", new InstantCommand(() -> (new HopperTest(m_hopper, SmartDashboard.getNumber("Hopper Left Speed", 0), SmartDashboard.getNumber("Hopper Right Speed", 0))).schedule()));
 
+    // Arm
     SmartDashboard.putData("Arm Calibrate", new CalibrateArm(m_arm));
     SmartDashboard.putNumber("ArmTestPosition", 0);
     SmartDashboard.putData("Arm to Position", new InstantCommand(() -> new ArmMotionMagic(m_arm, SmartDashboard.getNumber("ArmTestPosition", 0)).schedule()));
@@ -444,11 +452,23 @@ public class RobotContainer {
     SmartDashboard.putData("Arm to Layup", new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()));
     SmartDashboard.putData("Arm Hold Position", new InstantCommand(() -> new ArmMotionMagic(m_arm, m_arm.getCurrentArmPosition()).schedule(), m_arm));
     SmartDashboard.putData("Arm Test Brake Mode", new TestBrakeMode(m_arm));
-    
-    SmartDashboard.putNumber("FeederTestSpeed", 0);
-    SmartDashboard.putData("FeederTest",new InstantCommand(() -> (new FeederRun(m_feeder, SmartDashboard.getNumber("FeederTestSpeed", 0))).schedule()));
-    SmartDashboard.putData("FeederStop", new FeederStop(m_feeder));
+    SmartDashboard.putData("Arm Full up", new ArmFullUp(m_arm));
 
+    // Feeder
+    SmartDashboard.putNumber("FeederTestSpeed", 0);
+    SmartDashboard.putData("FeederTest",new InstantCommand(() -> (new FeederRun(m_cpm, SmartDashboard.getNumber("FeederTestSpeed", 0))).schedule()));
+    SmartDashboard.putData("FeederStop", new FeederStop(m_cpm));
+
+    // CPM
+    SmartDashboard.putData("CPM RotationControl", new CPMRotationControl(m_cpm));
+    SmartDashboard.putData("CPM PositionControl", new CPMPositionControl(m_cpm));
+    SmartDashboard.putData("CPM Test Deploy", new CPMTestDeploy(m_cpm));
+    SmartDashboard.putData("CPM Test Retract", new CPMTestRetract(m_cpm));
+    SmartDashboard.putData("CPM TestColorWheelPositionControl", new CPMTestGoToPosition(m_cpm, SmartDashboard.getNumber("CPM Desired Wheel Position", 0)));
+    // Tiny Wheel Correction may become the third CPM button to correct for position errors
+    SmartDashboard.putData("CPM TestTinyWheelCorrection", new CPMTinyCorrectionRotation(m_cpm));
+
+    // Shooter
     SmartDashboard.putNumber("ShooterTestFlywheelSpeed", 0);
     SmartDashboard.putData("ShooterTestFlywheel", new InstantCommand(() -> (new ShooterFlywheelRun(m_shooter, SmartDashboard.getNumber("ShooterTestFlywheelSpeed", 0))).schedule()));
     SmartDashboard.putData("ShooterStopFlywheel", new ShooterFlywheelRun(m_shooter, 0));
@@ -477,7 +497,7 @@ public class RobotContainer {
     // m_arm.setDefaultCommand(m_armHoldCurrentPosition);
     m_intake.setDefaultCommand(new StopIntake(m_intake));
     m_hopper.setDefaultCommand(new HopperStop(m_hopper));
-    m_feeder.setDefaultCommand(new FeederStop(m_feeder));
+    m_cpm.setDefaultCommand(new FeederStop(m_cpm));
     m_shooter.setDefaultCommand(new ShooterStop(m_shooter));
 
     // DoubleSupplier climbSpeedXSupplier = m_buttonBox::getClimberTiltAxis;
