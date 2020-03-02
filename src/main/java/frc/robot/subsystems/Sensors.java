@@ -71,6 +71,7 @@ public class Sensors extends SubsystemBase {
     limelight = new Limelight();
     limelight.camVision();
     limelight.ledOff();
+    SmartDashboard.putNumber("Limelight Test Distance", 120.0);
 
     shooterBallSensor = new DigitalInput(Constants.SHOOTER_BALL_SENSOR_ID);
 
