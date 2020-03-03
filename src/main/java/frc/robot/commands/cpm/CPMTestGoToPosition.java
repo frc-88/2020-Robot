@@ -16,7 +16,7 @@ public class CPMTestGoToPosition extends CommandBase {
   private double m_colorWheelRotations;
 
   /**
-   * Creates a new SetWheelPosition.
+   * Creates a new CPMTestGoToPosition.
    */
   public CPMTestGoToPosition(ControlPanelManipulator cpm, double colorWheelRotations) {
     m_colorWheelRotations = colorWheelRotations;

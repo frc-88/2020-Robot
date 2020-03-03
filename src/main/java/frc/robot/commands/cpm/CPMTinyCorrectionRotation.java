@@ -52,21 +52,21 @@ public class CPMTinyCorrectionRotation extends CommandBase {
         if(cpm.getMotorSensorPosition() !=0){
           cpm.setMotorSensorPosition(0);
         } else {
-          cpm.getColor();
           state = 2;
         }
         break;
-      case 2: //start spinning motor, spins motor extra distance to target color if already received
-        cpm.moveWheelToPosition(Constants.CPM_TINY_TURN_ROTATIONS);
-        state = 3;
+      case 2: //start spinning motor and until we're 95% of our target
+        if (cpm.getWheelPosition() > .95*Constants.CPM_TINY_TURN_ROTATIONS){
+          state = 3;
+        } else {
+          cpm.moveWheelToPosition(Constants.CPM_TINY_TURN_ROTATIONS);
+        }
         break;
       case 3: //give control back to the driver + rumble 
         System.out.println("\nCPM RotateColorWheel State: "+ state);
         //controller.startHeavyRumble();
         // TODO: give back control to driver
-        if (cpm.getMotorVelocity() == 0){ // motor has stopped moving, motor is in break mode, proceed
-          state = 4;
-        }
+        state = 4;
         break;
       case 4: //stop heavy rumble after driver gets control back
         cpm.retractCPM();

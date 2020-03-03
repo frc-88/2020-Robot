@@ -277,6 +277,12 @@ public class ControlPanelManipulator extends SubsystemBase {
     m_feederSpinner.setSelectedSensorPosition(sensorPosition);
   }
 
+    /**
+   * Uses motion magic positional targeting to move color wheel some number of rotations
+   * 
+   * @param wheelPosition The desired color wheel position in number of rotations
+   * @return Nothing
+   */
   public void moveWheelToPosition(double wheelPosition) {
     m_feederSpinner.set(ControlMode.MotionMagic, convertWheelPositionToMotorPosition(wheelPosition));
   }

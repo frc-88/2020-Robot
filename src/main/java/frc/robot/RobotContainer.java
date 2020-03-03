@@ -497,7 +497,7 @@ public class RobotContainer {
     // m_arm.setDefaultCommand(m_armHoldCurrentPosition);
     m_intake.setDefaultCommand(new StopIntake(m_intake));
     m_hopper.setDefaultCommand(new HopperStop(m_hopper));
-    m_cpm.setDefaultCommand(new FeederStop(m_cpm));
+    //m_cpm.setDefaultCommand(new FeederStop(m_cpm));
     m_shooter.setDefaultCommand(new ShooterStop(m_shooter));
 
     // DoubleSupplier climbSpeedXSupplier = m_buttonBox::getClimberTiltAxis;
