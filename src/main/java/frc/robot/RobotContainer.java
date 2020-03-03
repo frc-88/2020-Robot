@@ -276,6 +276,19 @@ public class RobotContainer {
   private CommandBase m_currentFASHCommand = m_stopShoot;
   
   private final CommandBase m_autoDoNothing = new ParallelCommandGroup(
+    new ArcadeDrive(m_drive, () -> 0, () -> 0, () -> false, () -> Constants.MAX_SPEED_HIGH),
+    new ShooterStop(m_shooter),
+    new FeederStop(m_feeder),
+    new HopperStop(m_hopper),
+    new StopIntake(m_intake),
+    new SequentialCommandGroup(
+      new DisengageRatchets(m_climber),
+      new ZeroClimber(m_climber),
+      new StopClimber(m_climber)
+    )
+  );
+
+  private final CommandBase m_autoJustDrive = new ParallelCommandGroup(
     new SequentialCommandGroup(
       new ParallelDeadlineGroup(
         new WaitCommand(SmartDashboard.getNumber("Auto Drive Wait", 10)),
