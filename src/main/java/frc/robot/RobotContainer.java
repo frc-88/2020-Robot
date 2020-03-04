@@ -145,13 +145,13 @@ public class RobotContainer {
   //    turn on the limelight unless for layup
   private CommandBase m_prepShoot = new ConditionalCommand(
     new ParallelCommandGroup(
-      new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
-      new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue())
-    ),
-    new ParallelCommandGroup(
       new ArmFullUp(m_arm),
       new ShooterRunFromLimelight(m_shooter),
       new LimelightToggle(m_sensors, true)
+    ),
+    new ParallelCommandGroup(
+      new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
+      new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue())
     ),
     m_buttonBox.button7::get);
 
@@ -191,11 +191,36 @@ public class RobotContainer {
           new RunIntake(m_intake, 0.3)
         )
       ),
+      new SequentialCommandGroup(
+        new ParallelRaceGroup(
+          new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
+          new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()),
+          new WaitForShooterReady(m_arm, m_shooter)
+        ),
+        new ParallelCommandGroup(
+          new HopperShootMode(m_hopper), 
+          new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
+          new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()), 
+          new FeederRun(m_feeder, 1.0)
+        )
+      ),
       m_buttonBox.button7::get);
 
   // pauseShoot - stop the hopper and the feeder maintain arm and flywheel for shooting
   private final CommandBase m_pauseShoot = 
     new ConditionalCommand(
+      new SequentialCommandGroup(
+          new ParallelRaceGroup(
+            new HopperEject(m_hopper, -1.),
+            new WaitCommand(1),
+            new FeederStop(m_feeder), 
+            new ArmFullUp(m_arm),
+            new ShooterRunFromLimelight(m_shooter)),
+        new ParallelCommandGroup(
+          new HopperStop(m_hopper),
+          new FeederStop(m_feeder), 
+          new ArmFullUp(m_arm),
+          new ShooterRunFromLimelight(m_shooter))),
         new SequentialCommandGroup(
           new ParallelRaceGroup(
             new HopperEject(m_hopper, -1.),
@@ -208,18 +233,6 @@ public class RobotContainer {
             new FeederStop(m_feeder),
             new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
             new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()))),
-        new SequentialCommandGroup(
-          new ParallelRaceGroup(
-            new HopperEject(m_hopper, -1.),
-            new WaitCommand(1),
-            new FeederStop(m_feeder), 
-            new ArmFullUp(m_arm),
-            new ShooterRunFromLimelight(m_shooter)),
-        new ParallelCommandGroup(
-          new HopperStop(m_hopper),
-          new FeederStop(m_feeder), 
-          new ArmFullUp(m_arm),
-          new ShooterRunFromLimelight(m_shooter))),
       m_buttonBox.button7::get);
 
   // stopShoot - stows arm, stops shooter, stops feeder, turns limelight off
