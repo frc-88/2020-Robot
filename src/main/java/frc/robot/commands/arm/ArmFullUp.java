@@ -30,7 +30,7 @@ public class ArmFullUp extends CommandBase {
   @Override
   public void execute() {
     if (arm.getCurrentArmPosition() > 85) {
-      arm.setPercentOutput(0.07);
+      arm.setPercentOutput(0.05);
     } else {
       arm.setArmPosition(90);
     }

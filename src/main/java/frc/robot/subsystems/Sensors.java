@@ -192,6 +192,10 @@ public class Sensors extends SubsystemBase {
     return limelight.hasTarget();
   }
 
+  public boolean hasBallInShooter() {
+    return !shooterBallSensor.get();
+  }
+
   @Override
   public void periodic() {
     // NavX data

@@ -65,6 +65,11 @@ public class BasicAutoDrive extends CommandBase {
     m_rightSpeed -= desyncAmount * m_syncP.getValue();
 
     m_drive.basicDriveLimited(m_leftSpeed, m_rightSpeed);
+    if (m_drive.autoshift((m_leftSpeed + m_rightSpeed) / 2)) {
+      m_drive.shiftToHigh();
+    } else {
+      m_drive.shiftToLow();
+    }
   }
 
   // Called once the command ends or is interrupted.

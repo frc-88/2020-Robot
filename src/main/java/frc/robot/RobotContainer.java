@@ -61,7 +61,8 @@ import frc.robot.commands.shooter.ShooterFlywheelRun;
 import frc.robot.commands.shooter.ShooterFlywheelRunBasic;
 import frc.robot.commands.shooter.ShooterRunFromLimelight;
 import frc.robot.commands.shooter.ShooterStop;
-import frc.robot.commands.vision.LimelightToggle;
+import frc.robot.commands.sensors.LimelightToggle;
+import frc.robot.commands.sensors.WaitForBallsShot;
 import frc.robot.driveutil.DriveUtils;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Climber;
@@ -169,7 +170,8 @@ public class RobotContainer {
           new HopperShootMode(m_hopper), 
           new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
           new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()), 
-          new FeederRun(m_feeder, 1.0)
+          new FeederRun(m_feeder, 1.0),
+          new RunIntake(m_intake, 0.2)
         )
       ),
       new SequentialCommandGroup(
@@ -185,7 +187,8 @@ public class RobotContainer {
           new HopperShootMode(m_hopper), 
           new ArmFullUp(m_arm),
           new ShooterRunFromLimelight(m_shooter), 
-          new FeederRun(m_feeder, 1.0)
+          new FeederRun(m_feeder, 1.0),
+          new RunIntake(m_intake, 0.2)
         )
       ),
       m_buttonBox.button7::get);
@@ -274,36 +277,146 @@ public class RobotContainer {
 
   // The currently running FASH (Feeder/Arm/Shooter/Hopper) combined command
   private CommandBase m_currentFASHCommand = m_stopShoot;
+
+  //TODO: Make this look nice
+  /*****
+   * AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO
+   * AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO
+   * AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO
+   * AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO
+   */
+
+  private class AutoClimber extends SequentialCommandGroup {
+    public AutoClimber() {
+      super (
+        new ConditionalCommand(
+          new EngageRatchets(m_climber),
+          new DisengageRatchets(m_climber),
+          m_buttonBox.button14::get),
+        new ZeroClimber(m_climber),
+        new StopClimber(m_climber)
+      );
+    }
+  }
+
+  private class AutoDoNothing extends ParallelCommandGroup {
+    public AutoDoNothing() {
+      super(
+        new ArcadeDrive(m_drive, () -> 0, () -> 0, () -> false, () -> Constants.MAX_SPEED_HIGH),
+        new ShooterStop(m_shooter),
+        new FeederStop(m_feeder),
+        new HopperStop(m_hopper),
+        new StopIntake(m_intake),
+        new ArmStow(m_arm)
+      );
+    }
+  }
+
+  private class AutoDelayedDrive extends SequentialCommandGroup {
+    public AutoDelayedDrive() {
+      super(
+        new ParallelDeadlineGroup(
+          new WaitCommand(SmartDashboard.getNumber("Auto Drive Wait", 10)),
+          new ArcadeDrive(m_drive, () -> 0, () -> 0, () -> false, () -> Constants.MAX_SPEED_HIGH)
+        ),
+        new BasicAutoDrive(m_drive, SmartDashboard.getNumber("Auto Drive Distance", -2), SmartDashboard.getNumber("Auto Drive Distance", -2), 3),
+        new ArcadeDrive(m_drive, () -> 0, () -> 0, () -> false, () -> Constants.MAX_SPEED_HIGH)
+      );
+    }
+  }
+
+  private class AutoShoot extends SequentialCommandGroup {
+    public AutoShoot(int numBalls) {
+      super(
+        new ParallelDeadlineGroup(
+          new ParallelCommandGroup(
+            new WaitForShooterReady(m_arm, m_shooter),
+            new WaitForDriveAimed(m_drive)
+          ),
+          new LimelightToggle(m_sensors, true),
+          new TurnToLimelight(m_drive, m_sensors),
+          new ArmFullUp(m_arm), 
+          new ShooterRunFromLimelight(m_shooter),
+          new FeederStop(m_feeder)
+        ),
+        new ParallelDeadlineGroup(
+          new WaitForBallsShot(m_sensors, numBalls),
+          new TurnToLimelight(m_drive, m_sensors),
+          new ArmFullUp(m_arm), 
+          new ShooterRunFromLimelight(m_shooter),
+          new FeederRun(m_feeder, 1.0)
+        ),
+        new ParallelCommandGroup(
+          new LimelightToggle(m_sensors, false),
+          new AutoDoNothing()
+        )
+      );
+    }
+  }
   
   private final CommandBase m_autoDoNothing = new ParallelCommandGroup(
-    new ArcadeDrive(m_drive, () -> 0, () -> 0, () -> false, () -> Constants.MAX_SPEED_HIGH),
-    new ShooterStop(m_shooter),
-    new FeederStop(m_feeder),
-    new HopperStop(m_hopper),
-    new StopIntake(m_intake),
-    new SequentialCommandGroup(
-      new DisengageRatchets(m_climber),
-      new ZeroClimber(m_climber),
-      new StopClimber(m_climber)
-    )
+    new AutoDoNothing(),
+    new AutoClimber()
   );
 
   private final CommandBase m_autoJustDrive = new ParallelCommandGroup(
     new SequentialCommandGroup(
       new ParallelDeadlineGroup(
-        new WaitCommand(SmartDashboard.getNumber("Auto Drive Wait", 10)),
-        new ArcadeDrive(m_drive, () -> 0, () -> 0, () -> false, () -> Constants.MAX_SPEED_HIGH)
-      )
+          new WaitCommand(SmartDashboard.getNumber("Auto Drive Wait", 10)),
+          new ArcadeDrive(m_drive, () -> 0, () -> 0, () -> false, () -> Constants.MAX_SPEED_HIGH)
+      ),
+      new BasicAutoDrive(m_drive, SmartDashboard.getNumber("Auto Drive Distance", -2), SmartDashboard.getNumber("Auto Drive Distance", -2), 3),
+      new ArcadeDrive(m_drive, () -> 0, () -> 0, () -> false, () -> Constants.MAX_SPEED_HIGH)
     ),
+    new AutoClimber(),
     new ShooterStop(m_shooter),
     new FeederStop(m_feeder),
     new HopperStop(m_hopper),
     new StopIntake(m_intake),
+    new ArmStow(m_arm)
+  );
+
+  private final CommandBase m_auto3Ball = new ParallelCommandGroup(
     new SequentialCommandGroup(
-      new DisengageRatchets(m_climber),
-      new ZeroClimber(m_climber),
-      new StopClimber(m_climber)
-    )
+      new ParallelDeadlineGroup(
+        new WaitCommand(SmartDashboard.getNumber("Auto Drive Wait", 10)),
+        new AutoShoot(100)
+      ),
+      new ParallelCommandGroup(
+        new BasicAutoDrive(m_drive, SmartDashboard.getNumber("Auto Drive Distance", -2), SmartDashboard.getNumber("Auto Drive Distance", -2), 3),
+        new ShooterStop(m_shooter),
+        new FeederStop(m_feeder),
+        new HopperStop(m_hopper),
+        new StopIntake(m_intake),
+        new ArmStow(m_arm)
+      ),
+      new AutoDoNothing()
+    ),
+    new AutoClimber()
+  );
+
+  private final CommandBase m_autoTrench7Ball = new ParallelCommandGroup(
+    new SequentialCommandGroup(
+      new AutoShoot(3),
+      new ParallelCommandGroup(
+        new BasicAutoDrive(m_drive, -3, -3, 6),
+        new ShooterStop(m_shooter),
+        new FeederStop(m_feeder),
+        new HopperStop(m_hopper),
+        new StopIntake(m_intake),
+        new ArmStow(m_arm)
+      ),
+      new ParallelCommandGroup(
+        new BasicAutoDrive(m_drive, 2, 2, 8),
+        new ShooterStop(m_shooter),
+        new FeederStop(m_feeder),
+        new HopperStop(m_hopper),
+        new StopIntake(m_intake),
+        new ArmStow(m_arm)
+      ),
+      new AutoShoot(100)
+    ),
+    new AutoClimber()
   );
 
   private CommandBase m_autoCommand = m_autoDoNothing;
@@ -323,7 +436,10 @@ public class RobotContainer {
     }
   }
   private final List<ButtonAutoPair> autoSelectors = Arrays.asList(
-    new ButtonAutoPair(m_buttonBox.button2, m_autoDoNothing)
+    new ButtonAutoPair(m_buttonBox.button2, m_autoDoNothing),
+    new ButtonAutoPair(m_buttonBox.button3, m_autoJustDrive),
+    new ButtonAutoPair(m_buttonBox.button4, m_auto3Ball),
+    new ButtonAutoPair(m_buttonBox.button5, m_autoTrench7Ball)
   );
 
   /***
