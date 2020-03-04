@@ -162,20 +162,6 @@ public class RobotContainer {
     new ConditionalCommand(
       new SequentialCommandGroup(
         new ParallelRaceGroup(
-          new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
-          new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()),
-          new WaitForShooterReady(m_arm, m_shooter)
-        ),
-        new ParallelCommandGroup(
-          new HopperShootMode(m_hopper), 
-          new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
-          new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()), 
-          new FeederRun(m_feeder, 1.0),
-          new RunIntake(m_intake, 0.2)
-        )
-      ),
-      new SequentialCommandGroup(
-        new ParallelRaceGroup(
           new ArmFullUp(m_arm), 
           new ShooterRunFromLimelight(m_shooter),
           new ParallelCommandGroup(
@@ -188,7 +174,21 @@ public class RobotContainer {
           new ArmFullUp(m_arm),
           new ShooterRunFromLimelight(m_shooter), 
           new FeederRun(m_feeder, 1.0),
-          new RunIntake(m_intake, 0.2)
+          new RunIntake(m_intake, 0.3)
+        )
+      ),
+      new SequentialCommandGroup(
+        new ParallelRaceGroup(
+          new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
+          new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()),
+          new WaitForShooterReady(m_arm, m_shooter)
+        ),
+        new ParallelCommandGroup(
+          new HopperShootMode(m_hopper), 
+          new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
+          new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()), 
+          new FeederRun(m_feeder, 1.0),
+          new RunIntake(m_intake, 0.3)
         )
       ),
       m_buttonBox.button7::get);
