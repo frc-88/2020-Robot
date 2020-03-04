@@ -67,9 +67,10 @@ public class CPMPositionControl extends CommandBase {
       case 3: // start spinning motor, spins motor extra distance to target color if already received
         System.out.println("\nCPM: In state "+ state);
         System.out.println("\nCPM: Target position: "+ cpm.calcPositionControlTargetPosition());
-        cpm.moveWheelToPosition(cpm.calcPositionControlTargetPosition());
-        if (cpm.getMotorVelocity() == 0){ // motor has stopped moving, motor is in break mode, proceed
+        if (Math.abs(cpm.getWheelPosition()) > .95*cpm.calcPositionControlTargetPosition()){
           state = 4;
+        } else {
+          cpm.moveWheelToPosition(-cpm.calcPositionControlTargetPosition());
         }
         break;
       case 4: // give control back to the driver + rumble 

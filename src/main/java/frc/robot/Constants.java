@@ -17,8 +17,6 @@ public final class Constants {
 	public static final int CPM_DIGITAL_INPUT_CHANNEL = 0;
 	public static final int CPM_JOINT_ENCODER_CHANNEL_1A = 1;
 	public static final int CPM_JOINT_ENCODER_CHANNEL_1B = 2;
-	public static final int CPM_AUX_SENSOR_SLOT_IDX = 88; //Needs validation
-	public static final int CPM_MAIN_SLOT_IDX = 88; //Needs validation
 	//--Constants
 	public static final int CPM_WRIST_ENCODER_COUNTS_PER_REV = 2048;
 	public static final double CPM_PHASE_2_WHEEL_ROTATIONS = 3.5;

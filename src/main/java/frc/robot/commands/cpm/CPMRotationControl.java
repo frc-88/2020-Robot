@@ -64,7 +64,6 @@ public class CPMRotationControl extends CommandBase {
         if(cpm.getMotorSensorPosition() !=0){
           cpm.setMotorSensorPosition(0);
         } else {
-          cpm.getColor();
           state = 3;
         }
         break;
@@ -83,15 +82,13 @@ public class CPMRotationControl extends CommandBase {
           }
         }
         System.out.println("\nCPM target distance: "+ finalRotationDistance);
-        cpm.moveWheelToPosition(finalRotationDistance);
         state = 4;
         break;
-      case 4: //give control back to the driver + rumble 
-        System.out.println("\nCPM RotateColorWheel State: "+ state);
-        // TODO: give back control to driver
-        if (cpm.getMotorVelocity() == 0){ // motor has stopped moving, motor is in break mode, proceed
-          //controller.startHeavyRumble();
+      case 4: 
+        if (Math.abs(cpm.getWheelPosition()) > .95*finalRotationDistance){
           state = 5;
+        } else {
+          cpm.moveWheelToPosition(-finalRotationDistance);
         }
         break;
       case 5: //stop heavy rumble after driver gets control back

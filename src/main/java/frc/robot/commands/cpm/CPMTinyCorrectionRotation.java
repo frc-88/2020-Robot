@@ -40,6 +40,7 @@ public class CPMTinyCorrectionRotation extends CommandBase {
     switch(state) {
       case 0: 
         if(cpm.isCPMDeployed()) {
+          //TODO: move the deploy to somewhere else where we  are preparing the CPM and ARM
           //controller.startLightRumble();
           state = 1;
         } else {
@@ -56,10 +57,10 @@ public class CPMTinyCorrectionRotation extends CommandBase {
         }
         break;
       case 2: //start spinning motor and until we're 95% of our target
-        if (cpm.getWheelPosition() > .95*Constants.CPM_TINY_TURN_ROTATIONS){
+        if (Math.abs(cpm.getWheelPosition()) > .95*Constants.CPM_TINY_TURN_ROTATIONS){
           state = 3;
         } else {
-          cpm.moveWheelToPosition(Constants.CPM_TINY_TURN_ROTATIONS);
+          cpm.moveWheelToPosition(-Constants.CPM_TINY_TURN_ROTATIONS);
         }
         break;
       case 3: //give control back to the driver + rumble 
@@ -69,7 +70,8 @@ public class CPMTinyCorrectionRotation extends CommandBase {
         state = 4;
         break;
       case 4: //stop heavy rumble after driver gets control back
-        cpm.retractCPM();
+        //cpm.retractCPM();
+        //move the retract command to the arm stow  command
         System.out.println("\nCPM RotateColorWheel State: "+ state);
         //controller.stopRumble();
         break;

@@ -12,6 +12,10 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+// start_test_board
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.TalonFXPIDSetConfiguration;
+// end_test_board 
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -99,7 +103,7 @@ public class ControlPanelManipulator extends SubsystemBase {
     MAXIMUM_WHEEL_ACCELERATION = new DoublePreferenceConstant("CPM Acceleration", INIT_MAX_WHEEL_ACCELERATION);
     MAXIMUM_WHEEL_ACCELERATION.addChangeHandler(
       (Double acceleration) -> m_feederSpinner.configMotionAcceleration(convertWheelVelocityToMotorVelocity(acceleration)));
-    spinner_kP = new DoublePreferenceConstant("CPM Spinner kP", 0);
+    spinner_kP = new DoublePreferenceConstant("CPM Spinner kP", 0.003);
     spinner_kP.addChangeHandler((Double kP) -> m_feederSpinner.config_kP(0, kP));
     spinner_kI = new DoublePreferenceConstant("CPM Spinner kI", 0);
     spinner_kI.addChangeHandler((Double kI) -> m_feederSpinner.config_kI(0, kI));
