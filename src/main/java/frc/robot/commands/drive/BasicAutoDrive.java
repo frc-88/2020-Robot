@@ -7,6 +7,8 @@
 
 package frc.robot.commands.drive;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drive;
 import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
@@ -14,10 +16,12 @@ import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 public class BasicAutoDrive extends CommandBase {
 
   private final Drive m_drive;
-  private final double m_leftDistance;
-  private final double m_rightDistance;
+  private final DoubleSupplier m_leftDistanceSupplier;
+  private final DoubleSupplier m_rightDistanceSupplier;
   private final double m_maxSpeed;
 
+  private double m_leftDistance;
+  private double m_rightDistance;
   private double m_leftSpeed;
   private double m_rightSpeed;
 
@@ -25,15 +29,28 @@ public class BasicAutoDrive extends CommandBase {
 
   private int m_numLoops;
 
+  public BasicAutoDrive(final Drive drive, final DoubleSupplier leftDistance, final DoubleSupplier rightDistance, final double maxSpeed) {
+    m_drive = drive;
+    m_leftDistanceSupplier = leftDistance;
+    m_rightDistanceSupplier = rightDistance;
+    m_maxSpeed = maxSpeed;
+    m_syncP = new DoublePreferenceConstant("Basic Auto Drive kP", 0.2);
+
+    addRequirements(m_drive);
+  }
+
   /**
    * Creates a new BasicAutoDrive.
    */
   public BasicAutoDrive(final Drive drive, final double leftDistance, final double rightDistance, final double maxSpeed) {
-    m_drive = drive;
-    m_leftDistance = leftDistance;
-    m_rightDistance = rightDistance;
-    m_maxSpeed = maxSpeed;
-    m_syncP = new DoublePreferenceConstant("Basic Auto Drive kP", 0.2);
+    this(drive, () -> leftDistance, () -> rightDistance, maxSpeed);
+  }
+
+  // Called when the command is initially scheduled.
+  @Override
+  public void initialize() {
+    m_leftDistance = m_leftDistanceSupplier.getAsDouble();
+    m_rightDistance = m_rightDistanceSupplier.getAsDouble();
 
     if (m_leftDistance > m_rightDistance) {
       m_leftSpeed = m_maxSpeed;
@@ -45,11 +62,7 @@ public class BasicAutoDrive extends CommandBase {
 
     m_leftSpeed *= Math.signum(m_leftDistance);
     m_rightSpeed *= Math.signum(m_rightDistance);
-  }
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
     m_drive.resetEncoderPositions();
     m_numLoops = 0;
   }
@@ -59,10 +72,10 @@ public class BasicAutoDrive extends CommandBase {
   public void execute() {
     m_numLoops++;
 
-    double desyncAmount = (m_drive.getRightPosition() / (m_rightSpeed / m_maxSpeed)) 
-        - (m_drive.getLeftPosition() / (m_leftSpeed / m_maxSpeed));
-    m_leftSpeed += desyncAmount * m_syncP.getValue();
-    m_rightSpeed -= desyncAmount * m_syncP.getValue();
+    double desyncAmount = (m_drive.getRightPosition() / (Math.abs(m_rightSpeed) / m_maxSpeed)) 
+        - (m_drive.getLeftPosition() / (Math.abs(m_leftSpeed) / m_maxSpeed));
+    m_leftSpeed -= desyncAmount * m_syncP.getValue();
+    m_rightSpeed += desyncAmount * m_syncP.getValue();
 
     m_drive.basicDriveLimited(m_leftSpeed, m_rightSpeed);
     if (m_drive.autoshift((m_leftSpeed + m_rightSpeed) / 2)) {

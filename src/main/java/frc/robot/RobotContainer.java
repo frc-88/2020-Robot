@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.WaitForDriveAimed;
 import frc.robot.commands.WaitForShooterReady;
+import frc.robot.commands.WaitInitializeCommand;
 import frc.robot.commands.Intake.DeployIntake;
 import frc.robot.commands.Intake.RetractIntake;
 import frc.robot.commands.Intake.RunIntake;
@@ -191,19 +192,6 @@ public class RobotContainer {
           new RunIntake(m_intake, 0.3)
         )
       ),
-      new SequentialCommandGroup(
-        new ParallelRaceGroup(
-          new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
-          new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()),
-          new WaitForShooterReady(m_arm, m_shooter)
-        ),
-        new ParallelCommandGroup(
-          new HopperShootMode(m_hopper), 
-          new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
-          new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()), 
-          new FeederRun(m_feeder, 1.0)
-        )
-      ),
       m_buttonBox.button7::get);
 
   // pauseShoot - stop the hopper and the feeder maintain arm and flywheel for shooting
@@ -248,9 +236,7 @@ public class RobotContainer {
   private final CommandBase m_activateIntake = 
     new SequentialCommandGroup(
       new DeployIntake(m_intake),
-      new ParallelCommandGroup(
-        new RunIntake(m_intake, 1.)
-      )
+      new RunIntake(m_intake, 1.)
     );
 
   // deactivateIntake - retracts the intake, stops the rollers and hopper after a delay
@@ -260,9 +246,7 @@ public class RobotContainer {
         new WaitCommand(0.75),
         new RetractIntake(m_intake)
       ),
-      new ParallelCommandGroup(
-        new StopIntake(m_intake)
-      )
+      new StopIntake(m_intake)
     );
 
   // regurgitate - deploy the intake and run the intake, hopper, and feeder in reverse
@@ -342,11 +326,18 @@ public class RobotContainer {
     public AutoShoot(int numBalls) {
       super(
         new ParallelDeadlineGroup(
+          new WaitCommand(.15),
+          new LimelightToggle(m_sensors, true),
+          new ArcadeDrive(m_drive, () -> 0, () -> 0, () -> false, () -> Constants.MAX_SPEED_HIGH),
+          new ArmFullUp(m_arm), 
+          new ShooterRunFromLimelight(m_shooter),
+          new FeederStop(m_feeder)
+        ),
+        new ParallelDeadlineGroup(
           new ParallelCommandGroup(
             new WaitForShooterReady(m_arm, m_shooter),
             new WaitForDriveAimed(m_drive)
           ),
-          new LimelightToggle(m_sensors, true),
           new TurnToLimelight(m_drive, m_sensors),
           new ArmFullUp(m_arm), 
           new ShooterRunFromLimelight(m_shooter),
@@ -359,10 +350,7 @@ public class RobotContainer {
           new ShooterRunFromLimelight(m_shooter),
           new FeederRun(m_feeder, 1.0)
         ),
-        new ParallelCommandGroup(
-          new LimelightToggle(m_sensors, false),
-          new AutoDoNothing()
-        )
+        new LimelightToggle(m_sensors, false)
       );
     }
   }
@@ -375,10 +363,10 @@ public class RobotContainer {
   private final CommandBase m_autoJustDrive = new ParallelCommandGroup(
     new SequentialCommandGroup(
       new ParallelDeadlineGroup(
-          new WaitCommand(SmartDashboard.getNumber("Auto Drive Wait", 10)),
+          new WaitInitializeCommand(() -> SmartDashboard.getNumber("Auto Drive Wait", 10)),
           new ArcadeDrive(m_drive, () -> 0, () -> 0, () -> false, () -> Constants.MAX_SPEED_HIGH)
       ),
-      new BasicAutoDrive(m_drive, SmartDashboard.getNumber("Auto Drive Distance", -2), SmartDashboard.getNumber("Auto Drive Distance", -2), 3),
+      new BasicAutoDrive(m_drive, () -> SmartDashboard.getNumber("Auto Drive Distance", -2), () -> SmartDashboard.getNumber("Auto Drive Distance", -2), 3),
       new ArcadeDrive(m_drive, () -> 0, () -> 0, () -> false, () -> Constants.MAX_SPEED_HIGH)
     ),
     new AutoClimber(),
@@ -392,18 +380,23 @@ public class RobotContainer {
   private final CommandBase m_auto3Ball = new ParallelCommandGroup(
     new SequentialCommandGroup(
       new ParallelDeadlineGroup(
-        new WaitCommand(SmartDashboard.getNumber("Auto Drive Wait", 10)),
-        new AutoShoot(100)
+        new WaitInitializeCommand(() -> SmartDashboard.getNumber("Auto Drive Wait", 10)),
+        new SequentialCommandGroup(
+          new AutoShoot(100),
+          new AutoDoNothing()
+        )
       ),
       new ParallelCommandGroup(
-        new BasicAutoDrive(m_drive, SmartDashboard.getNumber("Auto Drive Distance", -2), SmartDashboard.getNumber("Auto Drive Distance", -2), 3),
+        new SequentialCommandGroup(
+          new BasicAutoDrive(m_drive, () -> SmartDashboard.getNumber("Auto Drive Distance", -2), () -> SmartDashboard.getNumber("Auto Drive Distance", -2), 3),
+          new ArcadeDrive(m_drive, () -> 0, () -> 0, () -> false, () -> Constants.MAX_SPEED_HIGH)
+        ), 
         new ShooterStop(m_shooter),
         new FeederStop(m_feeder),
         new HopperStop(m_hopper),
         new StopIntake(m_intake),
         new ArmStow(m_arm)
-      ),
-      new AutoDoNothing()
+      )
     ),
     new AutoClimber()
   );
@@ -411,20 +404,29 @@ public class RobotContainer {
   private final CommandBase m_autoTrench7Ball = new ParallelCommandGroup(
     new SequentialCommandGroup(
       new AutoShoot(3),
-      new ParallelCommandGroup(
-        new BasicAutoDrive(m_drive, -3, -3, 6),
+      new ParallelDeadlineGroup(
+        new BasicAutoDrive(m_drive, -8.5, -9, 6),
         new ShooterStop(m_shooter),
         new FeederStop(m_feeder),
         new HopperStop(m_hopper),
-        new StopIntake(m_intake),
+        new SequentialCommandGroup(
+          new DeployIntake(m_intake),
+          new RunIntake(m_intake, 1)
+        ),
         new ArmStow(m_arm)
       ),
-      new ParallelCommandGroup(
-        new BasicAutoDrive(m_drive, 2, 2, 8),
+      new ParallelDeadlineGroup(
+        new BasicAutoDrive(m_drive, 6.5, 7, 6),
         new ShooterStop(m_shooter),
         new FeederStop(m_feeder),
         new HopperStop(m_hopper),
-        new StopIntake(m_intake),
+        new SequentialCommandGroup(
+          new ParallelDeadlineGroup(
+            new WaitCommand(0.75),
+            new RetractIntake(m_intake)
+          ),
+          new StopIntake(m_intake)
+        ),
         new ArmStow(m_arm)
       ),
       new AutoShoot(100)
@@ -432,7 +434,7 @@ public class RobotContainer {
     new AutoClimber()
   );
 
-  private CommandBase m_autoCommand = m_autoDoNothing;
+  private CommandBase m_autoCommand = m_autoTrench7Ball;
   private class ButtonAutoPair {
     private Trigger button;
     private CommandBase auto;
@@ -611,6 +613,10 @@ public class RobotContainer {
 
     SmartDashboard.putData("Test Basic Auto 1", new BasicAutoDrive(m_drive, -10, -10, 8));
     SmartDashboard.putData("Test Basic Auto 2", new BasicAutoDrive(m_drive, -1, -6, 8));
+
+    // Auto stuff
+    SmartDashboard.putNumber("Auto Drive Wait", 10);
+    SmartDashboard.putNumber("Auto Drive Distance", -2);
   }
 
 

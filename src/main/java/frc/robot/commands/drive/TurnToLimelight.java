@@ -43,6 +43,7 @@ public class TurnToLimelight extends CommandBase {
     ticksOnTarget = 0;
     drive.setOnLimelightTarget(false);
     firstRun = true;
+    currentHeadingTarget = sensors.navx.getYaw();
     drive.shiftToLow();
   }
 
@@ -51,8 +52,8 @@ public class TurnToLimelight extends CommandBase {
   public void execute() {
     SmartDashboard.putBoolean("LimelightHeadingOnTarget", drive.isOnLimelightTarget());
     if (drive.isOnLimelightTarget()) {
+      drive.turnToHeading(currentHeadingTarget);
       if (LOG_DEBUG) {
-        drive.turnToHeading(currentHeadingTarget);
         System.out.println("On limelight target");
       }
       return;

@@ -19,7 +19,7 @@ public class WaitForBallsShot extends CommandBase {
   private int m_numDebounceTicks;
   private int m_numBallsPassed;
 
-  private static final int DEBOUNCE_TICKS = 3;
+  private static final int DEBOUNCE_TICKS = 2;
 
   /**
    * Creates a new WaitForBalls.
