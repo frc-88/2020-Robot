@@ -72,8 +72,8 @@ public class BasicAutoDrive extends CommandBase {
   public void execute() {
     m_numLoops++;
 
-    double desyncAmount = (m_drive.getRightPosition() / (Math.abs(m_rightSpeed) / m_maxSpeed)) 
-        - (m_drive.getLeftPosition() / (Math.abs(m_leftSpeed) / m_maxSpeed));
+    double desyncAmount = (m_drive.getRightPosition() / (m_rightSpeed / m_maxSpeed)) 
+        - (m_drive.getLeftPosition() / (m_leftSpeed / m_maxSpeed));
     m_leftSpeed -= desyncAmount * m_syncP.getValue();
     m_rightSpeed += desyncAmount * m_syncP.getValue();
 

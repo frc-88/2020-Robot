@@ -323,7 +323,7 @@ public class RobotContainer {
   }
 
   private class AutoShoot extends SequentialCommandGroup {
-    public AutoShoot(int numBalls) {
+    public AutoShoot(int numBalls, double minShotTime, double maxShotTime, boolean aim) {
       super(
         new ParallelDeadlineGroup(
           new WaitCommand(.15),
@@ -331,24 +331,49 @@ public class RobotContainer {
           new ArcadeDrive(m_drive, () -> 0, () -> 0, () -> false, () -> Constants.MAX_SPEED_HIGH),
           new ArmFullUp(m_arm), 
           new ShooterRunFromLimelight(m_shooter),
-          new FeederStop(m_feeder)
+          new FeederStop(m_feeder),
+          new RunIntake(m_intake, 0)
         ),
         new ParallelDeadlineGroup(
-          new ParallelCommandGroup(
-            new WaitForShooterReady(m_arm, m_shooter),
-            new WaitForDriveAimed(m_drive)
+          new ParallelRaceGroup(
+            new ParallelCommandGroup(
+              new WaitForShooterReady(m_arm, m_shooter),
+              new ConditionalCommand(new WaitForDriveAimed(m_drive), new WaitCommand(0.01), () -> aim),
+              new WaitCommand(0.75)
+            ),
+            new WaitCommand(1.5)
           ),
-          new TurnToLimelight(m_drive, m_sensors),
+          new ConditionalCommand(new TurnToLimelight(m_drive, m_sensors), new WaitCommand(0.01), () -> aim),
           new ArmFullUp(m_arm), 
           new ShooterRunFromLimelight(m_shooter),
-          new FeederStop(m_feeder)
+          new FeederStop(m_feeder),
+          new RunIntake(m_intake, 0)
         ),
         new ParallelDeadlineGroup(
-          new WaitForBallsShot(m_sensors, numBalls),
-          new TurnToLimelight(m_drive, m_sensors),
+          new ParallelRaceGroup(
+            new ParallelCommandGroup(
+              new WaitForBallsShot(m_sensors, numBalls),
+              new WaitCommand(minShotTime)
+            ),
+            new WaitCommand(maxShotTime)
+          ),
+          new ConditionalCommand(new TurnToLimelight(m_drive, m_sensors), new WaitCommand(0.01), () -> aim),
           new ArmFullUp(m_arm), 
           new ShooterRunFromLimelight(m_shooter),
-          new FeederRun(m_feeder, 1.0)
+          new FeederRun(m_feeder, 1.0),
+          new HopperShootMode(m_hopper),
+          new SequentialCommandGroup(
+            new ParallelDeadlineGroup(
+              new WaitCommand(1.5),
+              new RunIntake(m_intake, 0.3)
+            ),
+            new ParallelDeadlineGroup(
+              new WaitCommand(.25),
+              new DeployIntake(m_intake)
+            ),
+            new RetractIntake(m_intake),
+            new RunIntake(m_intake, 0.3)
+          )
         ),
         new LimelightToggle(m_sensors, false)
       );
@@ -382,7 +407,7 @@ public class RobotContainer {
       new ParallelDeadlineGroup(
         new WaitInitializeCommand(() -> SmartDashboard.getNumber("Auto Drive Wait", 10)),
         new SequentialCommandGroup(
-          new AutoShoot(100),
+          new AutoShoot(100, 15, 15, false),
           new AutoDoNothing()
         )
       ),
@@ -403,9 +428,9 @@ public class RobotContainer {
 
   private final CommandBase m_autoTrench7Ball = new ParallelCommandGroup(
     new SequentialCommandGroup(
-      new AutoShoot(3),
+      new AutoShoot(3, .3, 2, false),
       new ParallelDeadlineGroup(
-        new BasicAutoDrive(m_drive, -8.5, -9, 6),
+        new BasicAutoDrive(m_drive, -14, -15, 6),
         new ShooterStop(m_shooter),
         new FeederStop(m_feeder),
         new HopperStop(m_hopper),
@@ -416,7 +441,7 @@ public class RobotContainer {
         new ArmStow(m_arm)
       ),
       new ParallelDeadlineGroup(
-        new BasicAutoDrive(m_drive, 6.5, 7, 6),
+        new BasicAutoDrive(m_drive, 9.7, 10.2, 6),
         new ShooterStop(m_shooter),
         new FeederStop(m_feeder),
         new HopperStop(m_hopper),
@@ -429,7 +454,7 @@ public class RobotContainer {
         ),
         new ArmStow(m_arm)
       ),
-      new AutoShoot(100)
+      new AutoShoot(100, 15, 15, true)
     ),
     new AutoClimber()
   );

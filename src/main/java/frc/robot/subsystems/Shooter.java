@@ -27,6 +27,8 @@ public class Shooter extends SubsystemBase {
   private TalonFX m_flywheelFollower = new TalonFX(Constants.SHOOTER_FLYWHEEL_FOLLOWER);
   private ShooterConfig m_shooterConfig = new ShooterConfig();
 
+  private double lastSpeed = 5000;
+
   private DoublePreferenceConstant flywheel_kP;
   private DoublePreferenceConstant flywheel_kI;
   private DoublePreferenceConstant flywheel_kD;
@@ -97,18 +99,20 @@ public class Shooter extends SubsystemBase {
 
   public void setFlywheel(double velocity) {
     m_flywheelMaster.set(ControlMode.Velocity, convertFlywheelVelocityToEncoderVelocity(velocity));
+    lastSpeed = velocity;
   }
 
   public void setFlywheelFromLimelight() {
     if (m_sensors.doesLimelightHaveTarget()) {
-      this.setFlywheel(distanceToSpeedInterpolator.getInterpolatedValue(m_sensors.getDistanceToTarget()));
+      this.lastSpeed = distanceToSpeedInterpolator.getInterpolatedValue(m_sensors.getDistanceToTarget());
+      this.setFlywheel(lastSpeed);
     } else {
-      this.setFlywheel(5300);
+      this.setFlywheel(lastSpeed);
     }
   }
 
   public boolean flywheelOnTarget() {
-    return Math.abs(convertEncoderVelocityToFlywheelVelocity(m_flywheelMaster.getClosedLoopError())) < Constants.SHOOTER_FLYWHEEL_TOLERANCE;
+    return Math.abs(lastSpeed - convertEncoderVelocityToFlywheelVelocity(m_flywheelMaster.getSelectedSensorVelocity())) <= Constants.SHOOTER_FLYWHEEL_TOLERANCE;
   }
 
   public void setFlywheelBasic(double percentOutput) {
