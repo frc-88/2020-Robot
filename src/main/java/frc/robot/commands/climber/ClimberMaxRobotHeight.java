@@ -5,49 +5,40 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.arm;
-
-import java.util.function.BooleanSupplier;
+package frc.robot.commands.climber;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Climber;
 
-public class ArmStow extends CommandBase {
-  private Arm arm;
-  private BooleanSupplier trenchMode;
-  /**
-   * Creates a new ArmFullUp.
-   */
-  public ArmStow(Arm arm, BooleanSupplier trenchMode) {
-    this.arm = arm;
-    this.trenchMode=trenchMode;
-    addRequirements(arm);
+public class ClimberMaxRobotHeight extends CommandBase {
+  private Climber climber;
+  private static final int TARGET = 150_000;
+  public ClimberMaxRobotHeight(Climber climber) {
+    this.climber=climber;
+    addRequirements(climber);
+    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    arm.setArmPosition(0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (arm.getCurrentArmPosition() < 2) {
-      arm.setPercentOutput(trenchMode.getAsBoolean() ? -0.04:-0.01);
-    } else {
-      arm.setArmPosition(0);
-    }
+    climber.setMotors(1);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    climber.setMotors(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return ((climber.getLeftMotorPosition() + climber.getRightMotorPosition()) / 2) >= TARGET;
   }
 }

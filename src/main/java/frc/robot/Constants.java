@@ -60,6 +60,7 @@ public final class Constants {
 	public static final double ARM_ENCODER_SHIFT = 15;
 	public static final int ARM_SPEED_EXP = 2;
 	public static final double ARM_TOLERANCE = 5;
+	public static final int ARM_COAST_DIO = 9;
 
 	// Intake constants
 	public static final int ROLLER_ID = 11;
@@ -93,7 +94,7 @@ public final class Constants {
 	public static final double HOPPER_INTAKE_PERCENT_OUTPUT = 0.5;
 
 	// Sensor constants
-	public static final int SHOOTER_BALL_SENSOR_ID = 0;
+	public static final int SHOOTER_BALL_SENSOR_ID = 1;
 
 	// Field constants
 	public static final double FIELD_PORT_TARGET_HEIGHT = 90.75;

@@ -37,6 +37,7 @@ import frc.robot.commands.arm.ArmStow;
 import frc.robot.commands.arm.CalibrateArm;
 import frc.robot.commands.arm.RotateArm;
 import frc.robot.commands.arm.TestBrakeMode;
+import frc.robot.commands.climber.ClimberMaxRobotHeight;
 import frc.robot.commands.climber.DisengageRatchets;
 import frc.robot.commands.climber.EngageRatchets;
 import frc.robot.commands.climber.RunClimber;
@@ -227,7 +228,7 @@ public class RobotContainer {
   private final CommandBase m_stopShoot = 
     new ParallelCommandGroup(
       new LimelightToggle(m_sensors, false),
-      new ArmStow(m_arm), 
+      new ArmStow(m_arm, () -> m_driverController.getRawButton(5)), 
       new ShooterStop(m_shooter), 
       new FeederStop(m_feeder)
     );
@@ -304,8 +305,7 @@ public class RobotContainer {
         new FeederStop(m_feeder),
         new HopperStop(m_hopper),
         new StopIntake(m_intake),
-        new ArmStow(m_arm)
-      );
+        new ArmStow(m_arm, () -> false));
     }
   }
 
@@ -339,7 +339,7 @@ public class RobotContainer {
             new ParallelCommandGroup(
               new WaitForShooterReady(m_arm, m_shooter),
               new ConditionalCommand(new WaitForDriveAimed(m_drive), new WaitCommand(0.01), () -> aim),
-              new WaitCommand(0.75)
+              new WaitCommand(1.0)
             ),
             new WaitCommand(1.5)
           ),
@@ -399,8 +399,8 @@ public class RobotContainer {
     new FeederStop(m_feeder),
     new HopperStop(m_hopper),
     new StopIntake(m_intake),
-    new ArmStow(m_arm)
-  );
+    new ArmStow(m_arm, () -> m_driverController.getRawButton(5))
+    );
 
   private final CommandBase m_auto3Ball = new ParallelCommandGroup(
     new SequentialCommandGroup(
@@ -420,8 +420,7 @@ public class RobotContainer {
         new FeederStop(m_feeder),
         new HopperStop(m_hopper),
         new StopIntake(m_intake),
-        new ArmStow(m_arm)
-      )
+        new ArmStow(m_arm, () -> m_driverController.getRawButton(5)))
     ),
     new AutoClimber()
   );
@@ -438,8 +437,8 @@ public class RobotContainer {
           new DeployIntake(m_intake),
           new RunIntake(m_intake, 1)
         ),
-        new ArmStow(m_arm)
-      ),
+        new ArmStow(m_arm, () -> m_driverController.getRawButton(5))     
+        ),
       new ParallelDeadlineGroup(
         new BasicAutoDrive(m_drive, 9.7, 10.2, 6),
         new ShooterStop(m_shooter),
@@ -452,7 +451,7 @@ public class RobotContainer {
           ),
           new StopIntake(m_intake)
         ),
-        new ArmStow(m_arm)
+        new ArmStow(m_arm, () -> m_driverController.getRawButton(5))
       ),
       new AutoShoot(100, 15, 15, true)
     ),
@@ -554,7 +553,7 @@ public class RobotContainer {
       m_currentFASHCommand.cancel();
       m_currentFASHCommand.schedule();
     }));
-
+    m_buttonBox.button11.whenPressed(new ClimberMaxRobotHeight(m_climber));
     m_buttonBox.button14.whenPressed(new EngageRatchets(m_climber));
     m_buttonBox.button14.whenReleased(new DisengageRatchets(m_climber));
   }
@@ -609,7 +608,7 @@ public class RobotContainer {
     SmartDashboard.putData("Arm Calibrate", new CalibrateArm(m_arm));
     SmartDashboard.putNumber("ArmTestPosition", 0);
     SmartDashboard.putData("Arm to Position", new InstantCommand(() -> new ArmMotionMagic(m_arm, SmartDashboard.getNumber("ArmTestPosition", 0)).schedule()));
-    SmartDashboard.putData("Arm to Stow", new ArmStow(m_arm));
+    SmartDashboard.putData("Arm to Stow", new ArmStow(m_arm, () -> m_driverController.getRawButton(6)));
     SmartDashboard.putData("Arm to Layup", new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()));
     SmartDashboard.putData("Arm Hold Position", new InstantCommand(() -> new ArmMotionMagic(m_arm, m_arm.getCurrentArmPosition()).schedule(), m_arm));
     SmartDashboard.putData("Arm Test Brake Mode", new TestBrakeMode(m_arm));
