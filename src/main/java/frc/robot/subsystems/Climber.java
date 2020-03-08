@@ -105,8 +105,8 @@ public class Climber extends SubsystemBase{
     public void exitZeroMode() {
         StatorCurrentLimitConfiguration currentLimit = new StatorCurrentLimitConfiguration();
         currentLimit.enable = true;
-        currentLimit.currentLimit = 40;
-        currentLimit.triggerThresholdCurrent = 40;
+        currentLimit.currentLimit = 50;
+        currentLimit.triggerThresholdCurrent = 50;
         currentLimit.triggerThresholdTime = 0.001;
         m_climber_motor_left.configStatorCurrentLimit(currentLimit);
         m_climber_motor_right.configStatorCurrentLimit(currentLimit);   

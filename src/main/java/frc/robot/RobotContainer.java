@@ -301,7 +301,7 @@ public class RobotContainer {
     public AutoDoNothing() {
       super(
         new ArcadeDrive(m_drive, () -> 0, () -> 0, () -> false, () -> Constants.MAX_SPEED_HIGH),
-        new ShooterStop(m_shooter),
+        new ShooterRunFromLimelight(m_shooter),
         new FeederStop(m_feeder),
         new HopperStop(m_hopper),
         new StopIntake(m_intake),
@@ -430,7 +430,7 @@ public class RobotContainer {
       new AutoShoot(3, .3, 2, false),
       new ParallelDeadlineGroup(
         new BasicAutoDrive(m_drive, -14, -15, 6),
-        new ShooterStop(m_shooter),
+        new ShooterRunFromLimelight(m_shooter),
         new FeederStop(m_feeder),
         new HopperStop(m_hopper),
         new SequentialCommandGroup(
@@ -441,7 +441,7 @@ public class RobotContainer {
         ),
       new ParallelDeadlineGroup(
         new BasicAutoDrive(m_drive, 9.7, 10.2, 6),
-        new ShooterStop(m_shooter),
+        new ShooterRunFromLimelight(m_shooter),
         new FeederStop(m_feeder),
         new HopperStop(m_hopper),
         new SequentialCommandGroup(
