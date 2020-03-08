@@ -22,6 +22,7 @@ import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 
 public class Shooter extends SubsystemBase {
   private Sensors m_sensors;
+  private int m_loopCounter = 0;
 
   private TalonFX m_flywheelMaster = new TalonFX(Constants.SHOOTER_FLYWHEEL_MASTER);
   private TalonFX m_flywheelFollower = new TalonFX(Constants.SHOOTER_FLYWHEEL_FOLLOWER);
@@ -41,10 +42,10 @@ public class Shooter extends SubsystemBase {
     new ValueInterpolator.ValuePair(113, 5280),
     new ValueInterpolator.ValuePair(119, 5280),
     new ValueInterpolator.ValuePair(128, 5280),
-    new ValueInterpolator.ValuePair(162, 5240),
-    new ValueInterpolator.ValuePair(224, 5290),
-    new ValueInterpolator.ValuePair(239, 5300),
-    new ValueInterpolator.ValuePair(254, 5420),
+    new ValueInterpolator.ValuePair(162, 5260),
+    new ValueInterpolator.ValuePair(224, 5360),
+    new ValueInterpolator.ValuePair(239, 5390),
+    new ValueInterpolator.ValuePair(254, 5490),
     new ValueInterpolator.ValuePair(277, 5390),
     new ValueInterpolator.ValuePair(284, 5580)
   );
@@ -131,6 +132,11 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
+    m_loopCounter += 1;
     SmartDashboard.putNumber("Flywheel velocity", convertEncoderVelocityToFlywheelVelocity(m_flywheelMaster.getSelectedSensorVelocity()));
+    if(m_loopCounter % 3. == 0) {
+      System.out.println(lastSpeed);
+      System.out.println(convertEncoderVelocityToFlywheelVelocity((int)m_flywheelMaster.getClosedLoopTarget()));
+    }
   }
 }

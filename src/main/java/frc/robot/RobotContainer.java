@@ -341,7 +341,7 @@ public class RobotContainer {
               new ConditionalCommand(new WaitForDriveAimed(m_drive), new WaitCommand(0.01), () -> aim),
               new WaitCommand(1.0)
             ),
-            new WaitCommand(1.5)
+            new WaitCommand(2.0)
           ),
           new ConditionalCommand(new TurnToLimelight(m_drive, m_sensors), new WaitCommand(0.01), () -> aim),
           new ArmFullUp(m_arm), 
@@ -427,7 +427,7 @@ public class RobotContainer {
 
   private final CommandBase m_autoTrench7Ball = new ParallelCommandGroup(
     new SequentialCommandGroup(
-      new AutoShoot(3, .3, 2, false),
+      new AutoShoot(3, .3, 3, false),
       new ParallelDeadlineGroup(
         new BasicAutoDrive(m_drive, -14, -15, 6),
         new ShooterRunFromLimelight(m_shooter),
