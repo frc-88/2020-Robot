@@ -17,6 +17,10 @@ public class WaitForShooterReady extends CommandBase {
   private final Arm arm;
   private final Shooter shooter;
 
+  private int debounceTicks;
+
+  private final int DEBOUNCE = 5;
+  
   /**
    * Creates a new WaitForShooterReady.
    */
@@ -25,11 +29,20 @@ public class WaitForShooterReady extends CommandBase {
     this.shooter = shooter;
   }
 
+  public void initialize() {
+    debounceTicks = 0;
+  }
+
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     SmartDashboard.putBoolean("Arm On Target", this.arm.isOnTarget());
     SmartDashboard.putBoolean("Shooter On Target", this.shooter.flywheelOnTarget());
-    return this.arm.isOnTarget() && this.shooter.flywheelOnTarget();
+    if (this.arm.isOnTarget() && this.shooter.flywheelOnTarget()) {
+      debounceTicks++;
+    } else {
+      debounceTicks = 0;
+    }
+    return debounceTicks >= DEBOUNCE;
   }
 }

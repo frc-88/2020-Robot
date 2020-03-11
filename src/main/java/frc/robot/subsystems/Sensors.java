@@ -71,6 +71,7 @@ public class Sensors extends SubsystemBase {
     limelight = new Limelight();
     limelight.camVision();
     limelight.ledOff();
+    SmartDashboard.putNumber("Limelight Test Distance", 120.0);
 
     shooterBallSensor = new DigitalInput(Constants.SHOOTER_BALL_SENSOR_ID);
 
@@ -188,8 +189,19 @@ public class Sensors extends SubsystemBase {
                       ( distance * Math.cos(Math.toRadians(tx)) ) ) );
   }
 
+  public double calcLimelightAngle() {
+    double distance = SmartDashboard.getNumber("Limelight Test Distance", 120.0);
+    double ty = limelight.getTargetVerticalOffsetAngle();
+
+    return Math.toDegrees(Math.atan( (Constants.FIELD_PORT_TARGET_HEIGHT - m_limelightHeight.getValue()) / distance)) - ty;
+  }
+
   public boolean doesLimelightHaveTarget() {
     return limelight.hasTarget();
+  }
+
+  public boolean hasBallInShooter() {
+    return !shooterBallSensor.get();
   }
 
   @Override
@@ -207,6 +219,7 @@ public class Sensors extends SubsystemBase {
     SmartDashboard.putNumber("Limelight H-Angle", getAngleToTarget());
     SmartDashboard.putNumber("Limelight V-Angle", limelight.getTargetVerticalOffsetAngle());
     SmartDashboard.putNumber("Limelight Shooter Angle", getShooterAngle());
+    SmartDashboard.putNumber("Limelight Calc Angle", calcLimelightAngle());
 
     // Beam breaks
     SmartDashboard.putBoolean("Shooter Ball Sensor", shooterBallSensor.get());

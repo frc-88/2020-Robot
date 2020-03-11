@@ -5,45 +5,36 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.arm;
+package frc.robot.commands;
 
+import java.util.function.DoubleSupplier;
+
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Arm;
 
-public class ArmFullUp extends CommandBase {
-  private Arm arm;
+public class WaitInitializeCommand extends CommandBase {
+
+  private final DoubleSupplier waitSupplier;
+  private long waitTime;
+  private long startTime;
+
   /**
-   * Creates a new ArmFullUp.
+   * Creates a new WaitIntializeCommand.
    */
-  public ArmFullUp(Arm arm) {
-    this.arm = arm;
-    addRequirements(arm);
+  public WaitInitializeCommand(final DoubleSupplier seconds) {
+    waitSupplier = seconds;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    arm.setArmPosition(90);
-  }
-
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    if (arm.getCurrentArmPosition() > 85) {
-      arm.setPercentOutput(0.05);
-    } else {
-      arm.setArmPosition(90);
-    }
-  }
-
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
+    waitTime = (long)(waitSupplier.getAsDouble() * 1_000_000);
+    startTime = RobotController.getFPGATime();
   }
 
   // Returns true when the command should end.
-  @Override 
+  @Override
   public boolean isFinished() {
-    return false;
+    return RobotController.getFPGATime() - startTime >= waitTime;
   }
 }

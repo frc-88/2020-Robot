@@ -9,6 +9,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -29,6 +30,13 @@ public class Feeder extends SubsystemBase {
     m_feeder.setInverted(false);
     m_feeder.setSensorPhase(false);
     m_feeder.setNeutralMode(NeutralMode.Brake);
+
+    SupplyCurrentLimitConfiguration currentLimit = new SupplyCurrentLimitConfiguration();
+    currentLimit.enable = true;
+    currentLimit.triggerThresholdTime = 0.001;
+    currentLimit.triggerThresholdCurrent = 55;
+    currentLimit.currentLimit = 55;
+    m_feeder.configSupplyCurrentLimit(currentLimit);
   }
 
   public void setFeeder(double percentOutput) {
