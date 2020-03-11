@@ -36,7 +36,7 @@ public class ShooterRunFromLimelight extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_shooter.setFlywheelBasic(0);
+    // m_shooter.setFlywheelBasic(0);
   }
 
   // Returns true when the command should end.

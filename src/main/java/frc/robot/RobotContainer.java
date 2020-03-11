@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.WaitForDriveAimed;
 import frc.robot.commands.WaitForShooterReady;
+import frc.robot.commands.WaitInitializeCommand;
 import frc.robot.commands.Intake.DeployIntake;
 import frc.robot.commands.Intake.RetractIntake;
 import frc.robot.commands.Intake.RunIntake;
@@ -36,6 +37,7 @@ import frc.robot.commands.arm.ArmStow;
 import frc.robot.commands.arm.CalibrateArm;
 import frc.robot.commands.arm.RotateArm;
 import frc.robot.commands.arm.TestBrakeMode;
+import frc.robot.commands.climber.ClimberMaxRobotHeight;
 import frc.robot.commands.climber.DisengageRatchets;
 import frc.robot.commands.climber.EngageRatchets;
 import frc.robot.commands.climber.RunClimber;
@@ -61,7 +63,8 @@ import frc.robot.commands.shooter.ShooterFlywheelRun;
 import frc.robot.commands.shooter.ShooterFlywheelRunBasic;
 import frc.robot.commands.shooter.ShooterRunFromLimelight;
 import frc.robot.commands.shooter.ShooterStop;
-import frc.robot.commands.vision.LimelightToggle;
+import frc.robot.commands.sensors.LimelightToggle;
+import frc.robot.commands.sensors.WaitForBallsShot;
 import frc.robot.driveutil.DriveUtils;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Climber;
@@ -144,13 +147,13 @@ public class RobotContainer {
   //    turn on the limelight unless for layup
   private CommandBase m_prepShoot = new ConditionalCommand(
     new ParallelCommandGroup(
-      new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
-      new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue())
-    ),
-    new ParallelCommandGroup(
       new ArmFullUp(m_arm),
       new ShooterRunFromLimelight(m_shooter),
       new LimelightToggle(m_sensors, true)
+    ),
+    new ParallelCommandGroup(
+      new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
+      new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue())
     ),
     m_buttonBox.button7::get);
 
@@ -159,19 +162,6 @@ public class RobotContainer {
   //    TODO - freeze driver control and aim using vision data
   private final CommandBase m_shoot =
     new ConditionalCommand(
-      new SequentialCommandGroup(
-        new ParallelRaceGroup(
-          new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
-          new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()),
-          new WaitForShooterReady(m_arm, m_shooter)
-        ),
-        new ParallelCommandGroup(
-          new HopperShootMode(m_hopper), 
-          new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
-          new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()), 
-          new FeederRun(m_feeder, 1.0)
-        )
-      ),
       new SequentialCommandGroup(
         new ParallelRaceGroup(
           new ArmFullUp(m_arm), 
@@ -185,7 +175,22 @@ public class RobotContainer {
           new HopperShootMode(m_hopper), 
           new ArmFullUp(m_arm),
           new ShooterRunFromLimelight(m_shooter), 
-          new FeederRun(m_feeder, 1.0)
+          new FeederRun(m_feeder, 1.0),
+          new RunIntake(m_intake, 0.3)
+        )
+      ),
+      new SequentialCommandGroup(
+        new ParallelRaceGroup(
+          new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
+          new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()),
+          new WaitForShooterReady(m_arm, m_shooter)
+        ),
+        new ParallelCommandGroup(
+          new HopperShootMode(m_hopper), 
+          new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
+          new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()), 
+          new FeederRun(m_feeder, 1.0),
+          new RunIntake(m_intake, 0.3)
         )
       ),
       m_buttonBox.button7::get);
@@ -193,6 +198,18 @@ public class RobotContainer {
   // pauseShoot - stop the hopper and the feeder maintain arm and flywheel for shooting
   private final CommandBase m_pauseShoot = 
     new ConditionalCommand(
+      new SequentialCommandGroup(
+          new ParallelRaceGroup(
+            new HopperEject(m_hopper, -1.),
+            new WaitCommand(1),
+            new FeederStop(m_feeder), 
+            new ArmFullUp(m_arm),
+            new ShooterRunFromLimelight(m_shooter)),
+        new ParallelCommandGroup(
+          new HopperStop(m_hopper),
+          new FeederStop(m_feeder), 
+          new ArmFullUp(m_arm),
+          new ShooterRunFromLimelight(m_shooter))),
         new SequentialCommandGroup(
           new ParallelRaceGroup(
             new HopperEject(m_hopper, -1.),
@@ -205,25 +222,13 @@ public class RobotContainer {
             new FeederStop(m_feeder),
             new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()),
             new ShooterFlywheelRun(m_shooter, m_shooterLayupSpeed.getValue()))),
-        new SequentialCommandGroup(
-          new ParallelRaceGroup(
-            new HopperEject(m_hopper, -1.),
-            new WaitCommand(1),
-            new FeederStop(m_feeder), 
-            new ArmFullUp(m_arm),
-            new ShooterRunFromLimelight(m_shooter)),
-        new ParallelCommandGroup(
-          new HopperStop(m_hopper),
-          new FeederStop(m_feeder), 
-          new ArmFullUp(m_arm),
-          new ShooterRunFromLimelight(m_shooter))),
       m_buttonBox.button7::get);
 
   // stopShoot - stows arm, stops shooter, stops feeder, turns limelight off
   private final CommandBase m_stopShoot = 
     new ParallelCommandGroup(
       new LimelightToggle(m_sensors, false),
-      new ArmStow(m_arm), 
+      new ArmStow(m_arm, () -> m_driverController.getRawButton(5)), 
       new ShooterStop(m_shooter), 
       new FeederStop(m_feeder)
     );
@@ -232,9 +237,7 @@ public class RobotContainer {
   private final CommandBase m_activateIntake = 
     new SequentialCommandGroup(
       new DeployIntake(m_intake),
-      new ParallelCommandGroup(
-        new RunIntake(m_intake, 1.)
-      )
+      new RunIntake(m_intake, 1.)
     );
 
   // deactivateIntake - retracts the intake, stops the rollers and hopper after a delay
@@ -244,9 +247,7 @@ public class RobotContainer {
         new WaitCommand(0.75),
         new RetractIntake(m_intake)
       ),
-      new ParallelCommandGroup(
-        new StopIntake(m_intake)
-      )
+      new StopIntake(m_intake)
     );
 
   // regurgitate - deploy the intake and run the intake, hopper, and feeder in reverse
@@ -274,26 +275,190 @@ public class RobotContainer {
 
   // The currently running FASH (Feeder/Arm/Shooter/Hopper) combined command
   private CommandBase m_currentFASHCommand = m_stopShoot;
+
+  //TODO: Make this look nice
+  /*****
+   * AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO
+   * AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO
+   * AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO
+   * AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO AUTO
+   */
+
+  private class AutoClimber extends SequentialCommandGroup {
+    public AutoClimber() {
+      super (
+        new ConditionalCommand(
+          new EngageRatchets(m_climber),
+          new DisengageRatchets(m_climber),
+          m_buttonBox.button14::get),
+        new ZeroClimber(m_climber),
+        new StopClimber(m_climber)
+      );
+    }
+  }
+
+  private class AutoDoNothing extends ParallelCommandGroup {
+    public AutoDoNothing() {
+      super(
+        new ArcadeDrive(m_drive, () -> 0, () -> 0, () -> false, () -> Constants.MAX_SPEED_HIGH),
+        new ShooterRunFromLimelight(m_shooter),
+        new FeederStop(m_feeder),
+        new HopperStop(m_hopper),
+        new StopIntake(m_intake),
+        new ArmStow(m_arm, () -> false));
+    }
+  }
+
+  private class AutoDelayedDrive extends SequentialCommandGroup {
+    public AutoDelayedDrive() {
+      super(
+        new ParallelDeadlineGroup(
+          new WaitCommand(SmartDashboard.getNumber("Auto Drive Wait", 10)),
+          new ArcadeDrive(m_drive, () -> 0, () -> 0, () -> false, () -> Constants.MAX_SPEED_HIGH)
+        ),
+        new BasicAutoDrive(m_drive, SmartDashboard.getNumber("Auto Drive Distance", -2), SmartDashboard.getNumber("Auto Drive Distance", -2), 3),
+        new ArcadeDrive(m_drive, () -> 0, () -> 0, () -> false, () -> Constants.MAX_SPEED_HIGH)
+      );
+    }
+  }
+
+  private class AutoShoot extends SequentialCommandGroup {
+    public AutoShoot(int numBalls, double minShotTime, double maxShotTime, boolean aim) {
+      super(
+        new ParallelDeadlineGroup(
+          new WaitCommand(.15),
+          new LimelightToggle(m_sensors, true),
+          new ArcadeDrive(m_drive, () -> 0, () -> 0, () -> false, () -> Constants.MAX_SPEED_HIGH),
+          new ArmFullUp(m_arm), 
+          new ShooterRunFromLimelight(m_shooter),
+          new FeederStop(m_feeder),
+          new RunIntake(m_intake, 0)
+        ),
+        new ParallelDeadlineGroup(
+          new ParallelRaceGroup(
+            new ParallelCommandGroup(
+              new WaitForShooterReady(m_arm, m_shooter),
+              new ConditionalCommand(new WaitForDriveAimed(m_drive), new WaitCommand(0.01), () -> aim),
+              new WaitCommand(1.0)
+            ),
+            new WaitCommand(2.0)
+          ),
+          new ConditionalCommand(new TurnToLimelight(m_drive, m_sensors), new WaitCommand(0.01), () -> aim),
+          new ArmFullUp(m_arm), 
+          new ShooterRunFromLimelight(m_shooter),
+          new FeederStop(m_feeder),
+          new RunIntake(m_intake, 0)
+        ),
+        new ParallelDeadlineGroup(
+          new ParallelRaceGroup(
+            new ParallelCommandGroup(
+              new WaitForBallsShot(m_sensors, numBalls),
+              new WaitCommand(minShotTime)
+            ),
+            new WaitCommand(maxShotTime)
+          ),
+          new ConditionalCommand(new TurnToLimelight(m_drive, m_sensors), new WaitCommand(0.01), () -> aim),
+          new ArmFullUp(m_arm), 
+          new ShooterRunFromLimelight(m_shooter),
+          new FeederRun(m_feeder, 1.0),
+          new HopperShootMode(m_hopper),
+          new SequentialCommandGroup(
+            new ParallelDeadlineGroup(
+              new WaitCommand(1.5),
+              new RunIntake(m_intake, 0.3)
+            ),
+            new ParallelDeadlineGroup(
+              new WaitCommand(.25),
+              new DeployIntake(m_intake)
+            ),
+            new RetractIntake(m_intake),
+            new RunIntake(m_intake, 0.3)
+          )
+        ),
+        new LimelightToggle(m_sensors, false)
+      );
+    }
+  }
   
   private final CommandBase m_autoDoNothing = new ParallelCommandGroup(
+    new AutoDoNothing(),
+    new AutoClimber()
+  );
+
+  private final CommandBase m_autoJustDrive = new ParallelCommandGroup(
     new SequentialCommandGroup(
       new ParallelDeadlineGroup(
-        new WaitCommand(SmartDashboard.getNumber("Auto Drive Wait", 10)),
-        new ArcadeDrive(m_drive, () -> 0, () -> 0, () -> false, () -> Constants.MAX_SPEED_HIGH)
-      )
+          new WaitInitializeCommand(() -> SmartDashboard.getNumber("Auto Drive Wait", 10)),
+          new ArcadeDrive(m_drive, () -> 0, () -> 0, () -> false, () -> Constants.MAX_SPEED_HIGH)
+      ),
+      new BasicAutoDrive(m_drive, () -> SmartDashboard.getNumber("Auto Drive Distance", -2), () -> SmartDashboard.getNumber("Auto Drive Distance", -2), 3),
+      new ArcadeDrive(m_drive, () -> 0, () -> 0, () -> false, () -> Constants.MAX_SPEED_HIGH)
     ),
+    new AutoClimber(),
     new ShooterStop(m_shooter),
     new FeederStop(m_feeder),
     new HopperStop(m_hopper),
     new StopIntake(m_intake),
+    new ArmStow(m_arm, () -> m_driverController.getRawButton(5))
+    );
+
+  private final CommandBase m_auto3Ball = new ParallelCommandGroup(
     new SequentialCommandGroup(
-      new DisengageRatchets(m_climber),
-      new ZeroClimber(m_climber),
-      new StopClimber(m_climber)
-    )
+      new ParallelDeadlineGroup(
+        new WaitInitializeCommand(() -> SmartDashboard.getNumber("Auto Drive Wait", 10)),
+        new SequentialCommandGroup(
+          new AutoShoot(100, 15, 15, false),
+          new AutoDoNothing()
+        )
+      ),
+      new ParallelCommandGroup(
+        new SequentialCommandGroup(
+          new BasicAutoDrive(m_drive, () -> SmartDashboard.getNumber("Auto Drive Distance", -2), () -> SmartDashboard.getNumber("Auto Drive Distance", -2), 3),
+          new ArcadeDrive(m_drive, () -> 0, () -> 0, () -> false, () -> Constants.MAX_SPEED_HIGH)
+        ), 
+        new ShooterStop(m_shooter),
+        new FeederStop(m_feeder),
+        new HopperStop(m_hopper),
+        new StopIntake(m_intake),
+        new ArmStow(m_arm, () -> m_driverController.getRawButton(5)))
+    ),
+    new AutoClimber()
   );
 
-  private CommandBase m_autoCommand = m_autoDoNothing;
+  private final CommandBase m_autoTrench7Ball = new ParallelCommandGroup(
+    new SequentialCommandGroup(
+      new AutoShoot(3, .3, 3, false),
+      new ParallelDeadlineGroup(
+        new BasicAutoDrive(m_drive, -14, -15, 6),
+        new ShooterRunFromLimelight(m_shooter),
+        new FeederStop(m_feeder),
+        new HopperStop(m_hopper),
+        new SequentialCommandGroup(
+          new DeployIntake(m_intake),
+          new RunIntake(m_intake, 1)
+        ),
+        new ArmStow(m_arm, () -> m_driverController.getRawButton(5))     
+        ),
+      new ParallelDeadlineGroup(
+        new BasicAutoDrive(m_drive, 9.7, 10.2, 6),
+        new ShooterRunFromLimelight(m_shooter),
+        new FeederStop(m_feeder),
+        new HopperStop(m_hopper),
+        new SequentialCommandGroup(
+          new ParallelDeadlineGroup(
+            new WaitCommand(0.75),
+            new RetractIntake(m_intake)
+          ),
+          new StopIntake(m_intake)
+        ),
+        new ArmStow(m_arm, () -> m_driverController.getRawButton(5))
+      ),
+      new AutoShoot(100, 15, 15, true)
+    ),
+    new AutoClimber()
+  );
+
+  private CommandBase m_autoCommand = m_autoTrench7Ball;
   private class ButtonAutoPair {
     private Trigger button;
     private CommandBase auto;
@@ -310,7 +475,10 @@ public class RobotContainer {
     }
   }
   private final List<ButtonAutoPair> autoSelectors = Arrays.asList(
-    new ButtonAutoPair(m_buttonBox.button2, m_autoDoNothing)
+    new ButtonAutoPair(m_buttonBox.button2, m_autoDoNothing),
+    new ButtonAutoPair(m_buttonBox.button3, m_autoJustDrive),
+    new ButtonAutoPair(m_buttonBox.button4, m_auto3Ball),
+    new ButtonAutoPair(m_buttonBox.button5, m_autoTrench7Ball)
   );
 
   /***
@@ -385,7 +553,7 @@ public class RobotContainer {
       m_currentFASHCommand.cancel();
       m_currentFASHCommand.schedule();
     }));
-
+    m_buttonBox.button11.whenPressed(new ClimberMaxRobotHeight(m_climber));
     m_buttonBox.button14.whenPressed(new EngageRatchets(m_climber));
     m_buttonBox.button14.whenReleased(new DisengageRatchets(m_climber));
   }
@@ -440,7 +608,7 @@ public class RobotContainer {
     SmartDashboard.putData("Arm Calibrate", new CalibrateArm(m_arm));
     SmartDashboard.putNumber("ArmTestPosition", 0);
     SmartDashboard.putData("Arm to Position", new InstantCommand(() -> new ArmMotionMagic(m_arm, SmartDashboard.getNumber("ArmTestPosition", 0)).schedule()));
-    SmartDashboard.putData("Arm to Stow", new ArmStow(m_arm));
+    SmartDashboard.putData("Arm to Stow", new ArmStow(m_arm, () -> m_driverController.getRawButton(6)));
     SmartDashboard.putData("Arm to Layup", new ArmMotionMagic(m_arm, m_armLayupAngle.getValue()));
     SmartDashboard.putData("Arm Hold Position", new InstantCommand(() -> new ArmMotionMagic(m_arm, m_arm.getCurrentArmPosition()).schedule(), m_arm));
     SmartDashboard.putData("Arm Test Brake Mode", new TestBrakeMode(m_arm));
@@ -469,6 +637,10 @@ public class RobotContainer {
 
     SmartDashboard.putData("Test Basic Auto 1", new BasicAutoDrive(m_drive, -10, -10, 8));
     SmartDashboard.putData("Test Basic Auto 2", new BasicAutoDrive(m_drive, -1, -6, 8));
+
+    // Auto stuff
+    SmartDashboard.putNumber("Auto Drive Wait", 10);
+    SmartDashboard.putNumber("Auto Drive Distance", -2);
   }
 
 
