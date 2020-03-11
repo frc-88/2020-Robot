@@ -7,16 +7,20 @@
 
 package frc.robot.commands.arm;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Arm;
 
 public class ArmStow extends CommandBase {
   private Arm arm;
+  private BooleanSupplier trenchMode;
   /**
    * Creates a new ArmFullUp.
    */
-  public ArmStow(Arm arm) {
+  public ArmStow(Arm arm, BooleanSupplier trenchMode) {
     this.arm = arm;
+    this.trenchMode=trenchMode;
     addRequirements(arm);
   }
 
@@ -30,7 +34,7 @@ public class ArmStow extends CommandBase {
   @Override
   public void execute() {
     if (arm.getCurrentArmPosition() < 2) {
-      arm.setPercentOutput(-0.0275);
+      arm.setPercentOutput(trenchMode.getAsBoolean() ? -0.04:-0.01);
     } else {
       arm.setArmPosition(0);
     }

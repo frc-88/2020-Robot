@@ -5,34 +5,53 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.arm;
+package frc.robot.commands.sensors;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Sensors;
 
-public class ArmFullUp extends CommandBase {
-  private Arm arm;
+public class WaitForBallsShot extends CommandBase {
+
+  private final Sensors m_sensors;
+  private final int m_numBalls;
+
+  private boolean m_currentSensorState;
+  private int m_numDebounceTicks;
+  private int m_numBallsPassed;
+
+  private static final int DEBOUNCE_TICKS = 2;
+
   /**
-   * Creates a new ArmFullUp.
+   * Creates a new WaitForBalls.
    */
-  public ArmFullUp(Arm arm) {
-    this.arm = arm;
-    addRequirements(arm);
+  public WaitForBallsShot(final Sensors sensors, final int numBalls) {
+    m_sensors = sensors;
+    m_numBalls = numBalls;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    arm.setArmPosition(90);
+    m_currentSensorState = false;
+    m_numDebounceTicks = 0;
+    m_numBallsPassed = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (arm.getCurrentArmPosition() > 85) {
-      arm.setPercentOutput(0.05);
+    if (m_sensors.hasBallInShooter() != m_currentSensorState) {
+      m_numDebounceTicks++;
     } else {
-      arm.setArmPosition(90);
+      m_numDebounceTicks = 0;
+    }
+
+    if (m_numDebounceTicks >= DEBOUNCE_TICKS) {
+      m_numDebounceTicks = 0;
+      m_currentSensorState = !m_currentSensorState;
+      if (!m_currentSensorState) {
+        m_numBallsPassed++;
+      }
     }
   }
 
@@ -42,8 +61,8 @@ public class ArmFullUp extends CommandBase {
   }
 
   // Returns true when the command should end.
-  @Override 
+  @Override
   public boolean isFinished() {
-    return false;
+    return m_numBallsPassed >= m_numBalls;
   }
 }

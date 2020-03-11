@@ -64,6 +64,14 @@ public class Climber extends SubsystemBase{
         m_climber_motor_right.set(ControlMode.PercentOutput, speed);
     }
 
+    public int getLeftMotorPosition() {
+        return m_climber_motor_left.getSelectedSensorPosition();
+    }
+
+    public int getRightMotorPosition() {
+        return m_climber_motor_right.getSelectedSensorPosition();
+    }
+
     public void engageRatchets() {
         m_climber_motor_left.configPeakOutputForward(0);
         m_climber_motor_right.configPeakOutputForward(0);
@@ -97,8 +105,8 @@ public class Climber extends SubsystemBase{
     public void exitZeroMode() {
         StatorCurrentLimitConfiguration currentLimit = new StatorCurrentLimitConfiguration();
         currentLimit.enable = true;
-        currentLimit.currentLimit = 40;
-        currentLimit.triggerThresholdCurrent = 40;
+        currentLimit.currentLimit = 50;
+        currentLimit.triggerThresholdCurrent = 50;
         currentLimit.triggerThresholdTime = 0.001;
         m_climber_motor_left.configStatorCurrentLimit(currentLimit);
         m_climber_motor_right.configStatorCurrentLimit(currentLimit);   

@@ -41,6 +41,8 @@ public class Intake extends SubsystemBase {
     currentLimit.triggerThresholdTime = 0.250;
     currentLimit.triggerThresholdCurrent = 55;
     currentLimit.currentLimit = 35;
+    rollerMotor.configSupplyCurrentLimit(currentLimit);
+    
 
     deployPiston = new DoubleSolenoid(Constants.INTAKE_DEPLOY_PISTON, Constants.INTAKE_RETRACT_PISTON);
   }

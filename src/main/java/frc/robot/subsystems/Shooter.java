@@ -22,10 +22,13 @@ import frc.robot.util.preferenceconstants.DoublePreferenceConstant;
 
 public class Shooter extends SubsystemBase {
   private Sensors m_sensors;
+  private int m_loopCounter = 0;
 
   private TalonFX m_flywheelMaster = new TalonFX(Constants.SHOOTER_FLYWHEEL_MASTER);
   private TalonFX m_flywheelFollower = new TalonFX(Constants.SHOOTER_FLYWHEEL_FOLLOWER);
   private ShooterConfig m_shooterConfig = new ShooterConfig();
+
+  private double lastSpeed = 5200;
 
   private DoublePreferenceConstant flywheel_kP;
   private DoublePreferenceConstant flywheel_kI;
@@ -39,12 +42,12 @@ public class Shooter extends SubsystemBase {
     new ValueInterpolator.ValuePair(113, 5280),
     new ValueInterpolator.ValuePair(119, 5280),
     new ValueInterpolator.ValuePair(128, 5280),
-    new ValueInterpolator.ValuePair(162, 5210),
-    new ValueInterpolator.ValuePair(224, 5260),
-    new ValueInterpolator.ValuePair(239, 5270),
-    new ValueInterpolator.ValuePair(254, 5390),
-    new ValueInterpolator.ValuePair(277, 5360),
-    new ValueInterpolator.ValuePair(284, 5550)
+    new ValueInterpolator.ValuePair(162, 5260),
+    new ValueInterpolator.ValuePair(224, 5360),
+    new ValueInterpolator.ValuePair(239, 5390),
+    new ValueInterpolator.ValuePair(254, 5490),
+    new ValueInterpolator.ValuePair(277, 5390),
+    new ValueInterpolator.ValuePair(284, 5580)
   );
 
   /**
@@ -101,18 +104,22 @@ public class Shooter extends SubsystemBase {
 
   public void setFlywheel(double velocity) {
     m_flywheelMaster.set(ControlMode.Velocity, convertFlywheelVelocityToEncoderVelocity(velocity));
-  }
+    if (velocity > 2000) {
+      lastSpeed = velocity;
+    }
+  } 
 
   public void setFlywheelFromLimelight() {
     if (m_sensors.doesLimelightHaveTarget()) {
-      this.setFlywheel(distanceToSpeedInterpolator.getInterpolatedValue(m_sensors.getDistanceToTarget()));
+      this.lastSpeed = Math.max(distanceToSpeedInterpolator.getInterpolatedValue(m_sensors.getDistanceToTarget()), 5200);
+      this.setFlywheel(lastSpeed);
     } else {
-      this.setFlywheel(5300);
+      this.setFlywheel(lastSpeed);
     }
   }
 
   public boolean flywheelOnTarget() {
-    return Math.abs(convertEncoderVelocityToFlywheelVelocity(m_flywheelMaster.getClosedLoopError())) < Constants.SHOOTER_FLYWHEEL_TOLERANCE;
+    return Math.abs(lastSpeed - convertEncoderVelocityToFlywheelVelocity(m_flywheelMaster.getSelectedSensorVelocity())) <= Constants.SHOOTER_FLYWHEEL_TOLERANCE;
   }
 
   public void setFlywheelBasic(double percentOutput) {
@@ -129,6 +136,11 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
+    m_loopCounter += 1;
     SmartDashboard.putNumber("Flywheel velocity", convertEncoderVelocityToFlywheelVelocity(m_flywheelMaster.getSelectedSensorVelocity()));
+    if(m_loopCounter % 3. == 0) {
+      System.out.println(lastSpeed);
+      System.out.println(convertEncoderVelocityToFlywheelVelocity((int)m_flywheelMaster.getClosedLoopTarget()));
+    }
   }
 }
