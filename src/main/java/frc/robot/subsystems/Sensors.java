@@ -56,6 +56,7 @@ public class Sensors extends SubsystemBase {
   private final DoublePreferenceConstant m_limelightHeight = new DoublePreferenceConstant("Limelight Height", 19.5);
   private final DoublePreferenceConstant m_limelightAngle = new DoublePreferenceConstant("Limelight Angle", 20.0);
   private final DoublePreferenceConstant m_limelightOffset = new DoublePreferenceConstant("Limelight Offset", 8.0);
+  private final DoublePreferenceConstant m_limelightDepthOffset = new DoublePreferenceConstant("Limelight Depth Offset", 12.0);
 
   private DigitalInput shooterBallSensor;
 
@@ -186,7 +187,7 @@ public class Sensors extends SubsystemBase {
     double tx = -limelight.getTargetHorizontalOffsetAngle();
 
     return Math.toDegrees( Math.atan( ( ( distance * Math.sin(Math.toRadians(tx)) ) + m_limelightOffset.getValue() ) /
-                      ( distance * Math.cos(Math.toRadians(tx)) ) ) );
+                      ( distance * Math.cos(Math.toRadians(tx)) ) + m_limelightDepthOffset.getValue() ) );
   }
 
   public double calcLimelightAngle() {
