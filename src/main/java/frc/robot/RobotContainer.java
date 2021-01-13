@@ -72,6 +72,7 @@ import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Lights;
 import frc.robot.subsystems.Sensors;
 import frc.robot.subsystems.Shooter;
 import frc.robot.util.ButtonBox;
@@ -129,6 +130,8 @@ public class RobotContainer {
   private final Shooter m_shooter = new Shooter(m_sensors);
   private final Intake m_intake = new Intake();
   // private final ControlPanelManipulator m_cpm = new ControlPanelManipulator();
+  private final Lights m_lights = new Lights();
+
 
   /***
   *      ______   ______   .___  ___. .___  ___.      ___      .__   __.  _______       _______.
